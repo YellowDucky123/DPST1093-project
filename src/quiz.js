@@ -10,6 +10,11 @@ function adminQuizRemove( authUserId, name, description ) {
     }
 }
 
+/*********************************************************************************************|
+|*Given an admin user's "authUserId", return details about the user.                          |
+|*********************************************************************************************|
+|*attention: "name" is the first and last name concatenated with a single space between them**|
+\*********************************************************************************************/
 function adminQuizList ( authUserId ) {
     return {
         quizzes: [

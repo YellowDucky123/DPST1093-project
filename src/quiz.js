@@ -5,5 +5,10 @@ function adminQuizCreate( authUserId, name, description ) {
 }
 
 function adminQuizNameUpdate(authUserId, quizId, name) {
-    return {};
+    return {}
 }
+
+function adminQuizDescriptionUpdate(authUserId, quizId, description) {
+    return {}
+}
+

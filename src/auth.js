@@ -15,3 +15,15 @@ function adminUserDetails(authUserId) {
         }
     }
 }
+
+function adminAuthRegister(email, password, nameFirst, nameLast) {
+    return {
+        athUserId: 1
+    };
+}
+
+function adminAuthLogin(email, password) {
+    return {
+        athUserId: 1
+    };
+}

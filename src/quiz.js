@@ -10,6 +10,17 @@ function adminQuizRemove( authUserId, name, description ) {
     }
 }
 
+function adminQuizList ( authUserId ) {
+    return {
+        quizzes: [
+            {
+                quizId: 1,
+                name: 'My Quiz',
+            }
+        ]
+    }
+}
+
 function adminQuizInfo( authUserId, quizId ) {
     return {
         quizId: 1,

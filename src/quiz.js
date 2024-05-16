@@ -1,3 +1,5 @@
-function adminQuizNameUpdate(authUserId, quizId, name) {
-    return 0;
+function adminQuizCreate( authUserId, name, description ) {
+    return {
+        quizId: 2
+    }
 }

@@ -3,10 +3,11 @@ function someNewFeature(array) {
         console.log(item);
     }
 }
+
 /*********************************************************************************************|
-|*Given an admin user's "authUserId", return details about the user.                        **|
+|*Given an admin user's "authUserId", return details about the user.                         *|
 |*********************************************************************************************|
-|*attention: "name" is the first and last name concatenated with a single space between them**|
+|*attention: "name" is the first and last name concatenated with a single space between them *|
 |*********************************************************************************************/
 function adminUserDetails(authUserId) {
     return { 
@@ -22,12 +23,12 @@ function adminUserDetails(authUserId) {
 
 function adminAuthRegister(email, password, nameFirst, nameLast) {
     return {
-        athUserId: 1
+        authUserId: 1
     };
 }
 
 function adminAuthLogin(email, password) {
     return {
-        athUserId: 1
+        authUserId: 1
     };
 }

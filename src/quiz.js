@@ -5,9 +5,7 @@ function adminQuizCreate( authUserId, name, description ) {
 }
 
 function adminQuizRemove( authUserId, name, description ) {
-    return {
-        quizId: 2
-    }
+    return {}
 }
 
 /*********************************************************************************************|

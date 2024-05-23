@@ -1,10 +1,10 @@
-function adminQuizCreate( authUserId, name, description ) {
+export function adminQuizCreate( authUserId, name, description ) {
     return {
         quizId: 2
     }
 }
 
-function adminQuizRemove( authUserId, name, description ) {
+export function adminQuizRemove( authUserId, name, description ) {
     return {}
 }
 
@@ -13,7 +13,7 @@ function adminQuizRemove( authUserId, name, description ) {
 |*********************************************************************************************|
 |*attention: "name" is the first and last name concatenated with a single space between them**|
 \*********************************************************************************************/
-function adminQuizList ( authUserId ) {
+export function adminQuizList ( authUserId ) {
     return {
         quizzes: [
             {
@@ -24,7 +24,7 @@ function adminQuizList ( authUserId ) {
     }
 }
 
-function adminQuizInfo( authUserId, quizId ) {
+export function adminQuizInfo( authUserId, quizId ) {
     return {
         quizId: 1,
         name: 'My Quiz',
@@ -34,11 +34,11 @@ function adminQuizInfo( authUserId, quizId ) {
     }
 }
 
-function adminQuizNameUpdate(authUserId, quizId, name) {
+export function adminQuizNameUpdate(authUserId, quizId, name) {
     return {}
 }
 
-function adminQuizDescriptionUpdate(authUserId, quizId, description) {
+export function adminQuizDescriptionUpdate(authUserId, quizId, description) {
     return {}
 }
 

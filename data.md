@@ -2,8 +2,7 @@
 let data = {
     users : {
         user/*I suggest use authUserId as key*/ : { 
-            
-            //name : nameFirst + nameLast,
+            name : nameFirst + nameLast,
             nameFirst : string,
             nameLast  : string,
 

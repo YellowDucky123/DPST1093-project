@@ -1,0 +1,1 @@
+export { adminQuizNameUpdate } from '../src/quiz

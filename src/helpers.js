@@ -18,7 +18,7 @@ export function quizIdValidator(quizId) {
     let wh_data = getData();
     let data = wh_data.quizzes;
     for(const i in data) {
-        if(data[i][QuizId] === quizId) {
+        if(data[i][quizId] === quizId) {
             return true;
         }
     }
@@ -47,3 +47,30 @@ export function quizOwnership(userId, quizId) {
         }
     }
 }
+
+export function nameLen(name) {
+    if(name.length < 3) {
+        return false;
+    }
+    else if(name.length > 30) {
+        return false;
+    }
+
+    return true;
+}
+
+export function isNameAlphaNumeric(str) {
+    var code, i, len;
+
+    for (i = 0, len = str.length; i < len; i++) {
+      code = str.charCodeAt(i);
+      if (!(code > 47 && code < 58) && // numeric (0-9)
+          !(code > 64 && code < 91) && // upper alpha (A-Z)
+          !(code > 96 && code < 123) && // lower alpha (a-z)
+          !(code == ' ')) { // space ' '
+        console.log("error: 'Invalid character used in name'");   
+        return false;
+      }
+    }
+    return true;
+  };

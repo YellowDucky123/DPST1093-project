@@ -4,7 +4,8 @@ export function userIdValidator(UserId) {
     let wh_data = getData();
     let data = wh_data.users;
     for(const i in data) {
-        if(data[i]['authUserId'] === UserId) {
+        let id = parseInt(i);
+        if(id === UserId) {
             return true;
         }
     }
@@ -18,7 +19,8 @@ export function quizIdValidator(quizId) {
     let wh_data = getData();
     let data = wh_data.quizzes;
     for(const i in data) {
-        if(data[i][quizId] === quizId) {
+        let id = parseInt(i);
+        if(id === quizId) {
             return true;
         }
     }
@@ -31,7 +33,7 @@ export function quizIdValidator(quizId) {
 export function quizOwnership(userId, quizId) {
     let wh_data = getData();
     let q_data = wh_data.quizzes;
-    let owned_quizzes = wh_data.users.userId.quizzesUserHave;
+    let owned_quizzes = wh_data['users'][userId]['quizzesUserHave'];
     let flag = 0;
 
     for(const i in q_data) {
@@ -42,7 +44,7 @@ export function quizOwnership(userId, quizId) {
                 if(n == q_name) return true;
             }
             
-            console.log("error 'This user does not own this quiz'");
+            console.log("error: 'This user does not own this quiz'");
             return false;
         }
     }

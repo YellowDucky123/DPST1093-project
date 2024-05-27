@@ -10,8 +10,6 @@ export function userIdValidator(UserId) {
         }
     }
 
-    console.log("error: 'User Id invalid'");
-
     return false;
 }
 
@@ -24,8 +22,6 @@ export function quizIdValidator(quizId) {
             return true;
         }
     }
-
-    console.log("error: 'Quiz Id invalid'");
 
     return false;
 }
@@ -44,7 +40,6 @@ export function quizOwnership(userId, quizId) {
                 if(n == q_name) return true;
             }
             
-            console.log("error: 'This user does not own this quiz'");
             return false;
         }
     }
@@ -70,9 +65,16 @@ export function isNameAlphaNumeric(str) {
           !(code > 64 && code < 91) && // upper alpha (A-Z)
           !(code > 96 && code < 123) && // lower alpha (a-z)
           !(code == ' ')) { // space ' '
-        console.log("error: 'Invalid character used in name'");   
         return false;
       }
     }
     return true;
   };
+
+  export function description_length_valid(description) {
+    if(description.length > 100) {
+        return false;
+    }
+
+    return true;
+  }

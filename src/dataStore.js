@@ -1,9 +1,9 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW
 
 /* data and its commits are editted by Yuxuan Wang */
-/* 
-
-type user = {
+/*
+type Id = number;
+interface user = {
   name : string
   nameFirst? : string,
   nameLast ? : string,
@@ -14,28 +14,32 @@ type user = {
 
   numSuccessfulLogins:  number,                 // This should be 0 at first
   numFailedPasswordsSinceLastLogin: number,     // This should be 0 at first
+  
+  quizzesUserHave : Id[]
 }
 
-type users = user[];
+interface users [
+  [authUserId : number] : user;
+]
 
-type quiz = {
-  QuizId : number,
-  nume : string,
+interface quiz {
+  quizId : number,
+  name : string,
 
   description? : string | undefined | null,
 
-  timeCreated : number | time,    
-  timeLastEdited : number | time   
+  timeCreated : number ,    
+  timeLastEdited : number  
 };
 
-type quizzes : quiz[];
+type quizzes = quiz[];
 
 type data = { "users" : users, "quizzes" : quizzes };
 */
 
 let data  = {
-  users  : [],
-  quizzes : []
+  users : {},
+  quizzes : {}
 };
 //////////////////////////////////////////////////////////////////
 ////DATA DEFINE FINISHED //////////////// DATA DEFINE FINISHED////

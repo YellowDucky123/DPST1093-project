@@ -26,6 +26,18 @@ export function adminQuizCreate( authUserId, name, description ) {
     const data = getData();
     const quizId = Object.keys(data.quizzes).length + 1;
 
+    let d = new Date();
+    const time = d.getTime();
+
+    const new_data = {
+        quizId: quizId,
+        name: name,
+        timeCreated: time,
+        timeLastEdited: time,
+        description: description
+    }
+
+    setData(new_data);
     return {quizId}
 }
 
@@ -39,7 +51,28 @@ export function adminQuizRemove( authUserId, quizId) {
     if(quizOwnership(authUserId, quizId) == false){
         return {error: 'adminQuizRemove: you do not own this quiz'}
     }
+
     return {}
+}
+
+export function adminQuizInfo( authUserId, quizId ) {
+    if(userIdValidator(authUserId) == false){
+        return {error: 'adminQuizInfo: invalid user id'}
+    }
+    if(quizIdValidator(quizId) == false){
+        return {error: 'adminQuizInfo: invalid quiz id'}
+    }
+    if(quizOwnership(authUserId, quizId) == false){
+        return {error: 'adminQuizInfo: you do not own this quiz'}
+    }
+
+    return {
+        quizId: 1,
+        name: 'My Quiz',
+        timeCreated: 1683125870,
+        timeLastEdited: 1683125871,
+        description: 'This is my quiz',
+    }
 }
 
 /*********************************************************************************************|
@@ -58,15 +91,6 @@ export function adminQuizList ( authUserId ) {
     }
 }
 
-export function adminQuizInfo( authUserId, quizId ) {
-    return {
-        quizId: 1,
-        name: 'My Quiz',
-        timeCreated: 1683125870,
-        timeLastEdited: 1683125871,
-        description: 'This is my quiz',
-    }
-}
 
 export function adminQuizNameUpdate(authUserId, quizId, name) {
     // Error checks

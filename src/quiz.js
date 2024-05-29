@@ -7,9 +7,26 @@ import { nameLen } from './helpers.js'
 import { description_length_valid } from './helpers.js'
 
 export function adminQuizCreate( authUserId, name, description ) {
-    return {
-        quizId: 2
+    if(userIdValidator(authUserId) == false){
+        return {error: 'adminQuizCreate: invalid user id'}
     }
+    if(nameLen(name) == false){
+        return {error: 'adminQuizCreate: invalid quiz name length'}
+    }
+    if(isNameAlphaNumeric(name) == false){
+        return {error: 'adminQuizCreate: quiz name contains invalid letters'}
+    }
+    if(description_length_valid(name) == false){
+        return {error: 'adminQuizCreate: quiz description too long'}
+    }
+    if(quizIdValidator(name) == true){
+        return {error: 'adminQuizCreate: quiz name already used by another user'}
+    }
+
+    const data = getData();
+    const quizId = Object.keys(data.quizzes).length + 1;
+
+    return {quizId}
 }
 
 export function adminQuizRemove( authUserId, name, description ) {

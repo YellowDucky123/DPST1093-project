@@ -66,12 +66,13 @@ export function adminQuizInfo( authUserId, quizId ) {
         return {error: 'adminQuizInfo: you do not own this quiz'}
     }
 
-    return {
-        quizId: 1,
-        name: 'My Quiz',
-        timeCreated: 1683125870,
-        timeLastEdited: 1683125871,
-        description: 'This is my quiz',
+    const data = getData();
+    let return_data;
+    
+    for(const item of data.quizzes) {
+        if(item.quizId === quizId) {
+            return item;
+        }
     }
 }
 

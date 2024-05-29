@@ -19,7 +19,7 @@ export function adminQuizCreate( authUserId, name, description ) {
     if(description_length_valid(name) == false){
         return {error: 'adminQuizCreate: quiz description too long'}
     }
-    if(quizIdValidator(name) == true){
+    if(isUsedQuizName(name) == true){
         return {error: 'adminQuizCreate: quiz name already used by another user'}
     }
 
@@ -29,7 +29,16 @@ export function adminQuizCreate( authUserId, name, description ) {
     return {quizId}
 }
 
-export function adminQuizRemove( authUserId, name, description ) {
+export function adminQuizRemove( authUserId, quizId) {
+    if(userIdValidator(authUserId) == false){
+        return {error: 'adminQuizRemove: invalid user id'}
+    }
+    if(quizIdValidator(quizId) == false){
+        return {error: 'adminQuizRemove: invalid quiz id'}
+    }
+    if(quizOwnership(authUserId, quizId) == false){
+        return {error: 'adminQuizRemove: you do not own this quiz'}
+    }
     return {}
 }
 

@@ -5,6 +5,7 @@ import { quizOwnership } from './helpers.js'
 import { isNameAlphaNumeric } from './helpers.js'
 import { nameLen } from './helpers.js'
 import { description_length_valid } from './helpers.js'
+import { isUsedQuizName } from './helpers.js'
 
 export function adminQuizCreate( authUserId, name, description ) {
     if(userIdValidator(authUserId) == false){

@@ -71,10 +71,20 @@ export function isNameAlphaNumeric(str) {
     return true;
   };
 
-  export function description_length_valid(description) {
+export function description_length_valid(description) {
     if(description.length > 100) {
         return false;
     }
 
     return true;
-  }
+}
+
+export function isUsedQuizName(name){
+    const data = getData();
+    for(let item of data.quizzes){
+        if(item.name === name) {
+            return false;
+        }
+    }
+    return true;
+}

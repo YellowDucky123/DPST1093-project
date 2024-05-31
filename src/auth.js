@@ -28,26 +28,33 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
         return {error : 'email existed'};
     }
     if (validator.isEmail(email) === false) {
-        return {error : 'wrong email'};    
+        return {error : 'email should have specific format'};    
     }
-    if (checkName(nameFirst) === false) {
-        return {error : 'wrong first name'};    
+    if (checkPasswordLength(password) === false) {
+        return {error: 'Password should be less than 8 characters'};
     }
-    if (checkName(nameLast) === false) {
-        return {error : 'wrong last name'};    
+    if (checkPasswordContain(password) === false) {
+        return {error: 'Password should contain at least one number and at least one letter'};    
     }
-    if (checkPassword(password) === false) {
-        return {error: 'Wrong password'};
+    if (checkNameContains(nameFirst) === false) {
+        return {error : 'NameFirst contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes'};    
     }
+    if (checkNameFirstLength(nameFirst) === false) {
+        return {error : 'NameFirst is less than 2 characters or more than 20 characters'};    
+    }
+    if (checkNameContains(nameLast) === false) {
+        return {error : 'NameLast contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes'};    
+    }
+    if (checkNameFirstLength(nameLast) === false) {
+        return {error : 'NameLast less than 2 characters or more than 20 characters'};    
+    }
+    
     return { authUserId : 1 };      
 }
 
-function checkPassword(password) {
-    if (checkPasswordLength(password) && checkPasswordContain(password)) {
-        return true;
-    }
-    return false;
-}
+
+// const a = adminAuthRegister("good@gmail.com", 'abcd11223', 'a', 'b');
+
 
 function checkPasswordLength(password) {
     if (password.length <= 8 && password.length > 0) {
@@ -73,22 +80,12 @@ function checkPasswordContain(password) {
     return false;
 }
 
-function checkName (nameFirst) {
+function checkNameContains (nameFirst) {
     for (let i = 0; i < nameFirst.length; i++) {
-        if ((nameFirst[i] !== validator.isAlpha) || (checkNameFirstLength === false)) {
+        if ((!validator.isAlpha(nameFirst[i])) && (nameFirst[i] !== '-') && (nameFirst[i] !== ' ') && (nameFirst[i] !== '\'')) {
             return false;
-        }
-        if ((nameFirst !== '') || (checkNameFirstLength === false)) {
-            return false;
-        }
-        if ((nameFirst !== '-') || (checkNameFirstLength === false)) {
-            return false;
-        }
-        if ((nameFirst !== '\'') || (checkNameFirstLength === false)) {
-            return false;
-        }
-    }
-    
+        }    
+    }    
     return true;
 }
 
@@ -104,7 +101,7 @@ function checkNameFirstLength(nameFirst) {
 
 function emailExist(email) {
     const currentData = getData();
-    for (i = 0; i < currentData.length; i++) {
+    for (let i = 0; i < currentData.length; i++) {
         if (email === currentData[i].email) {
             return true;
         }
@@ -117,4 +114,5 @@ function adminAuthLogin(email, password) {
         authUserId: 1
     };
 }
-console.log("Can work");
+//console.log(a);
+//console.log("Can work");

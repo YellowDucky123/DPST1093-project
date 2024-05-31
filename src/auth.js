@@ -24,7 +24,7 @@ function adminUserDetails(authUserId) {
 }
 
 function adminAuthRegister(email, password, nameFirst, nameLast) {
-    if (dataExist(email) === true)  {
+    if (emailExist(email) === true)  {
         return {error : 'email existed'};
     }
     if (validator.isEmail(email) === false) {
@@ -35,7 +35,42 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
     }
     if (checkName(nameLast) === false) {
         return {error : 'wrong last name'};    
-    }      
+    }
+    if (checkPassword(password) === false) {
+        return {error: 'Wrong password'};
+    }
+    return { authUserId : 1 };      
+}
+
+function checkPassword(password) {
+    if (checkPasswordLength(password) && checkPasswordContain(password)) {
+        return true;
+    }
+    return false;
+}
+
+function checkPasswordLength(password) {
+    if (password.length <= 8 && password.length > 0) {
+        return true;
+    }
+    return false;
+}
+
+function checkPasswordContain(password) {
+    let checkNumber = 0;
+    let checkLetter = 0;
+    for (let i = 0; i < password.length; i++) {
+        if (validator.isAlpha(password[i])) {
+            checkLetter = 1;
+        }
+        if (password[i] <= 9 && password[i] >= 0) {
+            checkNumber = 1;
+        }
+    }
+    if (checkLetter === 1 && checkNumber === 1) {
+        return true;
+    }
+    return false;
 }
 
 function checkName (nameFirst) {
@@ -67,7 +102,7 @@ function checkNameFirstLength(nameFirst) {
     return true;
 }
 
-function dataExist(email) {
+function emailExist(email) {
     const currentData = getData();
     for (i = 0; i < currentData.length; i++) {
         if (email === currentData[i].email) {

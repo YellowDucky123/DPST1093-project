@@ -1,3 +1,5 @@
+import { getData } from './dataStore.js'
+import validator from 'validator';
 function someNewFeature(array) {
     for (const item of array) {
         console.log(item);
@@ -22,9 +24,57 @@ function adminUserDetails(authUserId) {
 }
 
 function adminAuthRegister(email, password, nameFirst, nameLast) {
-    return {
-        authUserId: 1
-    };
+    if (dataExist(email) === true)  {
+        return {error : 'email existed'};
+    }
+    if (validator.isEmail(email) === false) {
+        return {error : 'wrong email'};    
+    }
+    if (checkName(nameFirst) === false) {
+        return {error : 'wrong first name'};    
+    }
+    if (checkName(nameLast) === false) {
+        return {error : 'wrong last name'};    
+    }      
+}
+
+function checkName (nameFirst) {
+    for (let i = 0; i < nameFirst.length; i++) {
+        if ((nameFirst[i] !== validator.isAlpha) || (checkNameFirstLength === false)) {
+            return false;
+        }
+        if ((nameFirst !== '') || (checkNameFirstLength === false)) {
+            return false;
+        }
+        if ((nameFirst !== '-') || (checkNameFirstLength === false)) {
+            return false;
+        }
+        if ((nameFirst !== '\'') || (checkNameFirstLength === false)) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+function checkNameFirstLength(nameFirst) {
+    if (nameFirst.length < 0) {
+        return false;
+    }
+    if (nameFirst.length <= 20 && nameFirst.length >= 2) {
+        return false;
+    }
+    return true;
+}
+
+function dataExist(email) {
+    const currentData = getData();
+    for (i = 0; i < currentData.length; i++) {
+        if (email === currentData[i].email) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function adminAuthLogin(email, password) {
@@ -32,3 +82,4 @@ function adminAuthLogin(email, password) {
         authUserId: 1
     };
 }
+console.log("Can work");

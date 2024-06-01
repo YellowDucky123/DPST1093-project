@@ -26,7 +26,7 @@ beforeEach(() => {
         const userId = adminAuthRegister("good@gmail.com", 'abcd1234', 'victor', 'xiao').authUserId;
         expect(adminUserDetailsUpdate(userId, "good@gcmail.com", 'luffy', 'wang@')).toStrictEqual({error : 'NameLast contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes'});
     });
-    test('Error first name length', () => {
+    test('Error last name length', () => {
         const userId = adminAuthRegister("good@gmail.com", 'abcd1234', 'victor', 'xiao').authUserId;
         expect(adminUserDetailsUpdate(userId, "good@gcmail.com", 'luffy', 'wangzuoyeshizhendezhendehaoduoa')).toStrictEqual({error : 'NameLast should be between 2 to 20 characters'});
     });

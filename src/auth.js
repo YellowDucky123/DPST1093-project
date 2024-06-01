@@ -1,3 +1,5 @@
+// import { Id } from "./dataStore.ts"
+import { setData, getData } from "./dataStore.js";
 function someNewFeature(array) {
     for (const item of array) {
         console.log(item);
@@ -9,14 +11,23 @@ function someNewFeature(array) {
 |*********************************************************************************************|
 |*attention: "name" is the first and last name concatenated with a single space between them *|
 |*********************************************************************************************/
-function adminUserDetails(authUserId) {
-    return { 
+
+export function adminUserDetails(authUserId) {
+    let dataStore = getData();
+    let data = dataStore.users[authUserId];
+    if (data === undefined) {
+        return {error : "can not find such a member"};
+    }
+    if (user.name === undefined) {
+        user.name = user.nameFirst + " " + nameLast;
+    }
+    return {
         user : {
-          userId: 1,
-          name: 'Jar Jar Brinks',
-          email: 'mesasosorry@naboo.com.au',
-          numSuccessfulLogins: 3,
-          numFailedPasswordsSinceLastLogin: 1,
+          userId: data.authUserId,
+          name: data.name,
+          email: data.email,
+          numSuccessfulLogin: data.numSuccessfulLogin,
+          numFailedPasswordsSinceLastLogin: data.numFailedPasswordsSinceLastLogin,
         }
     };
 }

@@ -38,7 +38,8 @@ export function adminQuizCreate( authUserId, name, description ) {
         description: description
     }
 
-    setData(new_data);
+    data.quizzes[quizId] = new_data;
+    setData(data);
     return {quizId}
 }
 
@@ -68,7 +69,6 @@ export function adminQuizInfo( authUserId, quizId ) {
     }
 
     const data = getData();
-    let return_data;
     
     for(const item of data.quizzes) {
         if(item.quizId === quizId) {

@@ -70,7 +70,7 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
 }
 
 
-//const a = adminAuthRegister("good@gmail.com", 'abcd11', 'a', 'b');
+//adminAuthRegister("good@gmail.com", 'abcd1234', 'victor', 'xiao');
 //const b = adminAuthRegister("good@gmail.com", 'ewcd11', 'a', 'b');
 
 
@@ -119,7 +119,6 @@ function checkNameFirstLength(nameFirst) {
 
 function emailExist(email) {
     const currentData = getData();
-    console.log(currentData.users);
     for (let index in currentData.users) {       
         if (email === currentData.users[index].email) {
             return true;
@@ -128,10 +127,36 @@ function emailExist(email) {
     return false;
 }
 
-function adminAuthLogin(email, password) {
-    return {
-        authUserId: 1
-    };
+function findAuthUserIdByEmail(email) {
+    const currentData = getData();
+    for (let index in currentData.users) {       
+        if (email === currentData.users[index].email) {
+            return currentData.users[index].authUserId;
+        }
+    }
+    return false;
 }
 
+export function adminAuthLogin(email, password) {
+    if (emailExist(email)) {
+        if (checkPasswordCorrect(password)) {
+            return {
+                authUserId: findAuthUserIdByEmail(email)
+            };
+        }
+        return {error: 'Passord is not correct for the given email'};
+    }
+    return {error: 'Email address does not exist'};  
+}
+
+function checkPasswordCorrect(password) {
+    const currentData = getData();
+    for (let index in currentData.users) {       
+        if (password === currentData.users[index].password) {
+            return true;
+        }
+    }
+    return false;
+}
+//console.log(adminAuthLogin("good@gmail.com", 'abcd1234'));
 //console.log(b);

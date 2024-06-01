@@ -1,4 +1,5 @@
-import { getData } from './dataStore.js'
+import { nextDay } from 'date-fns/fp/nextDay';
+import { getData, setData} from './dataStore.js'
 import validator from 'validator';
 function someNewFeature(array) {
     for (const item of array) {
@@ -48,12 +49,28 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
     if (checkNameFirstLength(nameLast) === false) {
         return {error : 'NameLast less than 2 characters or more than 20 characters'};    
     }
-    
-    return { authUserId : 1 };      
+    let userId = Math.floor(10000000 + Math.random() * 90000000).toString();
+    let name = nameFirst + ' ' + nameLast
+    const newUser = {
+        name : name,
+        nameFirst : nameFirst,
+        nameLast : nameLast,
+        authUserId : userId,
+        email : email,
+        password : password,
+        numSuccessfulLogins : 1,
+        numFailedPasswordsSinceLastLogin : 0,
+        quizzesUserHave : [],
+        pastPassword: []
+    };
+    let dataStore = getData(); 
+    dataStore.users[userId] = newUser;
+    return { authUserId : userId };      
 }
 
 
-// const a = adminAuthRegister("good@gmail.com", 'abcd11223', 'a', 'b');
+//const a = adminAuthRegister("good@gmail.com", 'abcd11', 'a', 'b');
+//const b = adminAuthRegister("cdod@gmail.com", 'ewcd11', 'a', 'b');
 
 
 function checkPasswordLength(password) {
@@ -114,5 +131,5 @@ function adminAuthLogin(email, password) {
         authUserId: 1
     };
 }
-//console.log(a);
+//console.log(getData());
 //console.log("Can work");

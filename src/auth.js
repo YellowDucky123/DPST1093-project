@@ -69,8 +69,8 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
 }
 
 
- const a = adminAuthRegister("good@gmail.com", 'abcd11', 'a', 'b');
- const b = adminAuthRegister("cdod@gmail.com", 'ewcd11', 'a', 'b');
+//const a = adminAuthRegister("good@gmail.com", 'abcd11', 'a', 'b');
+//const b = adminAuthRegister("cdod@gmail.com", 'ewcd11', 'a', 'b');
 
 
 function checkPasswordLength(password) {
@@ -131,5 +131,5 @@ function adminAuthLogin(email, password) {
         authUserId: 1
     };
 }
-console.log(getData());
+//console.log(getData());
 //console.log("Can work");

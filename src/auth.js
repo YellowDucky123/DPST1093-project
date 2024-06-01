@@ -17,8 +17,8 @@ export function adminUserDetails(authUserId) {
     if (data === undefined) {
         return {error : "can not find such a member"};
     }
-    if (dataStore.users.name === undefined) {
-        dataStore.users.name = dataStore.users.nameFirst + " " + dataStore.users.nameLast;
+    if (dataStore.users[authUserId].name === undefined) {
+        dataStore.users[authUserId].name = dataStore.users[authUserId].nameFirst + " " + dataStore.users.nameLast;
     }
     return {
         user : {

@@ -1,3 +1,5 @@
+import { getData } from './dataStore.js'
+import validator from 'validator';
 function someNewFeature(array) {
     for (const item of array) {
         console.log(item);
@@ -22,9 +24,89 @@ function adminUserDetails(authUserId) {
 }
 
 function adminAuthRegister(email, password, nameFirst, nameLast) {
-    return {
-        authUserId: 1
-    };
+    if (emailExist(email) === true)  {
+        return {error : 'email existed'};
+    }
+    if (validator.isEmail(email) === false) {
+        return {error : 'email should have specific format'};    
+    }
+    if (checkPasswordLength(password) === false) {
+        return {error: 'Password should be less than 8 characters'};
+    }
+    if (checkPasswordContain(password) === false) {
+        return {error: 'Password should contain at least one number and at least one letter'};    
+    }
+    if (checkNameContains(nameFirst) === false) {
+        return {error : 'NameFirst contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes'};    
+    }
+    if (checkNameFirstLength(nameFirst) === false) {
+        return {error : 'NameFirst is less than 2 characters or more than 20 characters'};    
+    }
+    if (checkNameContains(nameLast) === false) {
+        return {error : 'NameLast contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes'};    
+    }
+    if (checkNameFirstLength(nameLast) === false) {
+        return {error : 'NameLast less than 2 characters or more than 20 characters'};    
+    }
+    
+    return { authUserId : 1 };      
+}
+
+
+// const a = adminAuthRegister("good@gmail.com", 'abcd11223', 'a', 'b');
+
+
+function checkPasswordLength(password) {
+    if (password.length <= 8 && password.length > 0) {
+        return true;
+    }
+    return false;
+}
+
+function checkPasswordContain(password) {
+    let checkNumber = 0;
+    let checkLetter = 0;
+    for (let i = 0; i < password.length; i++) {
+        if (validator.isAlpha(password[i])) {
+            checkLetter = 1;
+        }
+        if (password[i] <= 9 && password[i] >= 0) {
+            checkNumber = 1;
+        }
+    }
+    if (checkLetter === 1 && checkNumber === 1) {
+        return true;
+    }
+    return false;
+}
+
+function checkNameContains (nameFirst) {
+    for (let i = 0; i < nameFirst.length; i++) {
+        if ((!validator.isAlpha(nameFirst[i])) && (nameFirst[i] !== '-') && (nameFirst[i] !== ' ') && (nameFirst[i] !== '\'')) {
+            return false;
+        }    
+    }    
+    return true;
+}
+
+function checkNameFirstLength(nameFirst) {
+    if (nameFirst.length < 0) {
+        return false;
+    }
+    if (nameFirst.length <= 20 && nameFirst.length >= 2) {
+        return false;
+    }
+    return true;
+}
+
+function emailExist(email) {
+    const currentData = getData();
+    for (let i = 0; i < currentData.length; i++) {
+        if (email === currentData[i].email) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function adminAuthLogin(email, password) {
@@ -32,3 +114,5 @@ function adminAuthLogin(email, password) {
         authUserId: 1
     };
 }
+//console.log(a);
+//console.log("Can work");

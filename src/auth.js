@@ -24,7 +24,7 @@ function adminUserDetails(authUserId) {
     };
 }
 
-function adminAuthRegister(email, password, nameFirst, nameLast) {
+export function adminAuthRegister(email, password, nameFirst, nameLast) {
     if (emailExist(email) === true)  {
         return {error : 'email existed'};
     }
@@ -32,7 +32,7 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
         return {error : 'email should have specific format'};    
     }
     if (checkPasswordLength(password) === false) {
-        return {error: 'Password should be less than 8 characters'};
+        return {error: 'Password should be between 8 to 20 characters'};
     }
     if (checkPasswordContain(password) === false) {
         return {error: 'Password should contain at least one number and at least one letter'};    
@@ -41,13 +41,13 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
         return {error : 'NameFirst contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes'};    
     }
     if (checkNameFirstLength(nameFirst) === false) {
-        return {error : 'NameFirst is less than 2 characters or more than 20 characters'};    
+        return {error : 'NameFirst should be between 2 to 20 characters'};    
     }
     if (checkNameContains(nameLast) === false) {
         return {error : 'NameLast contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes'};    
     }
     if (checkNameFirstLength(nameLast) === false) {
-        return {error : 'NameLast less than 2 characters or more than 20 characters'};    
+        return {error : 'NameLast should be between 2 to 20 characters'};    
     }
     let userId = Math.floor(10000000 + Math.random() * 90000000).toString();
     let name = nameFirst + ' ' + nameLast
@@ -65,16 +65,17 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
     };
     let dataStore = getData(); 
     dataStore.users[userId] = newUser;
+    setData(dataStore);
     return { authUserId : userId };      
 }
 
 
 //const a = adminAuthRegister("good@gmail.com", 'abcd11', 'a', 'b');
-//const b = adminAuthRegister("cdod@gmail.com", 'ewcd11', 'a', 'b');
+//const b = adminAuthRegister("good@gmail.com", 'ewcd11', 'a', 'b');
 
 
 function checkPasswordLength(password) {
-    if (password.length <= 8 && password.length > 0) {
+    if (password.length >= 8) {
         return true;
     }
     return false;
@@ -111,15 +112,16 @@ function checkNameFirstLength(nameFirst) {
         return false;
     }
     if (nameFirst.length <= 20 && nameFirst.length >= 2) {
-        return false;
+        return true;
     }
-    return true;
+    return false;
 }
 
 function emailExist(email) {
     const currentData = getData();
-    for (let i = 0; i < currentData.length; i++) {
-        if (email === currentData[i].email) {
+    console.log(currentData.users);
+    for (let index in currentData.users) {       
+        if (email === currentData.users[index].email) {
             return true;
         }
     }
@@ -131,5 +133,5 @@ function adminAuthLogin(email, password) {
         authUserId: 1
     };
 }
-//console.log(getData());
-//console.log("Can work");
+
+//console.log(b);

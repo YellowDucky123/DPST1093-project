@@ -53,6 +53,9 @@ export function adminQuizRemove( authUserId, quizId) {
     if(quizOwnership(authUserId, quizId) == false){
         return {error: 'adminQuizRemove: you do not own this quiz'}
     }
+    let data = getData();
+    delete data.quizzes[quizId];
+    setData(data);
 
     return {}
 }

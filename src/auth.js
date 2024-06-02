@@ -1,17 +1,17 @@
-import { getData, setData} from './dataStore.js'
+import { getData, setData } from './dataStore.js'
 import validator from 'validator';
 function someNewFeature(array) {
     for (const item of array) {
         console.log(item);
     }
 }
-export function adminUserPasswordUpdate ( authUserId, oldPassword, newPassword ) {
-    if (checkPasswordLength(newPassword)) return { error: 'Password should be less than 8 characters' };
-    if (checkPasswordContain(newPassword) === false) return { error: 'Password should contain at least one number and at least one letter' };    
+export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+    if (!checkPasswordLength(newPassword)) return { error: 'Password should be at least than 8 characters' };
+    if (checkPasswordContain(newPassword) === false) return { error: 'Password should contain at least one number and at least one letter' };
     let data = getData();
-    if (!(oldPassword === data.users[authUserId].password)) return { error : "password incorrecrt" };
-    if (oldPassword === newPassword) return { error : "new Password can't be the old password" };
-    if (data.users[authUserId].pastPassword.find(newPassword)) return { error : "This password has been used in past" };
+    if (!(oldPassword === data.users[authUserId].password)) return { error: "password incorrecrt" };
+    if (oldPassword === newPassword) return { error: "new Password can't be the old password" };
+    if (data.users[authUserId].pastPassword.includes(newPassword)) return { error: "This password has been used in past" };
     data.users[authUserId].password = newPassword;
     data.users[authUserId].pastPassword.push(oldPassword);
     setData(data);
@@ -26,18 +26,18 @@ export function adminUserDetails(authUserId) {
     let dataStore = getData();
     let data = dataStore.users[authUserId];
     if (data === undefined) {
-        return {error : "can not find such a member"};
+        return { error: "can not find such a member" };
     }
     if (dataStore.users[authUserId].name === undefined) {
         dataStore.users[authUserId].name = dataStore.users[authUserId].nameFirst + " " + dataStore.users.nameLast;
     }
     return {
-        user : {
-          userId: data.authUserId,
-          name: data.name,
-          email: data.email,
-          numSuccessfulLogin: data.numSuccessfulLogin,
-          numFailedPasswordsSinceLastLogin: data.numFailedPasswordsSinceLastLogin,
+        user: {
+            userId: data.authUserId,
+            name: data.name,
+            email: data.email,
+            numSuccessfulLogin: data.numSuccessfulLogin,
+            numFailedPasswordsSinceLastLogin: data.numFailedPasswordsSinceLastLogin,
         }
     };
 }
@@ -47,14 +47,14 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
         return checkEmailNameFirstNameLast(email, nameFirst, nameLast);
     }
     if (checkPasswordLength(password) === false) {
-        return {error: 'Password should be between 8 to 20 characters'};
+        return { error: 'Password should be between 8 to 20 characters' };
     }
     if (checkPasswordContain(password) === false) {
-        return {error: 'Password should contain at least one number and at least one letter'};    
+        return { error: 'Password should contain at least one number and at least one letter' };
     }
     let userId = Math.floor(10000000 + Math.random() * 90000000).toString();
-    createNewAuth(nameFirst, nameLast, userId, email, password); 
-    return { authUserId : userId };      
+    createNewAuth(nameFirst, nameLast, userId, email, password);
+    return { authUserId: userId };
 }
 
 export function adminAuthLogin(email, password) {
@@ -64,48 +64,48 @@ export function adminAuthLogin(email, password) {
                 authUserId: findAuthUserIdByEmail(email)
             };
         }
-        return {error: 'Passord is not correct for the given email'};
+        return { error: 'Passord is not correct for the given email' };
     }
-    return {error: 'Email address does not exist'};  
+    return { error: 'Email address does not exist' };
 }
 
 function createNewAuth(nameFirst, nameLast, userId, email, password) {
     let name = nameFirst + ' ' + nameLast
     const newUser = {
-        name : name,
-        nameFirst : nameFirst,
-        nameLast : nameLast,
-        authUserId : userId,
-        email : email,
-        password : password,
-        numSuccessfulLogins : 1,
-        numFailedPasswordsSinceLastLogin : 0,
-        quizzesUserHave : [],
+        name: name,
+        nameFirst: nameFirst,
+        nameLast: nameLast,
+        authUserId: userId,
+        email: email,
+        password: password,
+        numSuccessfulLogins: 1,
+        numFailedPasswordsSinceLastLogin: 0,
+        quizzesUserHave: [],
         pastPassword: []
     };
-    let dataStore = getData(); 
+    let dataStore = getData();
     dataStore.users[userId] = newUser;
     setData(dataStore);
 }
 
 function checkEmailNameFirstNameLast(email, nameFirst, nameLast) {
-    if (emailExist(email) === true)  {
-        return {error : 'email existed'};
+    if (emailExist(email) === true) {
+        return { error: 'email existed' };
     }
     if (validator.isEmail(email) === false) {
-        return {error : 'email should have specific format'};    
+        return { error: 'email should have specific format' };
     }
     if (checkNameContains(nameFirst) === false) {
-        return {error : 'NameFirst contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes'};    
+        return { error: 'NameFirst contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes' };
     }
     if (checkNameFirstLength(nameFirst) === false) {
-        return {error : 'NameFirst should be between 2 to 20 characters'};    
+        return { error: 'NameFirst should be between 2 to 20 characters' };
     }
     if (checkNameContains(nameLast) === false) {
-        return {error : 'NameLast contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes'};    
+        return { error: 'NameLast contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes' };
     }
     if (checkNameFirstLength(nameLast) === false) {
-        return {error : 'NameLast should be between 2 to 20 characters'};    
+        return { error: 'NameLast should be between 2 to 20 characters' };
     }
     return true;
 }
@@ -137,12 +137,12 @@ function checkPasswordContain(password) {
     return false;
 }
 
-function checkNameContains (nameFirst) {
+function checkNameContains(nameFirst) {
     for (let i = 0; i < nameFirst.length; i++) {
         if ((!validator.isAlpha(nameFirst[i])) && (nameFirst[i] !== '-') && (nameFirst[i] !== ' ') && (nameFirst[i] !== '\'')) {
             return false;
-        }    
-    }    
+        }
+    }
     return true;
 }
 
@@ -158,7 +158,7 @@ function checkNameFirstLength(nameFirst) {
 
 function emailExist(email) {
     const currentData = getData();
-    for (let index in currentData.users) {       
+    for (let index in currentData.users) {
         if (email === currentData.users[index].email) {
             return true;
         }
@@ -168,7 +168,7 @@ function emailExist(email) {
 
 function findAuthUserIdByEmail(email) {
     const currentData = getData();
-    for (let index in currentData.users) {       
+    for (let index in currentData.users) {
         if (email === currentData.users[index].email) {
             return currentData.users[index].authUserId;
         }
@@ -178,7 +178,7 @@ function findAuthUserIdByEmail(email) {
 
 function checkPasswordCorrect(password) {
     const currentData = getData();
-    for (let index in currentData.users) {       
+    for (let index in currentData.users) {
         if (password === currentData.users[index].password) {
             return true;
         }
@@ -188,20 +188,20 @@ function checkPasswordCorrect(password) {
 
 function findPasswordByAuthUserId(authUserId) {
     const currentData = getData();
-    for (let index in currentData.users) {       
+    for (let index in currentData.users) {
         if (authUserId === currentData.users[index].authUserId) {
             return currentData.users[index].password;
         }
     }
-    return false;    
+    return false;
 }
 
 export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
-    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== true)  {
+    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== true) {
         return checkEmailNameFirstNameLast(email, nameFirst, nameLast)
     }
     let password = findPasswordByAuthUserId(authUserId);
-    createNewAuth(nameFirst, nameLast, authUserId, email, password) 
+    createNewAuth(nameFirst, nameLast, authUserId, email, password)
     return {};
 }
 //console.log(adminUserDetailsUpdate(a, 'cgood@gmail.com', 'sssw', 'asasa'));

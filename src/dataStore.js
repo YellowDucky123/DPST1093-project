@@ -1,5 +1,3 @@
-// YOU SHOULD MODIFY THIS OBJECT BELOW
-
 /* data and its commits are editted by Yuxuan Wang */
 /*
 export type Id = number;

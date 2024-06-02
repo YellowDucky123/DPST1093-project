@@ -62,7 +62,7 @@ export function adminQuizNameUpdate(authUserId, quizId, name) {
 
     // If no errors then update name
     let wh_data = getData();
-    let data_q = data.quizzes;
+    let data_q = wh_data.quizzes;
 
     data_q[quizId]['name'] = `${name}` ;
     wh_data.quizzes = data_q;

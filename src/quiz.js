@@ -8,19 +8,19 @@ import { description_length_valid } from './helpers.js'
 import { isUsedQuizName } from './helpers.js'
 
 export function adminQuizCreate( authUserId, name, description ) {
-    if(userIdValidator(authUserId) == false){
+    if(userIdValidator(authUserId) === false){
         return {error: 'adminQuizCreate: invalid user id'}
     }
-    if(nameLen(name) == false){
+    if(nameLen(name) === false){
         return {error: 'adminQuizCreate: invalid quiz name length'}
     }
-    if(isNameAlphaNumeric(name) == false){
+    if(isNameAlphaNumeric(name) === false){
         return {error: 'adminQuizCreate: quiz name contains invalid letters'}
     }
-    if(description_length_valid(name) == false){
+    if(description_length_valid(name) === false){
         return {error: 'adminQuizCreate: quiz description too long'}
     }
-    if(isUsedQuizName(name) == true){
+    if(isUsedQuizName(name) === true){
         return {error: 'adminQuizCreate: quiz name already used by another user'}
     }
 

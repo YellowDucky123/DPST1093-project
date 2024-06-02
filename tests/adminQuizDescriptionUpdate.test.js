@@ -59,3 +59,11 @@ test('User no ownership over quiz test: ', () => {
 
     expect(adminQuizDescriptionUpdate(123, 145, 'kelvin')).toEqual("error: 'This user does not own this quiz'");
 });
+
+test('Description too long', () => {
+    let input;
+    for(let i = 0; i < 100; i++) {
+        input = input + 'a';
+    }
+    expect(adminQuizDescriptionUpdate(123,145, input)).toEqual("error: 'Description too long'");
+})

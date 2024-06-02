@@ -1,8 +1,4 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW
-let data = {
-  users: {},
-  quizzes: {}
-};
 
 /* data and its commits are editted by Yuxuan Wang */
 /*

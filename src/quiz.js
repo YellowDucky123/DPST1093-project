@@ -20,7 +20,7 @@ export function adminQuizCreate( authUserId, name, description ) {
     if(description_length_valid(name) === false){
         return {error: 'adminQuizCreate: quiz description too long'}
     }
-    if(isUsedQuizName(name) === true){
+    if(isUsedQuizName(name) === false){
         return {error: 'adminQuizCreate: quiz name already used by another user'}
     }
 

@@ -1,4 +1,3 @@
-import { nextDay } from 'date-fns/fp/nextDay';
 import { getData, setData} from './dataStore.js'
 import validator from 'validator';
 function someNewFeature(array) {
@@ -131,10 +130,6 @@ function checkEmailNameFirstNameLast(email, nameFirst, nameLast) {
     }
     return true;
 }
-//adminAuthRegister("good@gmail.com", 'abcd1234', 'victor', 'xiao');
-//const b = adminAuthRegister("good@gmail.com", 'ewcd11', 'a', 'b');
-
-//console.log(getData());
 
 // Check whether password length is valid.
 function checkPasswordLength(password) {
@@ -226,9 +221,3 @@ function findPasswordByAuthUserId(authUserId) {
     }
     return false;    
 }
-
-
-//console.log(adminUserDetailsUpdate(a, 'cgood@gmail.com', 'sssw', 'asasa'));
-//console.log(b);
-//console.log(getData());
-//console.log("Can work");

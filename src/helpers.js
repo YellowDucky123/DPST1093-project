@@ -4,8 +4,7 @@ export function userIdValidator(UserId) {
     let wh_data = getData();
     let data = wh_data.users;
     for(const i in data) {
-        let id = parseInt(i);
-        if(id === UserId) {
+        if(i == UserId) {
             return true;
         }
     }
@@ -17,8 +16,7 @@ export function quizIdValidator(quizId) {
     let wh_data = getData();
     let data = wh_data.quizzes;
     for(const i in data) {
-        let id = parseInt(i);
-        if(id === quizId) {
+        if(i == quizId) {
             return true;
         }
     }
@@ -34,10 +32,10 @@ export function quizOwnership(userId, quizId) {
 
     for(const i in q_data) {
         if(`${i}` == quizId) {
-            let q_name = q_data[i]['name'];
+            // let q_name = q_data[i]['name'];
 
             for(const n of owned_quizzes) {
-                if(n == q_name) return true;
+                if(n == i) return true;
             }
             
             return false;
@@ -81,8 +79,8 @@ export function description_length_valid(description) {
 
 export function isUsedQuizName(name){
     const data = getData();
-    for(let item of data.quizzes){
-        if(item.name === name) {
+    for(let item in data.quizzes){
+        if(item.name == name) {
             return false;
         }
     }

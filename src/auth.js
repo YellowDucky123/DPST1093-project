@@ -5,29 +5,39 @@ function someNewFeature(array) {
         console.log(item);
     }
 }
-
+export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+    if (!checkPasswordLength(newPassword)) return { error: 'Password should be at least than 8 characters' };
+    if (checkPasswordContain(newPassword) === false) return { error: 'Password should contain at least one number and at least one letter' };
+    let data = getData();
+    if (!(oldPassword === data.users[authUserId].password)) return { error: "password incorrecrt" };
+    if (oldPassword === newPassword) return { error: "new Password can't be the old password" };
+    if (data.users[authUserId].pastPassword.includes(newPassword)) return { error: "This password has been used in past" };
+    data.users[authUserId].password = newPassword;
+    data.users[authUserId].pastPassword.push(oldPassword);
+    setData(data);
+    return {};
+}
 /*********************************************************************************************|
 |*Given an admin user's "authUserId", return details about the user.                         *|
 |*********************************************************************************************|
 |*attention: "name" is the first and last name concatenated with a single space between them *|
 |*********************************************************************************************/
-
 export function adminUserDetails(authUserId) {
     let dataStore = getData();
     let data = dataStore.users[authUserId];
     if (data === undefined) {
-        return {error : "can not find such a member"};
+        return { error: "can not find such a member" };
     }
-    if (user.name === undefined) {
-        user.name = user.nameFirst + " " + nameLast;
+    if (dataStore.users[authUserId].name === undefined) {
+        dataStore.users[authUserId].name = dataStore.users[authUserId].nameFirst + " " + dataStore.users.nameLast;
     }
     return {
-        user : {
-          userId: data.authUserId,
-          name: data.name,
-          email: data.email,
-          numSuccessfulLogin: data.numSuccessfulLogin,
-          numFailedPasswordsSinceLastLogin: data.numFailedPasswordsSinceLastLogin,
+        user: {
+            userId: data.authUserId,
+            name: data.name,
+            email: data.email,
+            numSuccessfulLogin: data.numSuccessfulLogin,
+            numFailedPasswordsSinceLastLogin: data.numFailedPasswordsSinceLastLogin,
         }
     };
 }
@@ -38,10 +48,10 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
         return checkEmailNameFirstNameLast(email, nameFirst, nameLast);
     }
     if (checkPasswordLength(password) === false) {
-        return {error: 'Password should be between 8 to 20 characters'};
+        return { error: 'Password should be between 8 to 20 characters' };
     }
     if (checkPasswordContain(password) === false) {
-        return {error: 'Password should contain at least one number and at least one letter'};    
+        return { error: 'Password should contain at least one number and at least one letter' };
     }
     let userId;
     while (1) {
@@ -62,9 +72,9 @@ export function adminAuthLogin(email, password) {
                 authUserId: findAuthUserIdByEmail(email)
             };
         }
-        return {error: 'Passord is not correct for the given email'};
+        return { error: 'Passord is not correct for the given email' };
     }
-    return {error: 'Email address does not exist'};  
+    return { error: 'Email address does not exist' };
 }
 
 // Updates the details of an autheticated admin user with the provided details.
@@ -92,41 +102,41 @@ function checkDuplicateUserId(useId) {
 function createNewAuth(nameFirst, nameLast, userId, email, password) {
     let name = nameFirst + ' ' + nameLast
     const newUser = {
-        name : name,
-        nameFirst : nameFirst,
-        nameLast : nameLast,
-        authUserId : userId,
-        email : email,
-        password : password,
-        numSuccessfulLogins : 1,
-        numFailedPasswordsSinceLastLogin : 0,
-        quizzesUserHave : [],
+        name: name,
+        nameFirst: nameFirst,
+        nameLast: nameLast,
+        authUserId: userId,
+        email: email,
+        password: password,
+        numSuccessfulLogins: 1,
+        numFailedPasswordsSinceLastLogin: 0,
+        quizzesUserHave: [],
         pastPassword: []
     };
-    let dataStore = getData(); 
+    let dataStore = getData();
     dataStore.users[userId] = newUser;
     setData(dataStore);
 }
 
 // Checks the validity of the provided email, first name, and last name.
 function checkEmailNameFirstNameLast(email, nameFirst, nameLast) {
-    if (emailExist(email) === true)  {
-        return {error : 'email existed'};
+    if (emailExist(email) === true) {
+        return { error: 'email existed' };
     }
     if (validator.isEmail(email) === false) {
-        return {error : 'email should have specific format'};    
+        return { error: 'email should have specific format' };
     }
     if (checkNameContains(nameFirst) === false) {
-        return {error : 'NameFirst contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes'};    
+        return { error: 'NameFirst contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes' };
     }
     if (checkNameFirstLength(nameFirst) === false) {
-        return {error : 'NameFirst should be between 2 to 20 characters'};    
+        return { error: 'NameFirst should be between 2 to 20 characters' };
     }
     if (checkNameContains(nameLast) === false) {
-        return {error : 'NameLast contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes'};    
+        return { error: 'NameLast contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes' };
     }
     if (checkNameFirstLength(nameLast) === false) {
-        return {error : 'NameLast should be between 2 to 20 characters'};    
+        return { error: 'NameLast should be between 2 to 20 characters' };
     }
     return true;
 }
@@ -162,8 +172,8 @@ function checkNameContains (nameFirst) {
     for (let i = 0; i < nameFirst.length; i++) {
         if ((!validator.isAlpha(nameFirst[i])) && (nameFirst[i] !== '-') && (nameFirst[i] !== ' ') && (nameFirst[i] !== '\'')) {
             return false;
-        }    
-    }    
+        }
+    }
     return true;
 }
 
@@ -181,7 +191,7 @@ function checkNameFirstLength(nameFirst) {
 // Check whether email existed.
 function emailExist(email) {
     const currentData = getData();
-    for (let index in currentData.users) {       
+    for (let index in currentData.users) {
         if (email === currentData.users[index].email) {
             return true;
         }
@@ -192,7 +202,7 @@ function emailExist(email) {
 // Finds the authticated user ID by email address.
 function findAuthUserIdByEmail(email) {
     const currentData = getData();
-    for (let index in currentData.users) {       
+    for (let index in currentData.users) {
         if (email === currentData.users[index].email) {
             return currentData.users[index].authUserId;
         }
@@ -203,7 +213,7 @@ function findAuthUserIdByEmail(email) {
 // Check whether password is correct for the user.
 function checkPasswordCorrect(password) {
     const currentData = getData();
-    for (let index in currentData.users) {       
+    for (let index in currentData.users) {
         if (password === currentData.users[index].password) {
             return true;
         }
@@ -214,7 +224,7 @@ function checkPasswordCorrect(password) {
 // Finds the authticated user password by user ID.
 function findPasswordByAuthUserId(authUserId) {
     const currentData = getData();
-    for (let index in currentData.users) {       
+    for (let index in currentData.users) {
         if (authUserId === currentData.users[index].authUserId) {
             return currentData.users[index].password;
         }

@@ -34,10 +34,10 @@ export function quizOwnership(userId, quizId) {
 
     for(const i in q_data) {
         if(`${i}` == quizId) {
-            let q_name = q_data[i]['name'];
+            // let q_name = q_data[i]['name'];
 
             for(const n of owned_quizzes) {
-                if(n == q_name) return true;
+                if(n == i) return true;
             }
             
             return false;

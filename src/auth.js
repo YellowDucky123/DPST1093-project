@@ -33,6 +33,7 @@ export function adminUserDetails(authUserId) {
     };
 }
 
+// Register a new admin user with provided email, password, first name, last name.
 export function adminAuthRegister(email, password, nameFirst, nameLast) {
     if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== true) {
         return checkEmailNameFirstNameLast(email, nameFirst, nameLast);
@@ -48,6 +49,7 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
     return { authUserId : userId };      
 }
 
+// Authenticates an admin user with the provided email and password.
 export function adminAuthLogin(email, password) {
     if (emailExist(email)) {
         if (checkPasswordCorrect(password)) {
@@ -60,6 +62,17 @@ export function adminAuthLogin(email, password) {
     return {error: 'Email address does not exist'};  
 }
 
+// Updates the details of an autheticated admin user with the provided details.
+export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
+    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== true)  {
+        return checkEmailNameFirstNameLast(email, nameFirst, nameLast)
+    }
+    let password = findPasswordByAuthUserId(authUserId);
+    createNewAuth(nameFirst, nameLast, authUserId, email, password) 
+    return {};
+}
+
+// Create a new authticated user with the provided details.
 function createNewAuth(nameFirst, nameLast, userId, email, password) {
     let name = nameFirst + ' ' + nameLast
     const newUser = {
@@ -79,6 +92,7 @@ function createNewAuth(nameFirst, nameLast, userId, email, password) {
     setData(dataStore);
 }
 
+// Checks the validity of the provided email, first name, and last name.
 function checkEmailNameFirstNameLast(email, nameFirst, nameLast) {
     if (emailExist(email) === true)  {
         return {error : 'email existed'};
@@ -104,6 +118,8 @@ function checkEmailNameFirstNameLast(email, nameFirst, nameLast) {
 //const b = adminAuthRegister("good@gmail.com", 'ewcd11', 'a', 'b');
 
 //console.log(getData());
+
+// Check whether password length is valid.
 function checkPasswordLength(password) {
     if (password.length >= 8) {
         return true;
@@ -111,6 +127,7 @@ function checkPasswordLength(password) {
     return false;
 }
 
+// Check whether password contains is valid.
 function checkPasswordContain(password) {
     let checkNumber = 0;
     let checkLetter = 0;
@@ -128,6 +145,7 @@ function checkPasswordContain(password) {
     return false;
 }
 
+// Check whether name contains is valid.
 function checkNameContains (nameFirst) {
     for (let i = 0; i < nameFirst.length; i++) {
         if ((!validator.isAlpha(nameFirst[i])) && (nameFirst[i] !== '-') && (nameFirst[i] !== ' ') && (nameFirst[i] !== '\'')) {
@@ -137,6 +155,7 @@ function checkNameContains (nameFirst) {
     return true;
 }
 
+// Check whether name length is valid.
 function checkNameFirstLength(nameFirst) {
     if (nameFirst.length < 0) {
         return false;
@@ -147,6 +166,7 @@ function checkNameFirstLength(nameFirst) {
     return false;
 }
 
+// Check whether email existed.
 function emailExist(email) {
     const currentData = getData();
     for (let index in currentData.users) {       
@@ -157,6 +177,7 @@ function emailExist(email) {
     return false;
 }
 
+// Finds the authticated user ID by email address.
 function findAuthUserIdByEmail(email) {
     const currentData = getData();
     for (let index in currentData.users) {       
@@ -167,6 +188,7 @@ function findAuthUserIdByEmail(email) {
     return false;
 }
 
+// Check whether password is correct for the user.
 function checkPasswordCorrect(password) {
     const currentData = getData();
     for (let index in currentData.users) {       
@@ -177,6 +199,7 @@ function checkPasswordCorrect(password) {
     return false;
 }
 
+// Finds the authticated user password by user ID.
 function findPasswordByAuthUserId(authUserId) {
     const currentData = getData();
     for (let index in currentData.users) {       
@@ -187,14 +210,7 @@ function findPasswordByAuthUserId(authUserId) {
     return false;    
 }
 
-export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
-    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== true)  {
-        return checkEmailNameFirstNameLast(email, nameFirst, nameLast)
-    }
-    let password = findPasswordByAuthUserId(authUserId);
-    createNewAuth(nameFirst, nameLast, authUserId, email, password) 
-    return {};
-}
+
 //console.log(adminUserDetailsUpdate(a, 'cgood@gmail.com', 'sssw', 'asasa'));
 //console.log(b);
 //console.log(getData());

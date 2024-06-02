@@ -5,7 +5,18 @@ function someNewFeature(array) {
         console.log(item);
     }
 }
-
+export function adminUserPasswordUpdate ( authUserId, oldPassword, newPassword ) {
+    if (checkPasswordLength(newPassword)) return { error: 'Password should be less than 8 characters' };
+    if (checkPasswordContain(newPassword) === false) return { error: 'Password should contain at least one number and at least one letter' };    
+    let data = getData();
+    if (!(oldPassword === data.users[authUserId].password)) return { error : "password incorrecrt" };
+    if (oldPassword === newPassword) return { error : "new Password can't be the old password" };
+    if (data.users[authUserId].pastPassword.find(newPassword)) return { error : "This password has been used in past" };
+    data.users[authUserId].password = newPassword;
+    data.users[authUserId].pastPassword.push(oldPassword);
+    setData(data);
+    return {};
+}
 /*********************************************************************************************|
 |*Given an admin user's "authUserId", return details about the user.                         *|
 |*********************************************************************************************|

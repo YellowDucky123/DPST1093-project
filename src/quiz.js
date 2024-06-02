@@ -7,21 +7,21 @@ import { nameLen } from './helpers.js'
 import { description_length_valid } from './helpers.js'
 import { isUsedQuizName } from './helpers.js'
 
-export function adminQuizCreate( authUserId, name, description ) {
-    if(userIdValidator(authUserId) === false){
-        return {error: 'adminQuizCreate: invalid user id'}
+export function adminQuizCreate(authUserId, name, description) {
+    if (userIdValidator(authUserId) === false) {
+        return { error: 'adminQuizCreate: invalid user id' }
     }
-    if(nameLen(name) === false){
-        return {error: 'adminQuizCreate: invalid quiz name length'}
+    if (nameLen(name) === false) {
+        return { error: 'adminQuizCreate: invalid quiz name length' }
     }
-    if(isNameAlphaNumeric(name) === false){
-        return {error: 'adminQuizCreate: quiz name contains invalid letters'}
+    if (isNameAlphaNumeric(name) === false) {
+        return { error: 'adminQuizCreate: quiz name contains invalid letters' }
     }
-    if(description_length_valid(description) === false){
-        return {error: 'adminQuizCreate: quiz description is too long'}
+    if (description_length_valid(description) === false) {
+        return { error: 'adminQuizCreate: quiz description is too long' }
     }
-    if(isUsedQuizName(name) === false){
-        return {error: 'adminQuizCreate: quiz name already used by another user'}
+    if (isUsedQuizName(name) === false) {
+        return { error: 'adminQuizCreate: quiz name already used by another user' }
     }
 
     const data = getData();
@@ -40,18 +40,18 @@ export function adminQuizCreate( authUserId, name, description ) {
 
     data.quizzes[quizId] = new_data;
     setData(data);
-    return {quizId}
+    return { quizId }
 }
 
-export function adminQuizRemove( authUserId, quizId) {
-    if(userIdValidator(authUserId) == false){
-        return {error: 'adminQuizRemove: invalid user id'}
+export function adminQuizRemove(authUserId, quizId) {
+    if (userIdValidator(authUserId) == false) {
+        return { error: 'adminQuizRemove: invalid user id' }
     }
-    if(quizIdValidator(quizId) == false){
-        return {error: 'adminQuizRemove: invalid quiz id'}
+    if (quizIdValidator(quizId) == false) {
+        return { error: 'adminQuizRemove: invalid quiz id' }
     }
-    if(quizOwnership(authUserId, quizId) == false){
-        return {error: 'adminQuizRemove: you do not own this quiz'}
+    if (quizOwnership(authUserId, quizId) == false) {
+        return { error: 'adminQuizRemove: you do not own this quiz' }
     }
     let data = getData();
     delete data.quizzes[quizId];
@@ -60,21 +60,21 @@ export function adminQuizRemove( authUserId, quizId) {
     return {}
 }
 
-export function adminQuizInfo( authUserId, quizId ) {
-    if(userIdValidator(authUserId) == false){
-        return {error: 'adminQuizInfo: invalid user id'}
+export function adminQuizInfo(authUserId, quizId) {
+    if (userIdValidator(authUserId) == false) {
+        return { error: 'adminQuizInfo: invalid user id' }
     }
-    if(quizIdValidator(quizId) == false){
-        return {error: 'adminQuizInfo: invalid quiz id'}
+    if (quizIdValidator(quizId) == false) {
+        return { error: 'adminQuizInfo: invalid quiz id' }
     }
-    if(quizOwnership(authUserId, quizId) == false){
-        return {error: 'adminQuizInfo: you do not own this quiz'}
+    if (quizOwnership(authUserId, quizId) == false) {
+        return { error: 'adminQuizInfo: you do not own this quiz' }
     }
 
     const data = getData();
-    
-    for(const item in data.quizzes) {
-        if(item.quizId === quizId) {
+
+    for (const item in data.quizzes) {
+        if (item.quizId === quizId) {
             return item;
         }
     }
@@ -85,33 +85,38 @@ export function adminQuizInfo( authUserId, quizId ) {
 |*********************************************************************************************|
 |*attention: "name" is the first and last name concatenated with a single space between them**|
 \*********************************************************************************************/
-export function adminQuizList ( authUserId ) {
-    return {
-        quizzes: [
-            {
-                quizId: 1,
-                name: 'My Quiz',
-            }
-        ]
+export function adminQuizList(authUserId) {
+    let quizzes = [];
+    let datas = getData();
+    if (datas.users[authUserId] === undefined) {
+        return { error: "can not find such a member" };
     }
+    let dataBase = datas.users[authUserId];
+    for (const data of dataBase.quizzesUserHave) {
+        quizzes.push({
+            quizId: data,
+            name: datas.quizzes[data].name
+        })
+    }
+    return { quizzes: quizzes }
 }
 
 
 export function adminQuizNameUpdate(authUserId, quizId, name) {
     // Error checks
-    if(!nameLen(name)) {
+    if (!nameLen(name)) {
         return "error: 'Invalid name length'";
     }
-    if(!isNameAlphaNumeric(name)) {
+    if (!isNameAlphaNumeric(name)) {
         return "error: 'Invalid character used in name'";
     }
-    if(!userIdValidator(authUserId)) {
+    if (!userIdValidator(authUserId)) {
         return "error: 'User Id invalid'";
     }
-    if(!quizIdValidator(quizId)) {
+    if (!quizIdValidator(quizId)) {
         return "error: 'Quiz Id invalid'";
     }
-    if(!quizOwnership(authUserId, quizId)) {
+    if (!quizOwnership(authUserId, quizId)) {
         return "error: 'This user does not own this quiz'";
     }
 
@@ -119,7 +124,7 @@ export function adminQuizNameUpdate(authUserId, quizId, name) {
     let wh_data = getData();
     let data_q = wh_data.quizzes;
 
-    data_q[quizId]['name'] = `${name}` ;
+    data_q[quizId]['name'] = `${name}`;
     wh_data.quizzes = data_q;
 
     setData(wh_data);
@@ -128,16 +133,16 @@ export function adminQuizNameUpdate(authUserId, quizId, name) {
 }
 
 export function adminQuizDescriptionUpdate(authUserId, quizId, description) {
-    if(!description_length_valid(description)) {
+    if (!description_length_valid(description)) {
         return "error: 'Description too long'";
     }
-    if(!userIdValidator(authUserId)) {
+    if (!userIdValidator(authUserId)) {
         return "error: 'User Id invalid'";
     }
-    if(!quizIdValidator(quizId)) {
+    if (!quizIdValidator(quizId)) {
         return "error: 'Quiz Id invalid'";
     }
-    if(!quizOwnership(authUserId, quizId)) {
+    if (!quizOwnership(authUserId, quizId)) {
         return "error: 'This user does not own this quiz'";
     }
 

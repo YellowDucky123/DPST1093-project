@@ -2,42 +2,51 @@
 
 /* data and its commits are editted by Yuxuan Wang */
 /*
-type Id = number;
-interface user = {
-  name : string
+export type Id = number;
+
+
+export interface user {
+  name : string,
   nameFirst? : string,
   nameLast ? : string,
 
   authUserId : number,
   email : string,
-  password : string | null | undefined,
+  password : string,
 
   numSuccessfulLogins:  number,                 // This should be 0 at first
   numFailedPasswordsSinceLastLogin: number,     // This should be 0 at first
   
-  quizzesUserHave : Id[]
+  quizzesUserHave : Id[],
+
+  pastPassword : string[];
 }
 
-interface users [
+export interface users {
   [authUserId : number] : user;
-]
+}
 
-interface quiz {
+export interface quiz {
   quizId : number,
   name : string,
 
   description? : string | undefined | null,
 
-  timeCreated : number ,    
+  timeCreated : number,
   timeLastEdited : number  
 };
 
-type quizzes = quiz[];
+export interface quizzes {
+  [quizId : number] : quiz
+};
 
-type data = { "users" : users, "quizzes" : quizzes };
+export type data = { 
+  users : users,
+  quizzes : quizzes 
+};
+
 */
-
-let data  = {
+let data /*: data*/  = {
   users : {},
   quizzes : {}
 };

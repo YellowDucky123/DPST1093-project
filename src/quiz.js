@@ -5,15 +5,76 @@ import { quizOwnership } from './helpers.js'
 import { isNameAlphaNumeric } from './helpers.js'
 import { nameLen } from './helpers.js'
 import { description_length_valid } from './helpers.js'
+import { isUsedQuizName } from './helpers.js'
 
 export function adminQuizCreate( authUserId, name, description ) {
-    return {
-        quizId: 2
+    if(userIdValidator(authUserId) == false){
+        return {error: 'adminQuizCreate: invalid user id'}
     }
+    if(nameLen(name) == false){
+        return {error: 'adminQuizCreate: invalid quiz name length'}
+    }
+    if(isNameAlphaNumeric(name) == false){
+        return {error: 'adminQuizCreate: quiz name contains invalid letters'}
+    }
+    if(description_length_valid(name) == false){
+        return {error: 'adminQuizCreate: quiz description too long'}
+    }
+    if(isUsedQuizName(name) == true){
+        return {error: 'adminQuizCreate: quiz name already used by another user'}
+    }
+
+    const data = getData();
+    const quizId = Object.keys(data.quizzes).length + 1;
+
+    let d = new Date();
+    const time = d.getTime();
+
+    const new_data = {
+        quizId: quizId,
+        name: name,
+        timeCreated: time,
+        timeLastEdited: time,
+        description: description
+    }
+
+    setData(new_data);
+    return {quizId}
 }
 
-export function adminQuizRemove( authUserId, name, description ) {
+export function adminQuizRemove( authUserId, quizId) {
+    if(userIdValidator(authUserId) == false){
+        return {error: 'adminQuizRemove: invalid user id'}
+    }
+    if(quizIdValidator(quizId) == false){
+        return {error: 'adminQuizRemove: invalid quiz id'}
+    }
+    if(quizOwnership(authUserId, quizId) == false){
+        return {error: 'adminQuizRemove: you do not own this quiz'}
+    }
+
     return {}
+}
+
+export function adminQuizInfo( authUserId, quizId ) {
+    if(userIdValidator(authUserId) == false){
+        return {error: 'adminQuizInfo: invalid user id'}
+    }
+    if(quizIdValidator(quizId) == false){
+        return {error: 'adminQuizInfo: invalid quiz id'}
+    }
+    if(quizOwnership(authUserId, quizId) == false){
+        return {error: 'adminQuizInfo: you do not own this quiz'}
+    }
+
+    const data = getData();
+    let return_data;
+    
+    for(const item of data.quizzes) {
+        if(item.quizId === quizId) {
+            return item;
+        }
+    }
 }
 
 /*********************************************************************************************|
@@ -32,15 +93,6 @@ export function adminQuizList ( authUserId ) {
     }
 }
 
-export function adminQuizInfo( authUserId, quizId ) {
-    return {
-        quizId: 1,
-        name: 'My Quiz',
-        timeCreated: 1683125870,
-        timeLastEdited: 1683125871,
-        description: 'This is my quiz',
-    }
-}
 
 export function adminQuizNameUpdate(authUserId, quizId, name) {
     // Error checks

@@ -1,9 +1,8 @@
 ```javascript
 let data = {
-    users : {
-        user/*I suggest use authUserId as key*/ : { 
-            
-            //name : nameFirst + nameLast,
+    users : [
+        { 
+            name : nameFirst + nameLast,
             nameFirst : string,
             nameLast  : string,
 
@@ -16,14 +15,14 @@ let data = {
 
             quizzesUserHave : ['quizId1', 'quizId2', .......],
         },
-        user2 : {
+        {
             /*
                 just like the upper one
             */
         }
-    },
-    quizzes : {
-        quiz1 /*I suggest use quizId as keys*/ : {
+    ],
+    quizzes : [
+        {
             QuizId          : number,
             nume            : string,
 
@@ -32,12 +31,12 @@ let data = {
             timeCreated     : number/time,
             timeLastEdited  : number/time
         },
-        quiz2 : {
+        {
             /*
                 just like the upper one
             */
         }
-    }
+    ]
     // TODO: insert your data structure that contains 
     // users + quizzes here
 }

@@ -1,4 +1,4 @@
-import { getData, setData } from './dataStore.js'
+import { getData, setData} from './dataStore.js'
 import validator from 'validator';
 function someNewFeature(array) {
     for (const item of array) {
@@ -140,10 +140,6 @@ function checkEmailNameFirstNameLast(email, nameFirst, nameLast) {
     }
     return true;
 }
-//adminAuthRegister("good@gmail.com", 'abcd1234', 'victor', 'xiao');
-//const b = adminAuthRegister("good@gmail.com", 'ewcd11', 'a', 'b');
-
-//console.log(getData());
 
 // Check whether password length is valid.
 function checkPasswordLength(password) {
@@ -233,18 +229,5 @@ function findPasswordByAuthUserId(authUserId) {
             return currentData.users[index].password;
         }
     }
-    return false;
+    return false;    
 }
-
-export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
-    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== true) {
-        return checkEmailNameFirstNameLast(email, nameFirst, nameLast)
-    }
-    let password = findPasswordByAuthUserId(authUserId);
-    createNewAuth(nameFirst, nameLast, authUserId, email, password)
-    return {};
-}
-//console.log(adminUserDetailsUpdate(a, 'cgood@gmail.com', 'sssw', 'asasa'));
-//console.log(b);
-//console.log(getData());
-//console.log("Can work");

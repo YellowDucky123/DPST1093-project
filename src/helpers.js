@@ -1,5 +1,5 @@
-import { getData } from './dataStore.js'
-
+import { setData, getData } from './dataStore.js'
+import validator from 'validator';
 export function userIdValidator(UserId) {
     let wh_data = getData();
     let data = wh_data.users;
@@ -85,4 +85,149 @@ export function isUsedQuizName(name){
         }
     }
     return true;
+}
+
+// Check whether user ID is duplicate.
+export function checkDuplicateUserId(useId) {
+    const currentData = getData();
+    for (let index in currentData.users) {       
+        if (useId === currentData.users[index].authUserId) {
+            return true;
+        }
+    }
+    return useId;    
+}
+
+// Create a new authticated user with the provided details.
+export function createNewAuth(nameFirst, nameLast, userId, email, password) {
+    let name = nameFirst + ' ' + nameLast
+    const newUser = {
+        name: name,
+        nameFirst: nameFirst,
+        nameLast: nameLast,
+        authUserId: userId,
+        email: email,
+        password: password,
+        numSuccessfulLogins: 1,
+        numFailedPasswordsSinceLastLogin: 0,
+        quizzesUserHave: [],
+        pastPassword: []
+    };
+    let dataStore = getData();
+    dataStore.users[userId] = newUser;
+    setData(dataStore);
+}
+
+// Checks the validity of the provided email, first name, and last name.
+export function checkEmailNameFirstNameLast(email, nameFirst, nameLast) {
+    if (emailExist(email) === true) {
+        return { error: 'email existed' };
+    }
+    if (validator.isEmail(email) === false) {
+        return { error: 'email should have specific format' };
+    }
+    if (checkNameContains(nameFirst) === false) {
+        return { error: 'NameFirst contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes' };
+    }
+    if (checkNameFirstLength(nameFirst) === false) {
+        return { error: 'NameFirst should be between 2 to 20 characters' };
+    }
+    if (checkNameContains(nameLast) === false) {
+        return { error: 'NameLast contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes' };
+    }
+    if (checkNameFirstLength(nameLast) === false) {
+        return { error: 'NameLast should be between 2 to 20 characters' };
+    }
+    return true;
+}
+
+// Check whether password length is valid.
+export function checkPasswordLength(password) {
+    if (password.length >= 8) {
+        return true;
+    }
+    return false;
+}
+
+// Check whether password contains is valid.
+export function checkPasswordContain(password) {
+    let checkNumber = 0;
+    let checkLetter = 0;
+    for (let i = 0; i < password.length; i++) {
+        if (validator.isAlpha(password[i])) {
+            checkLetter = 1;
+        }
+        if (password[i] <= 9 && password[i] >= 0) {
+            checkNumber = 1;
+        }
+    }
+    if (checkLetter === 1 && checkNumber === 1) {
+        return true;
+    }
+    return false;
+}
+
+// Check whether name contains is valid.
+export function checkNameContains (nameFirst) {
+    for (let i = 0; i < nameFirst.length; i++) {
+        if ((!validator.isAlpha(nameFirst[i])) && (nameFirst[i] !== '-') && (nameFirst[i] !== ' ') && (nameFirst[i] !== '\'')) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Check whether name length is valid.
+export function checkNameFirstLength(nameFirst) {
+    if (nameFirst.length < 0) {
+        return false;
+    }
+    if (nameFirst.length <= 20 && nameFirst.length >= 2) {
+        return true;
+    }
+    return false;
+}
+
+// Check whether email existed.
+export function emailExist(email) {
+    const currentData = getData();
+    for (let index in currentData.users) {
+        if (email === currentData.users[index].email) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Finds the authticated user ID by email address.
+export function findAuthUserIdByEmail(email) {
+    const currentData = getData();
+    for (let index in currentData.users) {
+        if (email === currentData.users[index].email) {
+            return currentData.users[index].authUserId;
+        }
+    }
+    return false;
+}
+
+// Check whether password is correct for the user.
+export function checkPasswordCorrect(password) {
+    const currentData = getData();
+    for (let index in currentData.users) {
+        if (password === currentData.users[index].password) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Finds the authticated user password by user ID.
+export function findPasswordByAuthUserId(authUserId) {
+    const currentData = getData();
+    for (let index in currentData.users) {
+        if (authUserId === currentData.users[index].authUserId) {
+            return currentData.users[index].password;
+        }
+    }
+    return false;    
 }

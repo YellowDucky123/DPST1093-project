@@ -17,8 +17,8 @@ export function adminQuizCreate( authUserId, name, description ) {
     if(isNameAlphaNumeric(name) === false){
         return {error: 'adminQuizCreate: quiz name contains invalid letters'}
     }
-    if(description_length_valid(name) === false){
-        return {error: 'adminQuizCreate: quiz description too long'}
+    if(description_length_valid(description) === false){
+        return {error: 'adminQuizCreate: quiz description is too long'}
     }
     if(isUsedQuizName(name) === false){
         return {error: 'adminQuizCreate: quiz name already used by another user'}
@@ -70,7 +70,7 @@ export function adminQuizInfo( authUserId, quizId ) {
 
     const data = getData();
     
-    for(const item of data.quizzes) {
+    for(const item in data.quizzes) {
         if(item.quizId === quizId) {
             return item;
         }

@@ -57,7 +57,7 @@ test('User no ownership over quiz test: ', () => {
     }
     setData(data);
 
-    expect(adminQuizNameUpdate(123, 124, 'kelvin')).toEqual("error: 'This user does not own this quiz'");
+    expect(adminQuizNameUpdate(123, 145, 'kelvin')).toEqual("error: 'This user does not own this quiz'");
 });
 
 test('Name contains invalid characters test: ', () => {
@@ -71,3 +71,35 @@ test('Name too short test: ', () => {
 test('Name too long test: ', () => {
     expect(adminQuizNameUpdate(null, null, 'lllllllllllllllllllllllllllllll')).toEqual("error: 'Invalid name length'");
 });
+
+test('Correct implementation', () => {
+    let data = getData();
+    data.users = {
+        '123': {
+            nameFirst : 'kelvin',
+            nameLast  : 'yoga',
+
+            authUserId : 123,
+            email : 'kelvin@test.com',
+            password : 'password',
+
+            numSuccessfulLogins:  2,
+            numFailedPasswordsSinceLastLogin : 0,
+
+            quizzesUserHave : [145],
+        }
+    } 
+    data.quizzes = {
+        '145': {
+            QuizId          : 145,
+            name            : 'test',
+
+            description     : 'description',
+
+            timeCreated     : 1400,
+            timeLastEdited  : 1500
+        }
+    }
+
+    expect(adminQuizNameUpdate(123, 145, 'updated')).toEqual({});
+})

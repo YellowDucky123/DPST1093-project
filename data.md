@@ -1,19 +1,21 @@
 ```javascript
 let data = {
-    users : [
-        { 
-            name : nameFirst + nameLast,
-            nameFirst : string,
-            nameLast  : string,
+  users : [
+    { 
+      name : string,
+      nameFirst : string,
+      nameLast : string,
 
-            authUserId : number,
-            email : string,
-            password : string,
+      authUserId : number,
+      email : string,
+      password : string,
 
-            numSuccessfulLogins:  number,
-            numFailedPasswordsSinceLastLogin : number,
+      numSuccessfulLogins:  number,
+      numFailedPasswordsSinceLastLogin : number,
 
-            quizzesUserHave : ['quizId1', 'quizId2', .......],
+      quizzesUserHave : ['quizId1', 'quizId2', .......],
+
+      pastPasswords : 
         },
         {
             /*

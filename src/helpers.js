@@ -80,7 +80,7 @@ export function description_length_valid(description) {
 export function isUsedQuizName(name){
     const data = getData();
     for(let item in data.quizzes){
-        if(item.name == name) {
+        if(data.quizzes[item].name == name) {
             return false;
         }
     }

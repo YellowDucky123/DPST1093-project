@@ -44,7 +44,13 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
     if (checkPasswordContain(password) === false) {
         return {error: 'Password should contain at least one number and at least one letter'};    
     }
-    let userId = Math.floor(10000000 + Math.random() * 90000000).toString();
+    let userId;
+    while (1) {
+        userId = Math.floor(10000000 + Math.random() * 90000000).toString();
+        if (checkDuplicateUserId(userId) != true) {
+            break;
+        }
+    }
     createNewAuth(nameFirst, nameLast, userId, email, password); 
     return { authUserId : userId };      
 }
@@ -70,6 +76,17 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
     let password = findPasswordByAuthUserId(authUserId);
     createNewAuth(nameFirst, nameLast, authUserId, email, password) 
     return {};
+}
+
+// Check whether user ID is duplicate.
+function checkDuplicateUserId(useId) {
+    const currentData = getData();
+    for (let index in currentData.users) {       
+        if (useId === currentData.users[index].authUserId) {
+            return true;
+        }
+    }
+    return useId;    
 }
 
 // Create a new authticated user with the provided details.
@@ -114,7 +131,7 @@ function checkEmailNameFirstNameLast(email, nameFirst, nameLast) {
     }
     return true;
 }
-//const a = adminAuthRegister("good@gmail.com", 'abcd1234', 'victor', 'xiao').authUserId;
+//adminAuthRegister("good@gmail.com", 'abcd1234', 'victor', 'xiao');
 //const b = adminAuthRegister("good@gmail.com", 'ewcd11', 'a', 'b');
 
 //console.log(getData());

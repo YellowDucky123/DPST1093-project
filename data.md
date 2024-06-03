@@ -1,47 +1,41 @@
 ```javascript
-let data = {
-  users : [
-    { 
-      name : string,
-      nameFirst : string,
-      nameLast : string,
+interface user : { 
+  name : string,
+  nameFirst : string,
+  nameLast : string,
 
-      authUserId : number,
-      email : string,
-      password : string,
+  authUserId : number,
+  email : string,
+  password : string,
 
-      numSuccessfulLogins:  number,
-      numFailedPasswordsSinceLastLogin : number,
+  numSuccessfulLogins:  number,
+  numFailedPasswordsSinceLastLogin : number,
 
-      quizzesUserHave : ['quizId1', 'quizId2', .......],
+  quizzesUserHave : ['quizId1', 'quizId2', .......],
 
-      pastPasswords : 
-        },
-        {
-            /*
-                just like the upper one
-            */
-        }
-    ],
-    quizzes : [
-        {
-            QuizId          : number,
-            nume            : string,
-
-            description     : string,
-
-            timeCreated     : number/time,
-            timeLastEdited  : number/time
-        },
-        {
-            /*
-                just like the upper one
-            */
-        }
-    ]
-    // TODO: insert your data structure that contains 
-    // users + quizzes here
+  pastPasswords : []
 }
+interface users : {
+  [Id : number] : user
+}
+interface quiz : {
+  QuizId          : number,
+  nume            : string,
+
+  description     : string,
+
+  timeCreated     : number,
+  timeLastEdited  : number
+}
+interface quizzes : {
+  [Id : number] : quiz
+}
+
+interface data = {
+  users : users,
+  quizzes : quizzes
+},
+let dataBase : data = {users : {}, quizzes : {}};
 ```
 
 [Optional] short description: 

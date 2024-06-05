@@ -33,3 +33,4 @@ test("get detail of another one", () => {
     }
   })
 })
+clear()

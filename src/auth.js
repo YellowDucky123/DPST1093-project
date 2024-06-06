@@ -33,14 +33,14 @@ export function adminUserDetails(authUserId) {
         return { error: "can not find such a member" };
     }
     if (dataStore.users[authUserId].name === undefined) {
-        dataStore.users[authUserId].name = dataStore.users[authUserId].nameFirst + " " + dataStore.users.nameLast;
+        dataStore.users[authUserId].name = dataStore.users[authUserId].nameFirst + " " + dataStore.users[authUserId].nameLast;
     }
     return {
         user: {
             userId: data.authUserId,
             name: data.name,
             email: data.email,
-            numSuccessfulLogin: data.numSuccessfulLogins,
+            numSuccessfulLogins: data.numSuccessfulLogins,
             numFailedPasswordsSinceLastLogin: data.numFailedPasswordsSinceLastLogin,
         }
     };

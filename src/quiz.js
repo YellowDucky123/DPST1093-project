@@ -39,7 +39,8 @@ export function adminQuizCreate(authUserId, name, description) {
     }
 
     data.quizzes[quizId] = new_data;
-    setData(data);
+    data.users[authUserId].quizzesUserHave.push(quizId)
+    setData(data)
     return { quizId }
 }
 

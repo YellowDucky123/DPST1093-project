@@ -1,70 +1,33 @@
 import { adminUserDetails } from '../src/auth'
-import { setData } from '../src/dataStore.js'
 import { clear } from '../src/other.js'
+import { adminAuthRegister } from '../src/auth';
 
 clear();
-setData({
-  users: {
-    111: {
-      name: "test",
-      authUserId: 111,
-      email: "aofaij@???.com",
-      password: "1111",
-      numSuccessfulLogin: 1,
-      numFailedPasswordsSinceLastLogin: 0,
-      quizzesUserHave: []
-    },
-    222: {
-      name: "jest",
-      authUserId: 222,
-      email: "wq;pqoergn@???.com",
-      password: "2222",
-      numSuccessfulLogin: 1,
-      numFailedPasswordsSinceLastLogin: 0,
-      quizzesUserHave: []
-    }
-  },
-  quizzes: {
-    111: {
-      quizId: 111,
-      name: "114514",
-      timeCreated: 11,
-      timeLastEdited: 11
-    },
-  }
-})
+var idfor86 = adminAuthRegister("86@163.com", "1111aaaa", "sin", "zano");
+var idfor721 = adminAuthRegister("721@163.com", "ciallo111", "ning", "ning")
 
 test("no such a member", () => {
-  expect(adminUserDetails(1)).toEqual({ error: "can not find such a member" });
+  let i = 1
+  for (i; i === idfor721.authUserId && i === idfor86.authUserId ; i++);
+  expect(adminUserDetails(i)).toEqual({ error: "can not find such a member" });
 })
 test("get the detail of some one", () => {
-  expect(adminUserDetails(111)).toEqual({
+  expect(adminUserDetails(idfor721.authUserId)).toEqual({
     user: {
-      userId: 111,
-      name: "test",
-      email: "aofaij@???.com",
+      userId : idfor721.authUserId,
+      name: "ning ning",
+      email: "721@163.com",
       numSuccessfulLogin: 1,
       numFailedPasswordsSinceLastLogin: 0
     }
   })
 })
 test("get detail of another one", () => {
-  expect(adminUserDetails(222)).toEqual({
+  expect(adminUserDetails(idfor86.authUserId)).toEqual({
     user: {
-      userId: 222,
-      name: "jest",
-      email: "wq;pqoergn@???.com",
-      numSuccessfulLogin: 1,
-      numFailedPasswordsSinceLastLogin: 0
-    }
-  })
-})
-test("get detail of another one", () => {
-  expect(adminUserDetails(222)).toEqual({
-    user: {
-      userId: 222,
-      name: "jest",
-      email: "wq;pqoergn@???.com",
+      userId: idfor86.authUserId,
+      name: "sin zano",
+      email: "86@163.com",
       numSuccessfulLogin: 1,
       numFailedPasswordsSinceLastLogin: 0
     }

@@ -1,7 +1,9 @@
-import { getData, setData} from './dataStore.js'
+import { getData, setData } from './dataStore.js'
 import validator from 'validator';
-import { checkDuplicateUserId, createNewAuth, checkEmailNameFirstNameLast, checkPasswordContain, 
-    emailExist, findAuthUserIdByEmail, findPasswordByAuthUserId, checkPasswordCorrect, checkPasswordLength} from './helpers.js';
+import {
+    checkDuplicateUserId, createNewAuth, checkEmailNameFirstNameLast, checkPasswordContain,
+    emailExist, findAuthUserIdByEmail, findPasswordByAuthUserId, checkPasswordCorrect, checkPasswordLength
+} from './helpers.js';
 function someNewFeature(array) {
     for (const item of array) {
         console.log(item);
@@ -31,14 +33,14 @@ export function adminUserDetails(authUserId) {
         return { error: "can not find such a member" };
     }
     if (dataStore.users[authUserId].name === undefined) {
-        dataStore.users[authUserId].name = dataStore.users[authUserId].nameFirst + " " + dataStore.users.nameLast;
+        dataStore.users[authUserId].name = dataStore.users[authUserId].nameFirst + " " + dataStore.users[authUserId].nameLast;
     }
     return {
         user: {
             userId: data.authUserId,
             name: data.name,
             email: data.email,
-            numSuccessfulLogin: data.numSuccessfulLogin,
+            numSuccessfulLogins: data.numSuccessfulLogins,
             numFailedPasswordsSinceLastLogin: data.numFailedPasswordsSinceLastLogin,
         }
     };
@@ -62,8 +64,8 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
             break;
         }
     }
-    createNewAuth(nameFirst, nameLast, userId, email, password); 
-    return { authUserId : userId };      
+    createNewAuth(nameFirst, nameLast, userId, email, password);
+    return { authUserId: userId };
 }
 
 // Authenticates an admin user with the provided email and password.
@@ -81,10 +83,10 @@ export function adminAuthLogin(email, password) {
 
 // Updates the details of an autheticated admin user with the provided details.
 export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
-    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== true)  {
+    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== true) {
         return checkEmailNameFirstNameLast(email, nameFirst, nameLast)
     }
     let password = findPasswordByAuthUserId(authUserId);
-    createNewAuth(nameFirst, nameLast, authUserId, email, password) 
+    createNewAuth(nameFirst, nameLast, authUserId, email, password)
     return {};
 }

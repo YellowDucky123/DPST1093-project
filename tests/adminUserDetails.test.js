@@ -17,7 +17,7 @@ test("get the detail of some one", () => {
       userId : idfor721.authUserId,
       name: "ning ning",
       email: "721@163.com",
-      numSuccessfulLogin: 1,
+      numSuccessfulLogins: 1,
       numFailedPasswordsSinceLastLogin: 0
     }
   })
@@ -28,7 +28,7 @@ test("get detail of another one", () => {
       userId: idfor86.authUserId,
       name: "sin zano",
       email: "86@163.com",
-      numSuccessfulLogin: 1,
+      numSuccessfulLogins: 1,
       numFailedPasswordsSinceLastLogin: 0
     }
   })

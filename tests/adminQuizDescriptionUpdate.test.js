@@ -19,7 +19,7 @@ test('user Id Invalid test: ', () => {
         }
     }
     setData(data);
-    expect(adminQuizDescriptionUpdate(124, 'quiz', 'kelvin')).toEqual("error: 'User Id invalid'");
+    expect(adminQuizDescriptionUpdate(124, 'quiz', 'kelvin')).toEqual({ error: 'User Id invalid'});
 });
 
 test('Quiz Id Invalid test: ', () => {
@@ -38,7 +38,7 @@ test('Quiz Id Invalid test: ', () => {
         }
     }
     setData(data);
-    expect(adminQuizDescriptionUpdate(123, 542, 'kelvin')).toEqual("error: 'Quiz Id invalid'");
+    expect(adminQuizDescriptionUpdate(123, 542, 'kelvin')).toEqual({ error: 'Quiz Id invalid'});
 });
 
 test('User no ownership over quiz test: ', () => {
@@ -59,7 +59,7 @@ test('User no ownership over quiz test: ', () => {
     }
     setData(data);
 
-    expect(adminQuizDescriptionUpdate(123, 145, 'kelvin')).toEqual("error: 'This user does not own this quiz'");
+    expect(adminQuizDescriptionUpdate(123, 145, 'kelvin')).toEqual({ error: 'This user does not own this quiz'});
 });
 
 test('Description too long', () => {
@@ -67,7 +67,7 @@ test('Description too long', () => {
     for(let i = 0; i < 101; i++) {
         input += 'a';
     }
-    expect(adminQuizDescriptionUpdate(123,145, input)).toEqual("error: 'Description too long'");
+    expect(adminQuizDescriptionUpdate(123,145, input)).toEqual( { error: 'Description too long'});
 })
 
 test('correct implementation: ', () => {

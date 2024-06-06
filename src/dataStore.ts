@@ -1,9 +1,8 @@
-/* data and its commits are editted by Yuxuan Wang */
 /*
 export type Id = number;
 
 
-export interface user {
+export type user = {
   name : string,
   nameFirst? : string,
   nameLast ? : string,
@@ -20,11 +19,11 @@ export interface user {
   pastPassword : string[];
 }
 
-export interface users {
+export type users = {
   [authUserId : number] : user;
 }
 
-export interface quiz {
+export type quiz = {
   quizId : number,
   name : string,
 
@@ -34,7 +33,7 @@ export interface quiz {
   timeLastEdited : number  
 };
 
-export interface quizzes {
+export type quizzes = {
   [quizId : number] : quiz
 };
 

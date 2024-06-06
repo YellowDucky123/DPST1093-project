@@ -16,7 +16,7 @@ var quiz1for721 = adminQuizCreate(idfor721.authUserId, "4444", "")
 var quiz2for721 = adminQuizCreate(idfor721.authUserId, "5555", "")
 
 var idfornoone = 1;
-while (idfornoone === idfor721.authUserId && idfor86.authUserId === idfornoone && idforno.authUserId === idfornoone) idfornoone++;
+while (idfornoone === idfor721.authUserId || idfor86.authUserId === idfornoone || idforno.authUserId === idfornoone) idfornoone++;
 
 test("no such a user", () => {
   expect(adminQuizList(idfornoone)).toEqual({ error: "can not find such a member" })

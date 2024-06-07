@@ -62,7 +62,7 @@ export function isNameAlphaNumeric(str) {
       if (!(code > 47 && code < 58) && // numeric (0-9)
           !(code > 64 && code < 91) && // upper alpha (A-Z)
           !(code > 96 && code < 123) && // lower alpha (a-z)
-          !(code == ' ')) { // space ' '
+          !(code == 32)) { // space ' '
         return false;
       }
     }
@@ -157,7 +157,7 @@ export function checkPasswordContain(password) {
         if (validator.isAlpha(password[i])) {
             checkLetter = 1;
         }
-        if (password[i] <= 9 && password[i] >= 0) {
+        if (password[i] <= '9' && password[i] >= '0') {
             checkNumber = 1;
         }
     }
@@ -191,8 +191,8 @@ export function checkNameFirstLength(nameFirst) {
 // Check whether email existed.
 export function emailExist(email) {
     const currentData = getData();
-    for (let index in currentData.users) {
-        if (email === currentData.users[index].email) {
+    for (let authUserId in currentData.users) {
+        if (email === currentData.users[authUserId].email) {
             return true;
         }
     }
@@ -211,10 +211,10 @@ export function findAuthUserIdByEmail(email) {
 }
 
 // Check whether password is correct for the user.
-export function checkPasswordCorrect(password) {
+export function checkPasswordCorrect(password, email) {
     const currentData = getData();
     for (let index in currentData.users) {
-        if (password === currentData.users[index].password) {
+        if (password === currentData.users[index].password && currentData.users[index].email === email) {
             return true;
         }
     }

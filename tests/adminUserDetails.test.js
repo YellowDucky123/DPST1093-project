@@ -8,7 +8,7 @@ var idfor721 = adminAuthRegister("721@163.com", "ciallo111", "ning", "ning")
 
 test("no such a member", () => {
   let i = 1
-  for (i; i === idfor721.authUserId && i === idfor86.authUserId ; i++);
+  for (i; i === idfor721.authUserId || i === idfor86.authUserId ; i++);
   expect(adminUserDetails(i)).toEqual({ error: "can not find such a member" });
 })
 test("get the detail of some one", () => {

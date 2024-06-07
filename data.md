@@ -1,41 +1,51 @@
 ```javascript
-interface user : { 
+export type Id = number;
+
+
+export type user = {
   name : string,
-  nameFirst : string,
-  nameLast : string,
+  nameFirst? : string,
+  nameLast ? : string,
 
   authUserId : number,
   email : string,
   password : string,
 
-  numSuccessfulLogins:  number,
-  numFailedPasswordsSinceLastLogin : number,
+  numSuccessfulLogins:  number,                 // This should be 0 at first
+  numFailedPasswordsSinceLastLogin: number,     // This should be 0 at first
+  
+  quizzesUserHave : Id[],
 
-  quizzesUserHave : ['quizId1', 'quizId2', .......],
-
-  pastPasswords : []
-}
-interface users : {
-  [Id : number] : user
-}
-interface quiz : {
-  QuizId          : number,
-  nume            : string,
-
-  description     : string,
-
-  timeCreated     : number,
-  timeLastEdited  : number
-}
-interface quizzes : {
-  [Id : number] : quiz
+  pastPassword : string[];
 }
 
-interface data = {
+export type users = {
+  [authUserId : number] : user;
+}
+
+export type quiz = {
+  quizId : number,
+  name : string,
+
+  description? : string | undefined | null,
+
+  timeCreated : number,
+  timeLastEdited : number  
+};
+
+export type quizzes = {
+  [quizId : number] : quiz
+};
+
+export type data = { 
   users : users,
-  quizzes : quizzes
-},
-let dataBase : data = {users : {}, quizzes : {}};
+  quizzes : quizzes 
+};
+
+const data : data {
+  users : {}
+  quizzes : {}
+}
 ```
 
 [Optional] short description: 

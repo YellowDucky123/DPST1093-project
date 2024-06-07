@@ -41,17 +41,17 @@ export function adminQuizCreate(authUserId, name, description) {
     data.quizzes[quizId] = new_data;
     data.users[authUserId].quizzesUserHave.push(quizId)
     setData(data)
-    return { quizId }
+    return { quizId : quizId }
 }
 
 export function adminQuizRemove(authUserId, quizId) {
-    if (userIdValidator(authUserId) == false) {
+    if (userIdValidator(authUserId) === false) {
         return { error: 'adminQuizRemove: invalid user id' }
     }
-    if (quizIdValidator(quizId) == false) {
+    if (quizIdValidator(quizId) === false) {
         return { error: 'adminQuizRemove: invalid quiz id' }
     }
-    if (quizOwnership(authUserId, quizId) == false) {
+    if (quizOwnership(authUserId, quizId) === false) {
         return { error: 'adminQuizRemove: you do not own this quiz' }
     }
     let data = getData();
@@ -74,11 +74,19 @@ export function adminQuizInfo(authUserId, quizId) {
 
     const data = getData();
 
-    for (const item in data.quizzes) {
+    return {
+        quizId : data.quizzes[quizId].quizId,
+        name : data.quizzes[quizId].name,
+        timeCreated : data.quizzes[quizId].timeCreated,
+        timeLastEdited : data.quizzes[quizId].timeLastEdited,
+        description : data.quizzes[quizId].description
+    }
+//  return data.quizzes[quizId]
+    /*for (const item in data.quizzes) {
         if (item.quizId === quizId) {
             return item;
         }
-    }
+    }*/
 }
 
 /*********************************************************************************************|
@@ -93,10 +101,10 @@ export function adminQuizList(authUserId) {
         return { error: "can not find such a member" };
     }
     let dataBase = datas.users[authUserId];
-    for (const data of dataBase.quizzesUserHave) {
+    for (const Id of dataBase.quizzesUserHave) {
         quizzes.push({
-            quizId: data,
-            name: datas.quizzes[data].name
+            quizId: Id,
+            name: datas.quizzes[Id].name
         })
     }
     return { quizzes: quizzes }
@@ -106,19 +114,19 @@ export function adminQuizList(authUserId) {
 export function adminQuizNameUpdate(authUserId, quizId, name) {
     // Error checks
     if (!nameLen(name)) {
-        return "error: 'Invalid name length'";
+        return { error: 'Invalid name length'};
     }
     if (!isNameAlphaNumeric(name)) {
-        return "error: 'Invalid character used in name'";
+        return {error: 'Invalid character used in name'};
     }
     if (!userIdValidator(authUserId)) {
-        return "error: 'User Id invalid'";
+        return {error: 'User Id invalid'};
     }
     if (!quizIdValidator(quizId)) {
-        return "error: 'Quiz Id invalid'";
+        return {error: 'Quiz Id invalid'};
     }
     if (!quizOwnership(authUserId, quizId)) {
-        return "error: 'This user does not own this quiz'";
+        return {error: 'This user does not own this quiz'};
     }
 
     // If no errors then update name
@@ -135,16 +143,16 @@ export function adminQuizNameUpdate(authUserId, quizId, name) {
 
 export function adminQuizDescriptionUpdate(authUserId, quizId, description) {
     if (!description_length_valid(description)) {
-        return "error: 'Description too long'";
+        return { error : 'Description too long'};
     }
     if (!userIdValidator(authUserId)) {
-        return "error: 'User Id invalid'";
+        return { error: 'User Id invalid' };
     }
     if (!quizIdValidator(quizId)) {
-        return "error: 'Quiz Id invalid'";
+        return { error: 'Quiz Id invalid' };
     }
     if (!quizOwnership(authUserId, quizId)) {
-        return "error: 'This user does not own this quiz'";
+        return { error: 'This user does not own this quiz' };
     }
 
     let wh_data = getData();

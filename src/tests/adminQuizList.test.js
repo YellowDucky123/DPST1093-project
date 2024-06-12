@@ -1,7 +1,5 @@
-<<<<<<< HEAD:src/tests/adminQuizList.test.js
 import { setData, getData } from "../dataStore";
 import { adminQuizList } from "../quiz";
-=======
 import { adminQuizList } from "../src/quiz";
 import { adminAuthRegister} from "../src/auth";
 import { adminQuizCreate } from "../src/quiz";
@@ -11,7 +9,6 @@ clear()
 var idfor86 = adminAuthRegister("86@163.com", "1111aaaa", "sin", "zano");
 var idfor721 = adminAuthRegister("721@163.com", "ciallo111", "ning", "ning");
 var idforno = adminAuthRegister ("aaa@163.con", "11111aaa", "no", "quiz");
->>>>>>> 4048b05e697055b28bf664bd1285d6e2636322e8:tests/adminQuizList.test.js
 
 var quiz1for86 = adminQuizCreate(idfor86.authUserId, "1111", "");
 var quiz2for86 = adminQuizCreate(idfor86.authUserId, "2222", "");

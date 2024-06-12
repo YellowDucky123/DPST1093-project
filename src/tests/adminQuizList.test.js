@@ -1,5 +1,5 @@
-import { setData, getData } from "../src/dataStore";
-import { adminQuizList } from "../src/quiz";
+import { setData, getData } from "../dataStore";
+import { adminQuizList } from "../quiz";
 
 setData({
   users: {

@@ -1,91 +1,61 @@
+<<<<<<< HEAD:src/tests/adminQuizList.test.js
 import { setData, getData } from "../dataStore";
 import { adminQuizList } from "../quiz";
+=======
+import { adminQuizList } from "../src/quiz";
+import { adminAuthRegister} from "../src/auth";
+import { adminQuizCreate } from "../src/quiz";
+import { getData } from "../src/dataStore";
+import { clear } from "../src/other";
+clear()
+var idfor86 = adminAuthRegister("86@163.com", "1111aaaa", "sin", "zano");
+var idfor721 = adminAuthRegister("721@163.com", "ciallo111", "ning", "ning");
+var idforno = adminAuthRegister ("aaa@163.con", "11111aaa", "no", "quiz");
+>>>>>>> 4048b05e697055b28bf664bd1285d6e2636322e8:tests/adminQuizList.test.js
 
-setData({
-  users: {
-    111: {
-      name: "test",
-      authUserId: 111,
-      email: "aofaij@???.com",
-      password: "1111",
-      numSuccessfulLogin: 1,
-      numFailedPasswordsSinceLastLogin: 0,
-      quizzesUserHave: [111, 222, 333]
-    },
-    222: {
-      name: "jest",
-      authUserId: 222,
-      email: "wq;pqoergn@???.com",
-      password: "2222",
-      numSuccessfulLogin: 1,
-      numFailedPasswordsSinceLastLogin: 0,
-      quizzesUserHave: []
-    },
-    444 : {
-      name: "jest",
-      authUserId: 444,
-      email: "wq;woejgergn@???.com",
-      password: "2222",
-      numSuccessfulLogin: 1,
-      numFailedPasswordsSinceLastLogin: 0,
-      quizzesUserHave: [111, 222]
-    }
-  },
-  quizzes: {
-    111: {
-      quizId: 111,
-      name: "114514",
-      timeCreated: 11,
-      timeLastEdited: 11
-    },
-    222: {
-      quizId: 222,
-      name: "wpigjj",
-      timeCreated: 11,
-      timeLastEdited: 11
-    },
-    333: {
-      quizId: 333,
-      name: "wjldbv",
-      timeCreated: 11,
-      timeLastEdited: 11
-    }
-  }
-})
+var quiz1for86 = adminQuizCreate(idfor86.authUserId, "1111", "");
+var quiz2for86 = adminQuizCreate(idfor86.authUserId, "2222", "");
+var quiz3for86 = adminQuizCreate(idfor86.authUserId, "3333", "");
+
+var quiz1for721 = adminQuizCreate(idfor721.authUserId, "4444", "")
+var quiz2for721 = adminQuizCreate(idfor721.authUserId, "5555", "")
+
+var idfornoone = 1;
+while (idfornoone === idfor721.authUserId || idfor86.authUserId === idfornoone || idforno.authUserId === idfornoone) idfornoone++;
 
 test("no such a user", () => {
-  expect(adminQuizList(333)).toEqual({ error: "can not find such a member" })
+  expect(adminQuizList(idfornoone)).toEqual({ error: "can not find such a member" })
 })
 
 test("quizzes for the one have no quiz", () => {
-  expect(adminQuizList(222)).toEqual({ quizzes: [] });
+  expect(adminQuizList(idforno.authUserId)).toEqual({ quizzes: [] });
 })
 test("quizzes for the one have lot of quizzes", () => {
-  expect(adminQuizList(111)).toEqual({
+  expect(adminQuizList(idfor86.authUserId)).toEqual({
     quizzes: [{
-      name: "114514",
-      quizId: 111
+      name: "1111",
+      quizId: quiz1for86.quizId
     },
     {
-      name: "wpigjj",
-      quizId: 222
+      name: "2222",
+      quizId: quiz2for86.quizId
     },
     {
-      name: "wjldbv",
-      quizId: 333
+      name: "3333",
+      quizId: quiz3for86.quizId
     }
     ]
   });
 })
 test("quizzes for the one have some quizzes", () => {
-  expect(adminQuizList(444)).toEqual({
+  expect(adminQuizList(idfor721.authUserId)).toEqual({
     quizzes: [{
-      name: "114514",
-      quizId: 111
+      name: "4444",
+      quizId: quiz1for721.quizId
     },
     {
-      name: "wpigjj",
-      quizId: 222
+      name: "5555",
+      quizId: quiz2for721.quizId
     }
     ]
   });

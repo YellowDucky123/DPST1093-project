@@ -1,6 +1,6 @@
 // Do not delete this file
 import { echo } from './echo.js';
-
+import { clear } from './other.js';
 // We will be using the Jest framework for our testing in this course. For more information and examples, go to https://jestjs.io/docs/getting-started
 
 // This defines the Test Suite for all 'echo' related tests

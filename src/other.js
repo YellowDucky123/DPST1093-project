@@ -7,7 +7,7 @@ function clear() {
     }
 
     setData(newData);
-    return newData;
+    return {};
 }
 
 export { clear };

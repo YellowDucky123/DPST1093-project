@@ -1,6 +1,6 @@
-import { adminQuizRemove } from '../src/quiz.js'
-import { getData, setData } from '../src/dataStore.js'
-import { clear } from '../src/other.js'
+import { adminQuizRemove } from '../quiz.js'
+import { getData, setData } from '../dataStore.js'
+import { clear } from '../other.js'
 
 beforeEach(() => {
     clear();

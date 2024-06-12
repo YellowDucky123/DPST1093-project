@@ -1,3 +1,5 @@
+import { setData, getData } from "../dataStore";
+import { adminQuizList } from "../quiz";
 import { adminQuizList } from "../src/quiz";
 import { adminAuthRegister} from "../src/auth";
 import { adminQuizCreate } from "../src/quiz";

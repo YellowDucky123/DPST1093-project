@@ -1,10 +1,12 @@
-import { setData, getData } from './dataStore.js'
+import { setData, getData } from './dataStore'
 import validator from 'validator';
-export function userIdValidator(UserId) {
+import { user } from './dataStore'; 
+
+export function userIdValidator(UserId: number) {
     let wh_data = getData();
     let data = wh_data.users;
     for(const i in data) {
-        if(i == UserId) {
+        if(parseInt(i) === UserId) {
             return true;
         }
     }
@@ -12,11 +14,11 @@ export function userIdValidator(UserId) {
     return false;
 }
 
-export function quizIdValidator(quizId) {
+export function quizIdValidator(quizId: number) {
     let wh_data = getData();
     let data = wh_data.quizzes;
     for(const i in data) {
-        if(i == quizId) {
+        if(parseInt(i) === quizId) {
             return true;
         }
     }
@@ -24,18 +26,18 @@ export function quizIdValidator(quizId) {
     return false;
 }
 
-export function quizOwnership(userId, quizId) {
+export function quizOwnership(userId: number, quizId: number) {
     let wh_data = getData();
     let q_data = wh_data.quizzes;
     let owned_quizzes = wh_data['users'][userId]['quizzesUserHave'];
     let flag = 0;
 
     for(const i in q_data) {
-        if(`${i}` == quizId) {
+        if(parseInt(`${i}`) === quizId) {
             // let q_name = q_data[i]['name'];
 
             for(const n of owned_quizzes) {
-                if(n == i) return true;
+                if(n === parseInt(i)) return true;
             }
             
             return false;
@@ -43,7 +45,7 @@ export function quizOwnership(userId, quizId) {
     }
 }
 
-export function nameLen(name) {
+export function nameLen(name: string) {
     if(name.length < 3) {
         return false;
     }
@@ -54,7 +56,7 @@ export function nameLen(name) {
     return true;
 }
 
-export function isNameAlphaNumeric(str) {
+export function isNameAlphaNumeric(str: string) {
     var code, i, len;
 
     for (i = 0, len = str.length; i < len; i++) {
@@ -69,7 +71,7 @@ export function isNameAlphaNumeric(str) {
     return true;
   };
 
-export function description_length_valid(description) {
+export function description_length_valid(description: string) {
     if(description.length > 100) {
         return false;
     }
@@ -77,7 +79,7 @@ export function description_length_valid(description) {
     return true;
 }
 
-export function isUsedQuizName(name){
+export function isUsedQuizName(name: string){
     const data = getData();
     for(let item in data.quizzes){
         if(data.quizzes[item].name == name) {
@@ -88,7 +90,7 @@ export function isUsedQuizName(name){
 }
 
 // Check whether user ID is duplicate.
-export function checkDuplicateUserId(useId) {
+export function checkDuplicateUserId(useId: number) {
     const currentData = getData();
     for (let index in currentData.users) {       
         if (useId === currentData.users[index].authUserId) {
@@ -99,9 +101,9 @@ export function checkDuplicateUserId(useId) {
 }
 
 // Create a new authticated user with the provided details.
-export function createNewAuth(nameFirst, nameLast, userId, email, password) {
+export function createNewAuth(nameFirst: string, nameLast: string, userId: number, email: string, password: string) {
     let name = nameFirst + ' ' + nameLast
-    const newUser = {
+    const newUser: user = {
         name: name,
         nameFirst: nameFirst,
         nameLast: nameLast,
@@ -119,7 +121,7 @@ export function createNewAuth(nameFirst, nameLast, userId, email, password) {
 }
 
 // Checks the validity of the provided email, first name, and last name.
-export function checkEmailNameFirstNameLast(email, nameFirst, nameLast) {
+export function checkEmailNameFirstNameLast(email: string, nameFirst: string, nameLast: string) {
     if (emailExist(email) === true) {
         return { error: 'email existed' };
     }
@@ -142,7 +144,7 @@ export function checkEmailNameFirstNameLast(email, nameFirst, nameLast) {
 }
 
 // Check whether password length is valid.
-export function checkPasswordLength(password) {
+export function checkPasswordLength(password: string) {
     if (password.length >= 8) {
         return true;
     }
@@ -150,7 +152,7 @@ export function checkPasswordLength(password) {
 }
 
 // Check whether password contains is valid.
-export function checkPasswordContain(password) {
+export function checkPasswordContain(password: string) {
     let checkNumber = 0;
     let checkLetter = 0;
     for (let i = 0; i < password.length; i++) {
@@ -168,7 +170,7 @@ export function checkPasswordContain(password) {
 }
 
 // Check whether name contains is valid.
-export function checkNameContains (nameFirst) {
+export function checkNameContains (nameFirst: string) {
     for (let i = 0; i < nameFirst.length; i++) {
         if ((!validator.isAlpha(nameFirst[i])) && (nameFirst[i] !== '-') && (nameFirst[i] !== ' ') && (nameFirst[i] !== '\'')) {
             return false;
@@ -178,7 +180,7 @@ export function checkNameContains (nameFirst) {
 }
 
 // Check whether name length is valid.
-export function checkNameFirstLength(nameFirst) {
+export function checkNameFirstLength(nameFirst: string) {
     if (nameFirst.length < 0) {
         return false;
     }
@@ -189,7 +191,7 @@ export function checkNameFirstLength(nameFirst) {
 }
 
 // Check whether email existed.
-export function emailExist(email) {
+export function emailExist(email: string) {
     const currentData = getData();
     for (let authUserId in currentData.users) {
         if (email === currentData.users[authUserId].email) {
@@ -200,7 +202,7 @@ export function emailExist(email) {
 }
 
 // Finds the authticated user ID by email address.
-export function findAuthUserIdByEmail(email) {
+export function findAuthUserIdByEmail(email: string) {
     const currentData = getData();
     for (let index in currentData.users) {
         if (email === currentData.users[index].email) {
@@ -211,7 +213,7 @@ export function findAuthUserIdByEmail(email) {
 }
 
 // Check whether password is correct for the user.
-export function checkPasswordCorrect(password, email) {
+export function checkPasswordCorrect(password: string, email: string) {
     const currentData = getData();
     for (let index in currentData.users) {
         if (password === currentData.users[index].password && currentData.users[index].email === email) {
@@ -222,7 +224,7 @@ export function checkPasswordCorrect(password, email) {
 }
 
 // Finds the authticated user password by user ID.
-export function findPasswordByAuthUserId(authUserId) {
+export function findPasswordByAuthUserId(authUserId: number) {
     const currentData = getData();
     for (let index in currentData.users) {
         if (authUserId === currentData.users[index].authUserId) {

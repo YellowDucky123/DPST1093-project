@@ -1,13 +1,13 @@
-import { getData, setData } from './dataStore.js'
-import { userIdValidator } from './helpers.js'
-import { quizIdValidator } from './helpers.js'
-import { quizOwnership } from './helpers.js'
-import { isNameAlphaNumeric } from './helpers.js'
-import { nameLen } from './helpers.js'
-import { description_length_valid } from './helpers.js'
-import { isUsedQuizName } from './helpers.js'
+import { getData, setData } from './dataStore'
+import { userIdValidator } from './helpers'
+import { quizIdValidator } from './helpers'
+import { quizOwnership } from './helpers'
+import { isNameAlphaNumeric } from './helpers'
+import { nameLen } from './helpers'
+import { description_length_valid } from './helpers'
+import { isUsedQuizName } from './helpers'
 
-export function adminQuizCreate(authUserId, name, description) {
+export function adminQuizCreate(authUserId: number, name: string, description: string) {
     if (userIdValidator(authUserId) === false) {
         return { error: 'adminQuizCreate: invalid user id' }
     }
@@ -44,7 +44,7 @@ export function adminQuizCreate(authUserId, name, description) {
     return { quizId : quizId }
 }
 
-export function adminQuizRemove(authUserId, quizId) {
+export function adminQuizRemove(authUserId: number, quizId: number) {
     if (userIdValidator(authUserId) === false) {
         return { error: 'adminQuizRemove: invalid user id' }
     }
@@ -61,7 +61,7 @@ export function adminQuizRemove(authUserId, quizId) {
     return {}
 }
 
-export function adminQuizInfo(authUserId, quizId) {
+export function adminQuizInfo(authUserId: number, quizId: number) {
     if (userIdValidator(authUserId) == false) {
         return { error: 'adminQuizInfo: invalid user id' }
     }
@@ -94,7 +94,7 @@ export function adminQuizInfo(authUserId, quizId) {
 |*********************************************************************************************|
 |*attention: "name" is the first and last name concatenated with a single space between them**|
 \*********************************************************************************************/
-export function adminQuizList(authUserId) {
+export function adminQuizList(authUserId: number) {
     let quizzes = [];
     let datas = getData();
     if (datas.users[authUserId] === undefined) {
@@ -111,7 +111,7 @@ export function adminQuizList(authUserId) {
 }
 
 
-export function adminQuizNameUpdate(authUserId, quizId, name) {
+export function adminQuizNameUpdate(authUserId: number, quizId: number, name: string) {
     // Error checks
     if (!nameLen(name)) {
         return { error: 'Invalid name length'};
@@ -141,7 +141,7 @@ export function adminQuizNameUpdate(authUserId, quizId, name) {
     return {}
 }
 
-export function adminQuizDescriptionUpdate(authUserId, quizId, description) {
+export function adminQuizDescriptionUpdate(authUserId: number, quizId: number, description: string) {
     if (!description_length_valid(description)) {
         return { error : 'Description too long'};
     }

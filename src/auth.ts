@@ -1,9 +1,15 @@
-import { getData, setData } from './dataStore.js'
-import validator from 'validator';
+import { getData, setData } from './dataStore'
 import {
-    checkDuplicateUserId, createNewAuth, checkEmailNameFirstNameLast, checkPasswordContain,
-    emailExist, findAuthUserIdByEmail, findPasswordByAuthUserId, checkPasswordCorrect, checkPasswordLength
-} from './helpers.js';
+    checkDuplicateUserId, 
+    createNewAuth, 
+    checkEmailNameFirstNameLast, 
+    checkPasswordContain,
+    emailExist, 
+    findAuthUserIdByEmail, 
+    findPasswordByAuthUserId, 
+    checkPasswordCorrect, 
+    checkPasswordLength
+} from './helpers';
 export function someNewFeature(array) {
     for (const item of array) {
         console.log(item);
@@ -18,7 +24,7 @@ the oldPassword have to be correct,
 the newPassword can't equal to oldPassword,
 the newPassword can also not be any password used in the past
 */
-export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string) {
     let data = getData();    
     // check whether the password is valid
     if (!checkPasswordLength(newPassword)) 
@@ -45,7 +51,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
 |*********************************************************************************************|
 |*attention: "name" is the first and last name concatenated with a single space between them *|
 |*********************************************************************************************/
-export function adminUserDetails(authUserId) {
+export function adminUserDetails(authUserId: number) {
     let dataStore = getData();
     let data = dataStore.users[authUserId];
     if (data === undefined) {
@@ -66,7 +72,7 @@ export function adminUserDetails(authUserId) {
 }
 
 // Register a new admin user with provided email, password, first name, last name.
-export function adminAuthRegister(email, password, nameFirst, nameLast) {
+export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
     if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== true) {
         return checkEmailNameFirstNameLast(email, nameFirst, nameLast);
     }
@@ -90,7 +96,7 @@ console.log(adminAuthLogin ("sd@163.com", "111a1aaa"))
 console.log(getData())
 */
 // Authenticates an admin user with the provided email and password.
-export function adminAuthLogin(email, password) {
+export function adminAuthLogin(email: string, password: string) {
     console.log("adminAuthLogin")
     if (emailExist(email)) {
         if (checkPasswordCorrect(password, email)) {
@@ -113,7 +119,7 @@ export function adminAuthLogin(email, password) {
 }
 
 // Updates the details of an autheticated admin user with the provided details.
-export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
+export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string) {
     console.log("adminUserDetailsUpdate")
     if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== true) {
         return checkEmailNameFirstNameLast(email, nameFirst, nameLast)

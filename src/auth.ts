@@ -1,3 +1,4 @@
+import { error } from 'console';
 import { getData, setData } from './dataStore'
 import {
     checkDuplicateUserId, 
@@ -10,7 +11,7 @@ import {
     checkPasswordCorrect, 
     checkPasswordLength
 } from './helpers';
-export function someNewFeature(array) {
+export function someNewFeature(array : []) {
     for (const item of array) {
         console.log(item);
     }
@@ -102,6 +103,7 @@ export function adminAuthLogin(email: string, password: string) {
         if (checkPasswordCorrect(password, email)) {
             let useId = findAuthUserIdByEmail(email)
             var data = getData();
+            if (!useId) return {error : "Email address does not exist"};
             data.users[useId].numSuccessfulLogins += 1;
             data.users[useId].numFailedPasswordsSinceLastLogin = 0;
             setData(data);
@@ -110,6 +112,7 @@ export function adminAuthLogin(email: string, password: string) {
             };
         }
         let useId = findAuthUserIdByEmail(email)
+        if (!useId) return {error : "Email address does not exist"};
         var data = getData();
         data.users[useId].numFailedPasswordsSinceLastLogin += 1;
         setData(data)

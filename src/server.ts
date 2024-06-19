@@ -8,6 +8,10 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+//our imports below:
+import { adminQuizNameUpdate,
+         adminQuizDescriptionUpdate
+} from './quiz';
 
 // Set up web app
 const app = express();
@@ -38,6 +42,37 @@ app.get('/echo', (req: Request, res: Response) => {
   }
   return res.json(ret);
 });
+
+//update quiz name
+app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const newName = req.body.name;
+  let result = adminQuizNameUpdate(  ,quizId, newName);
+  if('error' in result) {
+    if(result.error === '') {
+      res.status().json(result);
+    }
+    else if(result.error === '') {
+      res.status().json(result);
+    }
+  }
+})
+
+//update quiz description
+app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const newDescription = req.body.description;
+  let result = adminQuizDescriptionUpdate(  ,quizId, newDescription);
+  if('error' in result) {
+    if(result.error === '') {
+      res.status().json(result);
+    }
+    else if(result.error === '') {
+      res.status().json(result);
+    }
+  }
+})
+
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================

@@ -128,6 +128,9 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
     if (!quizOwnership(authUserId, quizId)) {
         return {error: 'This user does not own this quiz'};
     }
+    if (isUsedQuizName(name) === false) {
+        return { error: 'adminQuizCreate: quiz name already used by another user' }
+    }
 
     // If no errors then update name
     let wh_data = getData();

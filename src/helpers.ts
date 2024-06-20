@@ -233,3 +233,10 @@ export function findPasswordByAuthUserId(authUserId: number) {
     }
     return false;    
 }
+
+//find userId that belongs to token
+export function ToktoId(token: number): number {
+    const data = getData();
+
+    return authUserId; 
+}

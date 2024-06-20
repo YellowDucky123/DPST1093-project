@@ -233,3 +233,11 @@ export function findPasswordByAuthUserId(authUserId: number) {
     }
     return false;    
 }
+
+//create random integer numbers(ID)
+export function createId(): number {
+    const digit = 10000;
+    const id = Math.floor(Math.random()*digit);
+
+    return id;
+}

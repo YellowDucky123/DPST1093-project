@@ -6,6 +6,7 @@ import { isNameAlphaNumeric } from './helpers'
 import { nameLen } from './helpers'
 import { description_length_valid } from './helpers'
 import { isUsedQuizName } from './helpers'
+import { createId } from './helpers'
 
 export function adminQuizCreate(authUserId: number, name: string, description: string) {
     if (userIdValidator(authUserId) === false) {
@@ -25,7 +26,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     }
 
     const data = getData();
-    const quizId = Object.keys(data.quizzes).length + 1;
+    const quizId = createId();
 
     let d = new Date();
     const time = d.getTime();
@@ -55,7 +56,7 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
         return { error: 'adminQuizRemove: you do not own this quiz' }
     }
     let data = getData();
-    delete data.quizzes[quizId];
+    trash.push(data.quizzes[quizId]);
     setData(data);
 
     return {}

@@ -71,10 +71,8 @@ let data : data  = {
   users : {},
   quizzes : {}
 };
-let trash : data = {
-  users : {},
-  quizzes : {}
-}
+let trash : quiz[] = [];
+
 let tokenUserIdList : tokenUserIdList = {}
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -94,7 +92,15 @@ export function setDataStorebyJSON() {
 export function getData() : data {
   return data;
 }
+
+export function getTrash(): quiz[] {
+  return trash;
+}
 // Use set(newData) to pass in the entire data object, with modifications made
 export function setData(newData : data) {
+  data = newData;
+}
+
+export function setTrash(newData : data) {
   data = newData;
 }

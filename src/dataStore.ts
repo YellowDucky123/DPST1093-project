@@ -101,6 +101,6 @@ export function setData(newData : data) {
   data = newData;
 }
 
-export function setTrash(newData : data) {
-  data = newData;
+export function setTrash(newData: quiz[]) {
+  trash = newData;
 }

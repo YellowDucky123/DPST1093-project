@@ -1,4 +1,4 @@
-import { getData, setData } from './dataStore'
+import { getData, getTrash, setData, setTrash } from './dataStore'
 import { userIdValidator } from './helpers'
 import { quizIdValidator } from './helpers'
 import { quizOwnership } from './helpers'
@@ -56,8 +56,12 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
         return { error: 'adminQuizRemove: you do not own this quiz' }
     }
     let data = getData();
+    let trash = getTrash();
+
     trash.push(data.quizzes[quizId]);
+
     setData(data);
+    setTrash(trash);
 
     return {}
 }

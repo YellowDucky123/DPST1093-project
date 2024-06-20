@@ -169,3 +169,15 @@ export function adminQuizDescriptionUpdate(authUserId: number, quizId: number, d
     return {}
 }
 
+export function duplicateQuiz(quizId: number) {
+    return {}
+}
+
+export function deleteQuestion(quizId: number, questionId: number) {
+    return {}
+}
+
+export function moveQuestion(quizId: number, questionId: number) {
+    return {}
+}
+

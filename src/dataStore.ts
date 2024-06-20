@@ -83,8 +83,13 @@ let tokenUserIdList : tokenUserIdList = {}
 function isdata (data : any) : boolean{
   return true;
 }
-
-export function setJSONbyDataStore() {fs.writeFileSync(dataStoreFile, JSON.stringify(data), "utf-8");}
+export function findUserIdByToken (Token : string) : number {
+  if (tokenUserIdList[Token]) return tokenUserIdList[Token]
+  return NaN;
+}
+export function setJSONbyDataStore() {
+  fs.writeFileSync(dataStoreFile, JSON.stringify(data), "utf-8");
+}
 export function setDataStorebyJSON() {
   let json = JSON.parse(fs.readFileSync(dataStoreFile, "utf-8"))
   if (isdata(json))

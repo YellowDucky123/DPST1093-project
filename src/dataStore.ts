@@ -1,6 +1,5 @@
 import * as fs from 'fs'
-
-const dataStoreFile = "./src/dataStore.json"
+const dataStoreFile = "./src/dataStoreFile.json"
 /////////////////////////////////////////////////////////////
 ///////////////////type definition start here////////////////
 /////////////////////////////////////////////////////////////
@@ -33,6 +32,7 @@ export type user = {
   numSuccessfulLogins:  number,                 // This should be 0 at first
   numFailedPasswordsSinceLastLogin: number,     // This should be 0 at first
   quizzesUserHave : Id[],
+  quizzesUserDeleted : Id[],
   pastPassword : string[],
 }
 ///////////definition of type user
@@ -59,23 +59,23 @@ export type quizzes = {
 /////////definition of type users and quizzes
 
 /////////definition of type data and tokenUserIdList
-export type data = { 
-  users : users,
-  quizzes : quizzes 
-};
 export type tokenUserIdList = {
   [token : string] : number
 }
+export type data = { 
+  users : users,
+  quizzes : quizzes,
+  quizzesDeleted : quizzes,
+  tokenUserIdList : tokenUserIdList
+};
+
 ///////////////////////////////////////////
 let data : data  = {
   users : {},
-  quizzes : {}
+  quizzes : {},
+  quizzesDeleted : {},
+  tokenUserIdList : {},
 };
-let trash : data = {
-  users : {},
-  quizzes : {}
-}
-let tokenUserIdList : tokenUserIdList = {}
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 ////DATA DEFINE FINISHED //////////////// DATA DEFINE FINISHED////
@@ -83,23 +83,28 @@ let tokenUserIdList : tokenUserIdList = {}
 function isdata (data : any) : boolean{
   return true;
 }
-export function findUserIdByToken (Token : string) : number {
-  if (tokenUserIdList[Token]) return tokenUserIdList[Token]
-  return NaN;
-}
-export function setJSONbyDataStore() {
+function setJSONbyDataStore() {
   fs.writeFileSync(dataStoreFile, JSON.stringify(data), "utf-8");
 }
-export function setDataStorebyJSON() {
+function setDataStorebyJSON() {
   let json = JSON.parse(fs.readFileSync(dataStoreFile, "utf-8"))
   if (isdata(json))
     data = json;
   return data;
 }
-export function getData() : data {
+function findUserIdByToken (Token : string) {  
+  if (Token.length === 0) return NaN;
+  if (data.tokenUserIdList[Token]) {
+    return data.tokenUserIdList[Token];
+  } else {
+    return NaN;
+  }
+}
+function getData() : data {
   return data;
 }
 // Use set(newData) to pass in the entire data object, with modifications made
-export function setData(newData : data) {
+function setData(newData : data) {
   data = newData;
 }
+export {setDataStorebyJSON, setJSONbyDataStore, findUserIdByToken, getData, setData};

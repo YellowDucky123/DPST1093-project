@@ -58,7 +58,12 @@ export type quizzes = {
 };
 /////////definition of type users and quizzes
 
-/////////definition of type data and tokenUserIdList
+/////////definition of type data, session, and tokenUserIdList
+export type data = { 
+  users : users,
+  quizzes : quizzes 
+};
+
 export type tokenUserIdList = {
   [token : string] : number
 }

@@ -8,6 +8,15 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+//our imports below:
+import { adminQuizNameUpdate,
+         adminQuizDescriptionUpdate,
+         duplicateQuiz,
+         deleteQuestion,
+         moveQuestion
+} from './quiz';
+import { ToktoId } from './helpers';
+import { string } from 'yaml/dist/schema/common/string';
 
 // Set up web app
 const app = express();
@@ -38,6 +47,89 @@ app.get('/echo', (req: Request, res: Response) => {
   }
   return res.json(ret);
 });
+
+//update quiz name
+app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const newName = req.body.name;
+  const token = req.body.token;
+  const userId: number = ToktoId(token);
+  let result = adminQuizNameUpdate(userId, quizId, newName);
+  if('error' in result) {
+    if(result.error === 'Invalid name length') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    }
+    else if(result.error === 'Invalid character used in name') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    }
+    else if(result.error === 'User Id invalid') {
+      res.status(401).send(JSON.stringify({ error: `${result.error}` }));
+    }
+    else if(result.error === 'Quiz Id invalid') {
+      res.status(401).send(JSON.stringify({ error: `${result.error}` }));
+    }
+    else if(result.error === 'This user does not own this quiz') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    }
+    else if(result.error === 'adminQuizCreate: quiz name already used by another user') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    }
+  }
+})
+
+//update quiz description
+app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const newDescription = req.body.description;
+  const token = req.body.token;
+  const userId: number = ToktoId(token);
+  let result = adminQuizDescriptionUpdate(userId, quizId, newDescription);
+  if('error' in result) {
+    if(result.error === 'Description too long') {
+      res.status(400).send(JSON.stringify({ error: 'Description too long' }))
+    }
+    else if(result.error === 'User Id invalid') {
+      res.status(401).send(JSON.stringify({ error: 'User Id invalid' }))
+    }
+    else if(result.error === 'Quiz Id invalid') {
+      res.status(401).send(JSON.stringify({ error: 'Quiz Id invalid' }))
+    }
+    else if(result.error === 'This user does not own this quiz') {
+      res.status(403).send(JSON.stringify({ error: 'This user does not own this quiz' }))
+    }
+  }
+})
+
+//duplicate quiz
+app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+
+  let result = duplicateQuiz(quizId);
+  if('error' in result) {
+    res.status(400).send(JSON.stringify({ error: '' }))
+  }
+})
+
+//delete question
+app.delete('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const questionId = parseInt(req.params.questionId);
+  let result = deleteQuestion(quizId, questionId);
+  if('error' in result) {
+    res.status(400).send(JSON.stringify({ error: '' }))
+  }
+})
+
+//move quiz question
+app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const questionId = parseInt(req.params.questionId);
+  let result = moveQuestion(quizId, questionId);
+  if('error' in result) {
+    res.status(400).send(JSON.stringify({ error: '' }))
+  }
+})
+
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================

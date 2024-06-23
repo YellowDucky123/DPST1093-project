@@ -140,7 +140,7 @@ export function checkEmailNameFirstNameLast(email: string, nameFirst: string, na
     if (checkNameFirstLength(nameLast) === false) {
         return { error: 'NameLast should be between 2 to 20 characters' };
     }
-    return true;
+    return undefined;
 }
 
 // Check whether password length is valid.

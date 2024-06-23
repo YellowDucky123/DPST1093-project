@@ -15,6 +15,8 @@ import { adminQuizNameUpdate,
          deleteQuestion,
          moveQuestion
 } from './quiz';
+import {adminAuthRegister, adminAuthLogin} from './auth';
+import { tokenUserIdList, getData } from './dataStore';
 import { ToktoId } from './helpers';
 import { string } from 'yaml/dist/schema/common/string';
 
@@ -47,6 +49,40 @@ app.get('/echo', (req: Request, res: Response) => {
   }
   return res.json(ret);
 });
+
+// Register a new admin user
+app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
+  const {email, password, nameFirst, nameLast} = req.body;
+  const result = adminAuthRegister(email, password, nameFirst, nameLast);
+  if ('error' in result) {
+    res.status(400).json({error: `${result.error}`});
+  }
+  else {
+    const token = Math.floor(10000 + Math.random() * 90000).toString();
+    getData().tokenUserIdList.push({token: token, userId: result.authUserId});
+    return res.status(200).json({token : token});
+  }
+});
+
+// Log an admin user
+app.post('/v1/admin/auth/login', async(req: Request, res: Response) => {
+  const {email, password} = req.body;
+  try {
+    const result = adminAuthLogin(email, password);
+    if ('error' in result) {
+      return res.status(400).json({ error: `${result.error}`});
+    }
+    else {
+      const token = Math.floor(10000 + Math.random() * 90000).toString();
+      result.authUserId
+      return res.status(200).json({token : token});
+    }
+  }
+  catch (error) {
+    console.error('Error during login', error);
+    return res.status(500).json({error: 'Server error'});
+  }
+})
 
 //update quiz name
 app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {

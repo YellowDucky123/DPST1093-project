@@ -74,7 +74,7 @@ export function adminUserDetails(authUserId: number) {
 
 // Register a new admin user with provided email, password, first name, last name.
 export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
-    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== true) {
+    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== undefined) {
         return checkEmailNameFirstNameLast(email, nameFirst, nameLast);
     }
     if (checkPasswordLength(password) === false) {
@@ -124,7 +124,7 @@ export function adminAuthLogin(email: string, password: string) {
 // Updates the details of an autheticated admin user with the provided details.
 export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string) {
     console.log("adminUserDetailsUpdate")
-    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== true) {
+    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== undefined) {
         return checkEmailNameFirstNameLast(email, nameFirst, nameLast)
     }
     let data = getData()

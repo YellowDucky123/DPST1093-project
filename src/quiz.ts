@@ -223,6 +223,9 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
     if (!quizOwnership(authUserId, quizId)) {
         return {error: 'This user does not own this quiz'};
     }
+    if (isUsedQuizName(name) === false) {
+        return { error: 'adminQuizCreate: quiz name already used by another user' }
+    }
 
     // If no errors then update name
     let wh_data = getData();
@@ -258,6 +261,18 @@ export function adminQuizDescriptionUpdate(authUserId: number, quizId: number, d
 
     setData(wh_data);
 
+    return {}
+}
+
+export function duplicateQuiz(quizId: number) {
+    return {}
+}
+
+export function deleteQuestion(quizId: number, questionId: number) {
+    return {}
+}
+
+export function moveQuestion(quizId: number, questionId: number) {
     return {}
 }
 

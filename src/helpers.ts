@@ -140,7 +140,7 @@ export function checkEmailNameFirstNameLast(email: string, nameFirst: string, na
     if (checkNameFirstLength(nameLast) === false) {
         return { error: 'NameLast should be between 2 to 20 characters' };
     }
-    return true;
+    return undefined;
 }
 
 // Check whether password length is valid.
@@ -232,4 +232,11 @@ export function findPasswordByAuthUserId(authUserId: number) {
         }
     }
     return false;    
+}
+
+//find userId that belongs to token
+export function ToktoId(token: number): number {
+    const data = getData();
+
+    return authUserId; 
 }

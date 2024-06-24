@@ -1,4 +1,11 @@
 import express, { json, Request, Response } from 'express';
+import { findUserIdByToken, 
+         question, 
+         setDataStorebyJSON, 
+         setJSONbyDataStore 
+         getData
+         } from './dataStore' ;
+import { adminUserDetails, adminUserDetailsUpdate, adminAuthRegister, adminAuthLogin } from './auth';
 import { echo } from './newecho';
 import morgan from 'morgan';
 import config from './config.json';
@@ -8,15 +15,18 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-//our imports below:
-import { adminQuizNameUpdate,
+import { adminQuizList, 
+         adminQuizTransfer, 
+         adminQuestionCreate,
+         adminQuizNameUpdate,
          adminQuizDescriptionUpdate,
          duplicateQuiz,
          deleteQuestion,
          moveQuestion
-} from './quiz';
-import {adminAuthRegister, adminAuthLogin} from './auth';
-import { tokenUserIdList, getData } from './dataStore';
+          } from './quiz';
+// set up data
+setDataStorebyJSON()
+//our imports below:
 import { ToktoId } from './helpers';
 import { string } from 'yaml/dist/schema/common/string';
 
@@ -36,6 +46,116 @@ app.use('/docs', sui.serve, sui.setup(YAML.parse(file), { swaggerOptions: { docE
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
 
+app.get("/v1/admin/user/details",(req : Request, res : Response) => {
+  let token = req.query.token as string
+  if (!token) {
+    res.status(401).json({error : "A token is required"})
+    return;
+  }
+  let UserId;
+  if (!(UserId = findUserIdByToken(token))) {
+    res.status(401).json({error : "token incorrect or not found"})
+  } else {
+    let ans = adminUserDetails(UserId)
+    if ("error" in ans) {
+      res.status(401).json(ans)
+    } else {
+      res.status(200).json(ans)
+    }
+  }
+})
+app.get("/v1/admin/quiz/list",(req : Request, res : Response) => {
+  let token = req.query.token as string
+  if (!token) {
+    res.status(401).json({error : "A token is required"})
+    return;
+  }
+  let UserId;
+  if (!(UserId = findUserIdByToken(token))) {
+    res.status(401).json({error : "token incorrect or not found"})
+  } else {
+    let ans = adminQuizList(UserId)
+    if ("error" in ans) {
+      res.status(401).json(ans)
+    } else {
+      res.status(200).json(ans)
+    }
+  }
+})
+app.put("/v1/admin/user/details",(req : Request, res : Response) => {
+  const token = req.body.token as string;
+  const email = req.body.email as string;
+  const nameFirst = req.body.nameFirst as string;
+  const nameLast = req.body.nameLast as string;
+  if (!token) {
+    res.status(400).json({error : "A token is required"});
+    return ;
+  }
+  if (!email || !nameFirst || !nameLast) {
+    res.status(401).json({error : "Missing some contents"});
+    return;
+  }
+  const UserId = findUserIdByToken(token)
+  if (!UserId) {
+    res.status(401).json({error : "token incorrect or not found"});
+    return;
+  }
+  let ans = adminUserDetailsUpdate(UserId, email, nameFirst, nameLast)
+  if ("error" in ans) {
+    res.status(401).json(ans);
+  } else {
+    res.status(200).json(ans);
+  }
+})
+app.post('/v1/admin/quiz/:quizid/transfer', (req : Request, res : Response) => {
+  const token = req.body.token as string;
+  const userEmail = req.body.userEmail as string;
+  const quizId = parseInt(req.params.quizid);
+  if (!token) {
+    res.status(401).json({error : "A token is required"});
+  }
+  if (!quizId || !userEmail) {
+    res.status(400).json({error : "Missing some contents"});
+    return;
+  }
+  const UserId = findUserIdByToken(token)
+  const ans = adminQuizTransfer(quizId, UserId, userEmail);
+  let status = 200;
+  if ("error" in ans) {
+    if (ans.error === "You do not own this quiz") {
+      status = 403;
+    } else {
+      status = 400;
+    }
+  }
+  res.status(status).json(ans);
+})
+app.post('/v1/admin/quiz/:quizId/question', (req : Request, res : Response) => {
+  const token = req.body.token as string;
+  const questionBody : question = req.body.questionBody;
+  const quizId = parseInt(req.params.quizId as string);
+  if (!token) {
+    res.status(401).json({error : "A correct token is required"});
+  }
+  if (!quizId || !questionBody) {
+    res.status(400).json({error : "Missing some contents"});
+  }
+  const UserId = findUserIdByToken(token)
+  if (!UserId) {
+    res.status(401).json({error : "token incorrect or not found"});
+    return;
+  }
+  const ans = adminQuestionCreate(UserId, quizId, questionBody);
+  let status = 200;
+  if ("error" in ans) {
+    if (ans.error === "This user does not own this quiz") {
+      status = 403;
+    } else {
+      status = 400;
+    }
+  }
+  res.status(status).json(ans);
+})
 // ====================================================================
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
@@ -194,5 +314,8 @@ const server = app.listen(PORT, HOST, () => {
 
 // For coverage, handle Ctrl+C gracefully
 process.on('SIGINT', () => {
-  server.close(() => console.log('Shutting down server gracefully.'));
+  server.close(() => {
+    setJSONbyDataStore()
+    console.log('Shutting down server gracefully.')
+  });
 });

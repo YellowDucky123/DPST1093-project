@@ -242,11 +242,3 @@ export function questionFinder(quizId: number, questionId: number): Boolean {
     }
     return false;
 }
-
-//still not sure if we need it or not, i don't have confirmation 
-//from the others yet
-//checks whether the token is active in a session
-export function TokenSess(token: number) {
-    return true;
-    return false;
-}

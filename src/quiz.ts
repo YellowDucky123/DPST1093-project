@@ -1,12 +1,12 @@
-import { getData, setData } from './dataStore'
-import { questionFinder, userIdValidator } from './helpers'
+import { getData, question, setData } from './dataStore'
+import { questionFinder, findAuthUserIdByEmail, userIdValidator } from './helpers'
 import { quizIdValidator } from './helpers'
 import { quizOwnership } from './helpers'
 import { isNameAlphaNumeric } from './helpers'
 import { nameLen } from './helpers'
 import { description_length_valid } from './helpers'
 import { isUsedQuizName } from './helpers'
-
+import { customAlphabet } from 'nanoid'
 export function adminQuizCreate(authUserId: number, name: string, description: string) {
     if (userIdValidator(authUserId) === false) {
         return { error: 'adminQuizCreate: invalid user id' }
@@ -29,13 +29,15 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
 
     let d = new Date();
     const time = d.getTime();
-
+    let questions : Array<question> = [];
     const new_data = {
         quizId: quizId,
         name: name,
         timeCreated: time,
         timeLastEdited: time,
-        description: description
+        description: description,
+        numQuizQuestion : 0,
+        questions : questions,
     }
 
     data.quizzes[quizId] = new_data;
@@ -101,6 +103,9 @@ export function adminQuizList(authUserId: number) {
         return { error: "can not find such a member" };
     }
     let dataBase = datas.users[authUserId];
+    console.log("here");
+    console.log(dataBase);
+    console.log(dataBase.quizzesUserHave);
     for (const Id of dataBase.quizzesUserHave) {
         quizzes.push({
             quizId: Id,
@@ -110,6 +115,97 @@ export function adminQuizList(authUserId: number) {
     return { quizzes: quizzes }
 }
 
+export function adminQuizTransfer (quizId : number, fromId : number, sendToEmail : string) {
+    let userId = findAuthUserIdByEmail(sendToEmail);
+    let data = getData();
+    if (!userId) {
+        return { error: 'This email does not exist' };
+    }
+    if (data.users[fromId].email === sendToEmail) {
+        return { error: 'You cannot transfer to yourself' };
+    }
+    if (!data.users[fromId].quizzesUserHave.includes(quizId)) {
+        return { error: 'You do not own this quiz' };
+    }
+    data.users[userId].quizzesUserHave.push(quizId);
+    console.log(userId)
+    console.log(data.users[userId].quizzesUserHave, "\n")
+    data.users[fromId].quizzesUserHave.splice(data.users[fromId].quizzesUserHave.indexOf(quizId), 1);
+    console.log(data);
+    setData(data);
+    return {}
+}
+function checkQuestionInfo (quizId : number, question : question) {
+    // Get the data from the dataStore
+    let data = getData();
+    // Check if the question has a valid length
+    if (!("question" in question) || question.question.length < 5 || question.question.length > 50) return { error: 'Invalid question length' };
+    // Check if the answers number is valid
+    if (!("answers" in question) || question.answers.length < 2 || question.answers.length > 6) return { error: 'Invalid answer length' };
+    // Check if the duration is valid
+    if (!("duration" in question) || question.duration < 0) return { error: 'Invalid duration' };
+
+    // Calculate the total duration of the quiz
+    let count = 0;
+    for (const question of data.quizzes[quizId].questions) count += question.duration;
+    // Check if the quiz duration exceeds 3 minutes
+    if (count + question.duration > 180) return { error: 'Quiz duration exceeds 3 minutes' };
+    // Check if the points are valid
+    if (!("points" in question) || question.points < 1 || question.points > 10) return { error: 'Invalid points' };
+    // Check if the answers have a valid length
+    if (question.answers.filter((answer) => (answer.answer.length < 1 || answer.answer.length > 30))) return { error: 'Invalid answer length' };
+    // Check if there are any duplicate answers
+    for (let i = 0; i < question.answers.length; i++) {
+        for (let j = i + 1; j < question.answers.length; j++) {
+            if (question.answers[i].answer === question.answers[j].answer) {
+                return { error: 'Duplicate answer' };
+            }
+        }
+    }
+    // Check if there is at least one correct answer
+    if (question.answers.filter((answer) => (answer.correct === true)).length === 0) return { error: 'No correct answer' }
+}
+export function adminQuestionCreate(authUserId: number, quizId: number, question : question) {
+    // Error checks
+    if (!checkQuestionInfo(quizId, question)) {
+        return { error: 'Invalid question' };
+    }
+    if (!userIdValidator(authUserId)) {
+        return { error: 'User Id invalid' };
+    }
+    if (!quizIdValidator(quizId)) {
+        return { error: 'Quiz Id invalid' };
+    }
+    if (!quizOwnership(authUserId, quizId)) {
+        return { error: 'This user does not own this quiz' };
+    }
+    // If no errors then create question
+    let data = getData();
+    // creating Id for question
+    const nanoId = customAlphabet("01234567890", 3);
+    let questionId = parseInt(nanoId())
+    questionId = questionId * Math.pow(10,quizId.toString().length) + quizId;
+    console.log("creating unique question id")
+    while (1) {
+        if (data.quizzes[quizId].questions.every(question => (question.questionId !== questionId * Math.pow(10,quizId.toString().length) + quizId))) {
+            break;
+        }
+        questionId = parseInt(nanoId())
+    }
+    console.log("question id: " + questionId)
+    for (let answer of question.answers) {
+        answer.answerId = parseInt(nanoId()) * Math.pow(10,quizId.toString().length) + quizId;
+        while (1) {
+            if (data.quizzes[quizId].questions.every(question => (question.answers.every(answer => (answer.answerId !== answer.answerId * Math.pow(10,quizId.toString().length) + quizId))))) {
+                break;
+            }
+        }
+    }
+    data.quizzes[quizId].questions.push(question);
+    data.quizzes[quizId].numQuizQuestion++;
+    setData(data);
+    return { questionId };
+}
 export function adminQuizNameUpdate(authUserId: number, quizId: number, name: string) {
     // Error checks
     if (!nameLen(name)) {

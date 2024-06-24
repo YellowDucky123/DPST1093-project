@@ -8,6 +8,18 @@ const port = config.port;
 const url = config.url;
 
 const SERVER_URL = `${url}:${port}`;
+request(
+    'POST',
+    SERVER_URL + '/v1/admin/auth/register',
+    {
+        json: {
+            email: 'test@email.com',
+            password: 'newPassword123',
+            nameFirst: 'Kelvin',
+            nameLast: 'Yoga'
+        }
+    }
+)
 
 describe('Update Quiz Name http test: ', () => {
     test('test succesfull: ', () => {
@@ -16,7 +28,7 @@ describe('Update Quiz Name http test: ', () => {
             SERVER_URL + '/v1/admin/quiz/:quizId/name',
             {
                 json: {
-                    
+
                 }
             }
         )

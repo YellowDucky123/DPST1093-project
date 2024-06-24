@@ -234,9 +234,11 @@ export function findPasswordByAuthUserId(authUserId: number) {
     return false;    
 }
 
-//find userId that belongs to token
-export function ToktoId(token: number): number {
+//checks whether the question exists within the specified quiz
+export function questionFinder(quizId: number, questionId: number): Boolean {
     const data = getData();
-
-    return authUserId; 
+    for(const d of data.quizzes[quizId].questions) {
+        if(d.questionId === questionId) return true;
+    }
+    return false;
 }

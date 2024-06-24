@@ -1,9 +1,11 @@
-import { setData } from './dataStore.js'
+import { setData } from './dataStore'
 
 function clear() {
     const newData = {
-        users: {},
-        quizzes: {}
+        users : {},
+        quizzes : {},
+        quizzesDeleted : {},
+        tokenUserIdList : {}
     }
 
     setData(newData);

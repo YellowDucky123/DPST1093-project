@@ -1,5 +1,5 @@
 import { getData, question, setData } from './dataStore'
-import { findAuthUserIdByEmail, userIdValidator } from './helpers'
+import { questionFinder, findAuthUserIdByEmail, userIdValidator } from './helpers'
 import { quizIdValidator } from './helpers'
 import { quizOwnership } from './helpers'
 import { isNameAlphaNumeric } from './helpers'
@@ -264,15 +264,89 @@ export function adminQuizDescriptionUpdate(authUserId: number, quizId: number, d
     return {}
 }
 
-export function duplicateQuiz(quizId: number) {
+export function duplicateQuestion(authUserId: number, quizId: number, questionId: number) {
+    if (!userIdValidator(authUserId)) {
+        return { error: 'User Id invalid' };
+    }
+    if (!quizIdValidator(quizId)) {
+        return { error: 'Quiz Id invalid' };
+    }
+    if(!quizOwnership(authUserId, quizId)) {
+        return { error: 'This user does not own this quiz' };
+    }
+    if(!questionFinder(quizId, questionId)) {
+        return { error: 'Question Id does not refer to a valid question within this quiz' };
+    }
+
+    const data = getData();
+    let qs = data.quizzes[quizId].questions;
+    for(const d of qs) {
+        if(d.questionId === questionId) {
+            qs.splice(qs.indexOf(d) + 1, 0, d);
+            break;
+        }
+    }
+
+    data.quizzes[quizId].questions = qs;
+    setData(data);
+
     return {}
 }
 
-export function deleteQuestion(quizId: number, questionId: number) {
+export function deleteQuestion(authUserId: number, quizId: number, questionId: number) {
+    if (!userIdValidator(authUserId)) {
+        return { error: 'User Id invalid' };
+    }
+    if (!quizIdValidator(quizId)) {
+        return { error: 'Quiz Id invalid' };
+    }
+    if(!quizOwnership(authUserId, quizId)) {
+        return { error: 'This user does not own this quiz' }
+    }
+    if(!questionFinder(quizId, questionId)) {
+        return { error: 'Question Id does not refer to a valid question within this quiz' };
+    }
+
+    const data = getData();
+    let qs = data.quizzes[quizId].questions;
+    for(const d of qs) {
+        if(d.questionId === questionId) {
+            qs.splice(qs.indexOf(d),1);
+            break;
+        }
+    }
+    data.quizzes[quizId].questions = qs;
+    setData(data);
+
     return {}
 }
 
-export function moveQuestion(quizId: number, questionId: number) {
+export function moveQuestion(authUserId: number, quizId: number, questionId: number, newPos: number) {
+    if (!userIdValidator(authUserId)) {
+        return { error: 'User Id invalid' };
+    }
+    if (!quizIdValidator(quizId)) {
+        return { error: 'Quiz Id invalid' };
+    }
+    if(!quizOwnership(authUserId, quizId)) {
+        return { error: 'This user does not own this quiz' }
+    }
+    if(!questionFinder(quizId, questionId)) {
+        return { error: 'Question Id does not refer to a valid question within this quiz' };
+    }
+
+    const data = getData();
+    const qs = data.quizzes[quizId].questions;
+    for(const d of qs) {
+        if(d.questionId === questionId) {
+            qs.splice(qs.indexOf(d), 1)
+            qs.splice(newPos, 0, d);
+            break;
+        }
+    }
+    data.quizzes[quizId].questions = qs;
+    setData(data);
+
     return {}
 }
 

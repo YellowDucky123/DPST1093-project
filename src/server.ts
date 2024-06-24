@@ -8,15 +8,16 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+
 //our imports below:
 import { adminQuizNameUpdate,
          adminQuizDescriptionUpdate,
-         duplicateQuiz,
          deleteQuestion,
-         moveQuestion
+         moveQuestion,
+         duplicateQuestion
 } from './quiz';
-import { ToktoId } from './helpers';
 import { string } from 'yaml/dist/schema/common/string';
+import { findUserIdByToken } from './dataStore';
 
 // Set up web app
 const app = express();
@@ -53,7 +54,8 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const newName = req.body.name;
   const token = req.body.token;
-  const userId: number = ToktoId(token);
+  const userId: number = findUserIdByToken(token);
+  
   let result = adminQuizNameUpdate(userId, quizId, newName);
   if('error' in result) {
     if(result.error === 'Invalid name length') {
@@ -75,6 +77,7 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     }
   }
+  res.status(200).send(JSON.stringify({}));
 })
 
 //update quiz description
@@ -82,8 +85,9 @@ app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const newDescription = req.body.description;
   const token = req.body.token;
-  const userId: number = ToktoId(token);
+  const userId: number = findUserIdByToken(token);
   let result = adminQuizDescriptionUpdate(userId, quizId, newDescription);
+
   if('error' in result) {
     if(result.error === 'Description too long') {
       res.status(400).send(JSON.stringify({ error: 'Description too long' }))
@@ -98,15 +102,24 @@ app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
       res.status(403).send(JSON.stringify({ error: 'This user does not own this quiz' }))
     }
   }
+  res.status(200).send(JSON.stringify({}));
 })
 
-//duplicate quiz
+//duplicate question
 app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
+  const questionId = parseInt(req.params.questionId);
+  const token = req.body.token;
+  const userId: number = findUserIdByToken(token);
 
-  let result = duplicateQuiz(quizId);
+  let result = duplicateQuestion(userId, quizId, questionId);
   if('error' in result) {
-    res.status(400).send(JSON.stringify({ error: '' }))
+    if(result.error == 'Question Id does not refer to a valid question within this quiz') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    }
+    else if(result.error == 'This user does not own this quiz') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    }
   }
 })
 
@@ -114,20 +127,39 @@ app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request,
 app.delete('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);
-  let result = deleteQuestion(quizId, questionId);
+  const token = req.body.token;
+  const userId: number = findUserIdByToken(token);
+
+  let result = deleteQuestion(userId, quizId, questionId);
   if('error' in result) {
-    res.status(400).send(JSON.stringify({ error: '' }))
+    if(result.error == 'Question Id does not refer to a valid question within this quiz') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    }
+    else if(result.error == 'This user does not own this quiz') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    }
   }
+  res.status(200).send(JSON.stringify({}));
 })
 
 //move quiz question
 app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);
-  let result = moveQuestion(quizId, questionId);
+  const token = req.body.token;
+  const newPosition = req.body.newPosition;
+  const userId: number = findUserIdByToken(token);
+
+  let result = moveQuestion(userId, quizId, questionId, newPosition);
   if('error' in result) {
-    res.status(400).send(JSON.stringify({ error: '' }))
+    if(result.error == 'Question Id does not refer to a valid question within this quiz') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    }
+    else if(result.error == 'This user does not own this quiz') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    }
   }
+  res.status(200).send(JSON.stringify({}));
 })
 
 

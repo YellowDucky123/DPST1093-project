@@ -234,9 +234,19 @@ export function findPasswordByAuthUserId(authUserId: number) {
     return false;    
 }
 
-//find userId that belongs to token
-export function ToktoId(token: number): number {
+//checks whether the question exists within the specified quiz
+export function questionFinder(quizId: number, questionId: number): Boolean {
     const data = getData();
+    for(const d of data.quizzes[quizId].questions) {
+        if(d.questionId === questionId) return true;
+    }
+    return false;
+}
 
-    return authUserId; 
+//still not sure if we need it or not, i don't have confirmation 
+//from the others yet
+//checks whether the token is active in a session
+export function TokenSess(token: number) {
+    return true;
+    return false;
 }

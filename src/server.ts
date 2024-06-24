@@ -17,8 +17,7 @@ import { adminQuizNameUpdate,
          duplicateQuestion
 } from './quiz';
 import {adminAuthRegister, adminAuthLogin} from './auth';
-import { tokenUserIdList, getData } from './dataStore';
-import { ToktoId } from './helpers';
+import { tokenUserIdList, findUserIdByToken, getData } from './dataStore';
 import { string } from 'yaml/dist/schema/common/string';
 
 // Set up web app
@@ -87,7 +86,6 @@ app.post('/v1/admin/auth/login', async(req: Request, res: Response) => {
 
 //update quiz name
 app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
-app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const newName = req.body.name;
   const token = req.body.token;
@@ -95,11 +93,6 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
   
   let result = adminQuizNameUpdate(userId, quizId, newName);
   if('error' in result) {
-    if(result.error === 'Invalid name length') {
-      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
-    }
-    else if(result.error === 'Invalid character used in name') {
-      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
     if(result.error === 'Invalid name length') {
       res.status(400).send(JSON.stringify({ error: `${result.error}` }));
     }
@@ -123,7 +116,6 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
 })
 
 //update quiz description
-app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
 app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const newDescription = req.body.description;

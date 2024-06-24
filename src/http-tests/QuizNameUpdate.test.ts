@@ -16,7 +16,7 @@ describe('Update Quiz Name http test: ', () => {
             SERVER_URL + '/v1/admin/quiz/:quizId/name',
             {
                 json: {
-
+                    
                 }
             }
         )

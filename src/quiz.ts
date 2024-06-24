@@ -1,3 +1,4 @@
+import { create } from 'domain'
 import { getData, question, setData } from './dataStore'
 import { questionFinder, findAuthUserIdByEmail, userIdValidator } from './helpers'
 import { quizIdValidator } from './helpers'
@@ -7,6 +8,8 @@ import { nameLen } from './helpers'
 import { description_length_valid } from './helpers'
 import { isUsedQuizName } from './helpers'
 import { customAlphabet } from 'nanoid'
+import { createId } from './helpers'
+
 export function adminQuizCreate(authUserId: number, name: string, description: string) {
     if (userIdValidator(authUserId) === false) {
         return { error: 'adminQuizCreate: invalid user id' }
@@ -25,7 +28,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     }
 
     const data = getData();
-    const quizId = Object.keys(data.quizzes).length + 1;
+    const quizId = createId(data.quizzes);
 
     let d = new Date();
     const time = d.getTime();

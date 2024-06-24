@@ -1,4 +1,4 @@
-import { setData, getData } from './dataStore'
+import { setData, getData, data, users, quizzes, quiz } from './dataStore'
 import validator from 'validator';
 import { user } from './dataStore'; 
 
@@ -241,4 +241,26 @@ export function questionFinder(quizId: number, questionId: number): Boolean {
         if(d.questionId === questionId) return true;
     }
     return false;
+}
+
+function checkIdDuplicate(id: number, object: users | quizzes): boolean {
+    let flag: boolean = false;
+    for(const item in object) {
+        if(id === parseInt(item)) {
+            flag = true;
+        }
+    }
+    return flag;
+}
+
+//create an Id, and check duplication within given object
+export function createId(obejct: users | quizzes): number {
+    const Digit = 1000;
+    let id: number = Math.floor(Math.random()*Digit);
+
+    while(checkIdDuplicate(id, obejct) != false) {
+        id = Math.floor(Math.random()*Digit);
+    }
+
+    return id;
 }

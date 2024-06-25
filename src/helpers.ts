@@ -26,10 +26,41 @@ export function quizIdValidator(quizId: number) {
     return false;
 }
 
+export function deletedQuizIdValidator(quizId: number) {
+    let wh_data = getData();
+    let data = wh_data.quizzesDeleted;
+    for(const i in data) {
+        if(parseInt(i) === quizId) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 export function quizOwnership(userId: number, quizId: number) {
     let wh_data = getData();
     let q_data = wh_data.quizzes;
     let owned_quizzes = wh_data['users'][userId]['quizzesUserHave'];
+    let flag = 0;
+
+    for(const i in q_data) {
+        if(parseInt(`${i}`) === quizId) {
+            // let q_name = q_data[i]['name'];
+
+            for(const n of owned_quizzes) {
+                if(n === parseInt(i)) return true;
+            }
+            
+            return false;
+        }
+    }
+}
+
+export function deletedQuizOwnership(userId: number, quizId: number) {
+    let wh_data = getData();
+    let q_data = wh_data.quizzesDeleted;
+    let owned_quizzes = wh_data['users'][userId].quizzesUserDeleted;
     let flag = 0;
 
     for(const i in q_data) {

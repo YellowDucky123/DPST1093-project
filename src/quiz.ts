@@ -60,7 +60,11 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
         return { error: 'adminQuizRemove: you do not own this quiz' }
     }
     let data = getData();
+    data.quizzesDeleted[quizId] = data.quizzes[quizId];
+    data.users[authUserId].quizzesUserDeleted[quizId] = quizId;
+    delete data.users[authUserId].quizzesUserHave[quizId];
     delete data.quizzes[quizId];
+    
     setData(data);
 
     return {}

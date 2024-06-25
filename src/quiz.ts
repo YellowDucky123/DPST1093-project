@@ -68,7 +68,7 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
     data.users[authUserId].quizzesUserHave.splice(index, 1);
 
     setData(data);
-
+    
     return {}
 }
 

@@ -252,7 +252,7 @@ app.post('/v1/admin/quiz/:quizId/restore', (req : Request, res : Response) => {
   res.status(status).json(ans);
 })
 
-app.delete('/v1/admin/quiz/:quizId/restore', (req : Request, res : Response) => {
+app.delete('/v1/admin/quiz/trash/empty', (req : Request, res : Response) => {
   const token = req.body.token as string;
   const quizId = parseInt(req.params.quizId as string);
   if (!token) {

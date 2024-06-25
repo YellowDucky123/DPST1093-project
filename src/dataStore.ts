@@ -108,6 +108,7 @@ function findUserIdByToken (Token : string) {
 function getData() : data {
   return data;
 }
+
 // Use set(newData) to pass in the entire data object, with modifications made
 function setData(newData : data) {
   data = newData;

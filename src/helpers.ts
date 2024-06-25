@@ -1,4 +1,4 @@
-import { setData, getData } from './dataStore'
+import { setData, getData, data, users, quizzes, quiz } from './dataStore'
 import validator from 'validator';
 import { user } from './dataStore'; 
 
@@ -26,10 +26,41 @@ export function quizIdValidator(quizId: number) {
     return false;
 }
 
+export function deletedQuizIdValidator(quizId: number) {
+    let wh_data = getData();
+    let data = wh_data.quizzesDeleted;
+    for(const i in data) {
+        if(parseInt(i) === quizId) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 export function quizOwnership(userId: number, quizId: number) {
     let wh_data = getData();
     let q_data = wh_data.quizzes;
     let owned_quizzes = wh_data['users'][userId]['quizzesUserHave'];
+    let flag = 0;
+
+    for(const i in q_data) {
+        if(parseInt(`${i}`) === quizId) {
+            // let q_name = q_data[i]['name'];
+
+            for(const n of owned_quizzes) {
+                if(n === parseInt(i)) return true;
+            }
+            
+            return false;
+        }
+    }
+}
+
+export function deletedQuizOwnership(userId: number, quizId: number) {
+    let wh_data = getData();
+    let q_data = wh_data.quizzesDeleted;
+    let owned_quizzes = wh_data['users'][userId].quizzesUserDeleted;
     let flag = 0;
 
     for(const i in q_data) {
@@ -241,4 +272,26 @@ export function questionFinder(quizId: number, questionId: number): Boolean {
         if(d.questionId === questionId) return true;
     }
     return false;
+}
+
+function checkIdDuplicate(id: number, object: users | quizzes): boolean {
+    let flag: boolean = false;
+    for(const item in object) {
+        if(id === parseInt(item)) {
+            flag = true;
+        }
+    }
+    return flag;
+}
+
+//create an Id, and check duplication within given object
+export function createId(obejct: users | quizzes): number {
+    const Digit = 1000;
+    let id: number = Math.floor(Math.random()*Digit);
+
+    while(checkIdDuplicate(id, obejct) != false) {
+        id = Math.floor(Math.random()*Digit);
+    }
+
+    return id;
 }

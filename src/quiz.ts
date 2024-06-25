@@ -1,5 +1,6 @@
+import { create } from 'domain'
 import { getData, question, setData } from './dataStore'
-import { questionFinder, findAuthUserIdByEmail, userIdValidator } from './helpers'
+import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership } from './helpers'
 import { quizIdValidator } from './helpers'
 import { quizOwnership } from './helpers'
 import { isNameAlphaNumeric } from './helpers'
@@ -7,6 +8,8 @@ import { nameLen } from './helpers'
 import { description_length_valid } from './helpers'
 import { isUsedQuizName } from './helpers'
 import { customAlphabet } from 'nanoid'
+import { createId } from './helpers'
+
 export function adminQuizCreate(authUserId: number, name: string, description: string) {
     if (userIdValidator(authUserId) === false) {
         return { error: 'adminQuizCreate: invalid user id' }
@@ -25,7 +28,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     }
 
     const data = getData();
-    const quizId = Object.keys(data.quizzes).length + 1;
+    const quizId = createId(data.quizzes);
 
     let d = new Date();
     const time = d.getTime();
@@ -57,9 +60,15 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
         return { error: 'adminQuizRemove: you do not own this quiz' }
     }
     let data = getData();
+    data.quizzesDeleted[quizId] = data.quizzes[quizId];
+    data.users[authUserId].quizzesUserDeleted[quizId] = quizId;
+    
     delete data.quizzes[quizId];
-    setData(data);
+    const index = data.users[authUserId].quizzesUserHave.indexOf(quizId);
+    data.users[authUserId].quizzesUserHave.splice(index, 1);
 
+    setData(data);
+    
     return {}
 }
 
@@ -350,3 +359,62 @@ export function moveQuestion(authUserId: number, quizId: number, questionId: num
     return {}
 }
 
+export function adminViewDeletedQuizzes(authUserId: number) {
+    if (!userIdValidator(authUserId)) {
+        return { error: 'User Id invalid' };
+    }
+
+    const data = getData();
+    const ret = data.users[authUserId].quizzesUserDeleted;
+
+    return {
+        ret
+    };
+}
+
+export function adminRestoreQuiz(authUserId: number, quizId: number) {
+    if (userIdValidator(authUserId) == false) {
+        return { error: 'adminQuizInfo: invalid user id' }
+    }
+    if (deletedQuizIdValidator(quizId) == false) {
+        return { error: 'adminQuizInfo: invalid quiz id' }
+    }
+    if (deletedQuizOwnership(authUserId, quizId) == false) {
+        return { error: 'adminQuizInfo: you do not own this quiz' }
+    }
+
+    const data = getData();
+    data.quizzes[quizId] = data.quizzesDeleted[quizId];
+    data.users[authUserId].quizzesUserHave.push(quizId);
+
+    delete data.quizzesDeleted[quizId];
+    const index = data.users[authUserId].quizzesUserDeleted.indexOf(quizId);
+    data.users[authUserId].quizzesUserDeleted.splice(index, 1);
+
+    setData(data);
+
+    return {};
+}
+
+export function adminQuizPermDelete(authUserId: number, quizId: number) {
+    if (userIdValidator(authUserId) == false) {
+        return { error: 'adminQuizInfo: invalid user id' }
+    }
+    if (deletedQuizIdValidator(quizId) == false) {
+        return { error: 'adminQuizInfo: invalid quiz id' }
+    }
+    if (deletedQuizOwnership(authUserId, quizId) == false) {
+        return { error: 'adminQuizInfo: you do not own this quiz' }
+    }
+
+    const data = getData();
+
+    const index = data.users[authUserId].quizzesUserDeleted.indexOf(quizId);
+    data.users[authUserId].quizzesUserDeleted.splice(index, 1);
+
+    delete data.quizzesDeleted[quizId];
+
+    setData(data);
+
+    return {};
+}

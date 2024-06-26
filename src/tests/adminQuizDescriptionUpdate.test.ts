@@ -1,7 +1,6 @@
 import { adminQuizDescriptionUpdate } from '../quiz'
 import { adminQuizCreate } from '../quiz';
 import { adminAuthRegister } from '../auth';
-import { getData, setData } from '../dataStore'
 import { clear } from '../other'
 
 beforeEach(() => {
@@ -14,16 +13,17 @@ afterEach(() => {
 
 
 test('user Id Invalid test: ', () => {
-    adminAuthRegister('test@email.com', 'testpass', 'Kelvin', 'Yoga');
+    adminAuthRegister('test@email.com', 'testpass1', 'Kelvin', 'Yoga');
     expect(adminQuizDescriptionUpdate(124, 521, 'kelvin')).toEqual( { error: 'User Id invalid' });
 });
 
 test('Quiz Id Invalid test: ', () => {
     //make a quiz 
-    const uid = adminAuthRegister('kelvin@email.com', 'testpass', 'Kelvin', 'Yoga');
-    if(typeof uid == 'boolean') throw 'strange error';
-    if("error" in uid) throw "strange error";
-
+    const uid = adminAuthRegister('kelvin@email.com', 'testpass1', 'Kelvin', 'Yoga');
+    if(!("authUserId" in uid)) {
+        console.log("creating UserId  falsed")
+        throw "create false"
+    }
     const qid = adminQuizCreate(uid.authUserId, 'newQuiz', 'this is a description');
 
 
@@ -32,18 +32,22 @@ test('Quiz Id Invalid test: ', () => {
 });
 
 test('User no ownership over quiz test: ', () => {
-    const uid = adminAuthRegister('kelvin@email.com', 'testpass', 'Kelvin', 'Yoga');
-    if(typeof uid == 'boolean') throw 'strange error';
-    if("error" in uid) throw "strange error";
-
+    const uid = adminAuthRegister('kelvin@email.com', 'testpass1', 'Kelvin', 'Yoga');
+    if(!("authUserId" in uid)) {
+        console.log("creating UserId  falsed")
+        throw "create error"
+    }
     adminQuizCreate(uid.authUserId, 'newQuiz', 'this is a description');
 
 
     //make another user to make another quiz, that first user does not have
-    const uid2 = adminAuthRegister('new@email.com', 'testpass', 'new', 'person');
+    const uid2 = adminAuthRegister('new@email.com', 'testpass1', 'new', 'person');
     if(typeof uid2 == 'boolean') throw 'strange error';
     if("error" in uid2) throw "strange error";
-
+    if(!("authUserId" in uid2)) {
+        console.log("creating UserId  falsed")
+        throw "create error"
+    }
     const qid = adminQuizCreate(uid2.authUserId, 'newQuiz', 'this is a description');
 
     expect(adminQuizDescriptionUpdate(uid.authUserId, qid.quizId, 'kelvin')).toEqual({ error: 'This user does not own this quiz' });
@@ -86,10 +90,11 @@ test('correct implementation: ', () => {
     //     }
     // }
 
-    const uid = adminAuthRegister('kelvin@email.com', 'testpass', 'Kelvin', 'Yoga');
-    if(typeof uid == 'boolean') throw 'strange error';
-    if("error" in uid) throw "strange error";
-
+    const uid = adminAuthRegister('kelvin@email.com', 'testpass1', 'Kelvin', 'Yoga');
+    if(!("authUserId" in uid)) {
+        console.log("creating UserId  falsed")
+        throw "create error"
+    }
     const qid = adminQuizCreate(uid.authUserId, 'newQuiz', 'this is a description');
 
     let input: any = [];

@@ -36,7 +36,7 @@ import {
 // set up data
 setDataStorebyJSON()
 //our imports below:
-import { string } from 'yaml/dist/schema/common/string';
+import { clear } from './other';
 
 // Set up web app
 const app = express();
@@ -53,6 +53,11 @@ app.use('/docs', sui.serve, sui.setup(YAML.parse(file), { swaggerOptions: { docE
 
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
+
+app.delete("/v1/clear", (req:Request, res : Response) => {
+  clear()
+  res.status(200).json({})
+})
 
 app.get("/v1/admin/user/details", (req: Request, res: Response) => {
   let token = req.query.token as string

@@ -6,8 +6,9 @@ clear()
 var idfor86 = adminAuthRegister("86@163.com", "1111aaaa", "sin", "zano");
 var idfor721 = adminAuthRegister("721@163.com", "ciallo111", "ning", "ning");
 var idforno = adminAuthRegister ("aaa@163.con", "11111aaa", "no", "quiz");
-if (typeof idfor721 === "boolean" || typeof idfor86 === "boolean" || typeof idforno === "boolean") throw "strange error"
-if( "error" in idfor721 || "error" in idfor86 || "error" in idforno) throw "strange error"
+if (!("authUserId" in idfor721)) throw "strange error"
+if (!("authUserId" in idfor86)) throw "strange error"
+if (!("authUserId" in idforno)) throw "strange error"
 
 var quiz1for86 = adminQuizCreate(idfor86.authUserId, "1111", "");
 var quiz2for86 = adminQuizCreate(idfor86.authUserId, "2222", "");
@@ -26,13 +27,19 @@ test("no such a user", () => {
 })
 
 test("quizzes for the one have no quiz", () => {
-  if (typeof idforno === "boolean") throw "strange error"
-  if("error" in idforno) throw "strange error"
+  if(!("authUserId" in idforno)) {
+    console.log("creating UserId  falsed")
+    throw "create error"
+  }
   expect(adminQuizList(idforno.authUserId)).toEqual({ quizzes: [] });
 })
 test("quizzes for the one have lot of quizzes", () => {
   if (typeof idfor86 === "boolean") throw "strange error"
   if( "error" in idfor86 ) throw "strange error"
+  if(!("authUserId" in idfor86)) {
+    console.log("creating UserId  falsed")
+    throw "create error"
+  }
   expect(adminQuizList(idfor86.authUserId)).toEqual({
     quizzes: [{
       name: "1111",
@@ -52,6 +59,10 @@ test("quizzes for the one have lot of quizzes", () => {
 test("quizzes for the one have some quizzes", () => {
   if (typeof idfor721 === "boolean") throw "strange error"
   if ( "error" in idfor721 ) throw "strange error"
+  if(!("authUserId" in idfor721)) {
+    console.log("creating UserId  falsed")
+    throw "create error"
+  }
   expect(adminQuizList(idfor721.authUserId)).toEqual({
     quizzes: [{
       name: "4444",

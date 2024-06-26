@@ -1,5 +1,5 @@
 import { create } from 'domain'
-import { findUserIdByToken, getData, question, setData } from './dataStore'
+import { findUserIdByToken, getData, question, quiz, setData } from './dataStore'
 import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership } from './helpers'
 import { quizIdValidator } from './helpers'
 import { quizOwnership } from './helpers'
@@ -23,7 +23,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     if (description_length_valid(description) === false) {
         return { error: 'adminQuizCreate: quiz description is too long' }
     }
-    if (isUsedQuizName(name) === false) {
+    if (isUsedQuizName(name, authUserId) === false) {
         return { error: 'adminQuizCreate: quiz name already used by another user' }
     }
 
@@ -33,7 +33,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     let d = new Date();
     const time = d.getTime();
     let questions: Array<question> = [];
-    const new_data = {
+    const new_data : quiz = {
         quizId: quizId,
         name: name,
         timeCreated: time,
@@ -232,7 +232,10 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
     if (!quizOwnership(authUserId, quizId)) {
         return { error: 'This user does not own this quiz' };
     }
-    if (isUsedQuizName(name) === false) {
+    if (name === getData().quizzes[quizId].name) {
+        return {}
+    }
+    if (isUsedQuizName(name, authUserId) === false) {
         return { error: 'adminQuizCreate: quiz name already used by another user' }
     }
 

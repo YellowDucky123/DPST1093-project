@@ -1,6 +1,6 @@
-import { adminQuizRemove } from '../quiz.js'
-import { getData, setData } from '../dataStore.js'
-import { clear } from '../other.js'
+import { adminQuizRemove } from '../quiz'
+import { getData, setData } from '../dataStore'
+import { clear } from '../other'
 
 beforeEach(() => {
     clear();
@@ -19,7 +19,7 @@ beforeEach(() => {
             }
         };
         setData(data);
-      expect(adminQuizRemove('124', '321')).toStrictEqual({error: 'adminQuizRemove: invalid user id'});
+      expect(adminQuizRemove(124, 321)).toStrictEqual({error: 'adminQuizRemove: invalid user id'});
     });
     test('invalid quiz id', () => {
         let data = getData();
@@ -34,7 +34,7 @@ beforeEach(() => {
             }
         };
         setData(data);
-        expect(adminQuizRemove('123', '2')).toStrictEqual({error: 'adminQuizRemove: invalid quiz id'});
+        expect(adminQuizRemove(123, 2)).toStrictEqual({error: 'adminQuizRemove: invalid quiz id'});
     });
     test('do not own this', () => {
         let data = getData();
@@ -54,6 +54,6 @@ beforeEach(() => {
             }
         };
         setData(data);
-        expect(adminQuizRemove('124', '321')).toStrictEqual({error: 'adminQuizRemove: you do not own this quiz'});
+        expect(adminQuizRemove(124, 321)).toStrictEqual({error: 'adminQuizRemove: you do not own this quiz'});
     });
 });

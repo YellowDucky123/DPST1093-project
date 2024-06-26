@@ -4,7 +4,8 @@ import {
   question,
   setDataStorebyJSON,
   setJSONbyDataStore,
-  getData
+  getData,
+  setData
 } from './dataStore';
 import { adminUserDetails, adminUserDetailsUpdate, adminAuthRegister, adminAuthLogin, adminUserPasswordUpdate } from './auth';
 import { echo } from './newecho';
@@ -301,8 +302,10 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   }
   else {
     const token = Math.floor(10000 + Math.random() * 90000).toString();
-    getData().tokenUserIdList[token] = result.authUserId;
-    return res.status(200).json({ token: token });
+    if ("authUserId" in result) {
+      getData().tokenUserIdList[token] = result.authUserId;
+      return res.status(200).json({ token: token });
+    }
   }
 });
 
@@ -327,6 +330,9 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   if (!userId) {
     return res.status(401).json({ error: "Token is empty or invalid (does not refer to valid logged in user session)" });
   }
+  let data = getData()
+  delete(data.tokenUserIdList[token]);
+  setData(data);
   return res.status(200).json({});
 })
 
@@ -412,43 +418,19 @@ app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Respo
   const questionId = parseInt(req.params.questionId);
   const { token, questionBody } = req.body;
   const userId = findUserIdByToken(token);
+  if (!userId) {
+    return res.status(401).json({ error: 'userId not found' });
+  }  
   let result = adminQuizQuestionUpdate(userId, quizId, questionId, questionBody);
+  let status = 200;
   if ('error' in result) {
-    if (result.error === 'Question Id does not refer to a valid question within this quiz') {
-      return res.status(400).send(JSON.stringify({ error: `${result.error}` }));
-    }
-    if (result.error === 'Question string is less than 5 characters in length or greater than 50 characters in length') {
-      return res.status(400).send(JSON.stringify({ error: `${result.error}` }));
-    }
-    if (result.error === 'The question has more than 6 answers or less than 2 answers') {
-      return res.status(400).send(JSON.stringify({ error: `${result.error}` }));
-    }
-    if (result.error === 'The question duration is not a positive number') {
-      return res.status(400).send(JSON.stringify({ error: `${result.error}` }));
-    }
-    if (result.error === 'If this question were to be updated, the sum of the question durations in the quiz exceeds 3 minutes') {
-      return res.status(400).send(JSON.stringify({ error: `${result.error}` }));
-    }
-    if (result.error === 'The points awarded for the question are less than 1 or greater than 10') {
-      return res.status(400).send(JSON.stringify({ error: `${result.error}` }));
-    }
-    if (result.error === 'The length of any answer is shorter than 1 character long, or longer than 30 characters long') {
-      return res.status(400).send(JSON.stringify({ error: `${result.error}` }));
-    }
-    if (result.error === 'Any answer strings are duplicates of one another (within the same question)') {
-      return res.status(400).send(JSON.stringify({ error: `${result.error}` }));
-    }
-    if (result.error === 'There are no correct answers') {
-      return res.status(400).send(JSON.stringify({ error: `${result.error}` }));
-    }
-    if (!userId) {
-      return res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid (does not refer to valid logged in user session)' }));
-    }
     if (result.error == 'This user does not own this quiz') {
-      return res.status(403).send(JSON.stringify({ error: 'Valid token is provided, but user is unauthorised to complete this action' }));
+      status = 403;
+    } else {
+      status = 400;
     }
   }
-  return res.status(200).send(JSON.stringify({}));
+  return res.status(status).json(result);
 })
 
 //duplicate question

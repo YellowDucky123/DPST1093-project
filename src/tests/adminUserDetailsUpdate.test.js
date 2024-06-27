@@ -1,6 +1,5 @@
-import { adminAuthRegister, adminUserDetailsUpdate} from '../src/auth.ts'
-import { getData, setData } from '../src/dataStore.ts'
-import { clear } from '../src/other.ts'
+import { adminAuthRegister, adminUserDetailsUpdate} from '../auth'
+import { clear } from '../other'
 
 beforeEach(() => {
     clear();   

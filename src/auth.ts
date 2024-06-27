@@ -1,4 +1,3 @@
-import { error } from 'console';
 import { getData, setData } from './dataStore'
 import {
     checkDuplicateUserId, 
@@ -16,7 +15,7 @@ export function someNewFeature(array : []) {
         console.log(item);
     }
 }
-
+import { customAlphabet } from 'nanoid'
 /*
 'oldPassword' is the current password,
 'newPassword' is the password you want to set to.
@@ -73,9 +72,10 @@ export function adminUserDetails(authUserId: number) {
 }
 
 // Register a new admin user with provided email, password, first name, last name.
-export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
-    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== undefined) {
-        return checkEmailNameFirstNameLast(email, nameFirst, nameLast);
+export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) : {error? : string} | {authUserId : number} {
+    let check = checkEmailNameFirstNameLast(email, nameFirst, nameLast);
+    if ("error" in check) {
+        return check;
     }
     if (checkPasswordLength(password) === false) {
         return { error: 'Password should be between 8 to 20 characters' };
@@ -84,7 +84,14 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
         return { error: 'Password should contain at least one number and at least one letter' };
     }
     var data = getData();
-    const userId = Object.keys(data.users).length + 1;
+    const nanoId = customAlphabet("0123456789", 5);
+    let userId = parseInt(nanoId())
+    while(1) {
+        if (data.users[userId] === undefined) {
+            break;
+        }
+        userId = parseInt(nanoId())
+    }
     createNewAuth(nameFirst, nameLast, userId, email, password);
     return { authUserId: userId };
 }
@@ -122,15 +129,17 @@ export function adminAuthLogin(email: string, password: string) {
 }
 
 // Updates the details of an autheticated admin user with the provided details.
-export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string) {
+export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string) : object {
     console.log("adminUserDetailsUpdate")
-    if (checkEmailNameFirstNameLast(email, nameFirst, nameLast) !== undefined) {
-        return checkEmailNameFirstNameLast(email, nameFirst, nameLast)
+    let check = checkEmailNameFirstNameLast(email, nameFirst, nameLast)
+    if ("error" in check && !(check.error === "Email address already exist" && findAuthUserIdByEmail(email) === authUserId)) {
+        return check
     }
     let data = getData()
     data.users[authUserId].email = email;
     data.users[authUserId].nameFirst = nameFirst;
     data.users[authUserId].nameLast = nameLast;
+    data.users[authUserId].name = nameFirst + " " + nameLast;
     setData(data);
     return {};
 }

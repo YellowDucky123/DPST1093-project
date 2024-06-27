@@ -226,6 +226,7 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   const description = req.body.description as string;
   if (!token) {
     res.status(401).json({ error: "A correct token is required" });
+    return;
   }
   const UserId = findUserIdByToken(token)
   if (!UserId) {

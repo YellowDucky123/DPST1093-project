@@ -144,7 +144,7 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
     return {};
 }
 
-export function adminAuthLogout(token: string): { error?: string } | { success: boolean } {
+export function adminAuthLogout(token: string): { error?: string } | any {
     let userId = findUserIdByToken(token);
     if (!userId) {
         return { error: "Token is empty or invalid (does not refer to a valid logged-in user session)" };
@@ -152,5 +152,5 @@ export function adminAuthLogout(token: string): { error?: string } | { success: 
     const data = getData();
     delete data.tokenUserIdList[token];
     setData(data);
-    return { success: true };
+    return {};
 }

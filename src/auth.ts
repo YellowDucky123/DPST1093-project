@@ -1,16 +1,16 @@
-import { getData, setData } from './dataStore'
+import { findUserIdByToken, getData, setData } from './dataStore'
 import {
-    checkDuplicateUserId, 
-    createNewAuth, 
-    checkEmailNameFirstNameLast, 
+    checkDuplicateUserId,
+    createNewAuth,
+    checkEmailNameFirstNameLast,
     checkPasswordContain,
-    emailExist, 
-    findAuthUserIdByEmail, 
-    findPasswordByAuthUserId, 
-    checkPasswordCorrect, 
+    emailExist,
+    findAuthUserIdByEmail,
+    findPasswordByAuthUserId,
+    checkPasswordCorrect,
     checkPasswordLength
 } from './helpers';
-export function someNewFeature(array : []) {
+export function someNewFeature(array: []) {
     for (const item of array) {
         console.log(item);
     }
@@ -25,19 +25,19 @@ the newPassword can't equal to oldPassword,
 the newPassword can also not be any password used in the past
 */
 export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string) {
-    let data = getData();    
+    let data = getData();
     // check whether the password is valid
-    if (!checkPasswordLength(newPassword)) 
+    if (!checkPasswordLength(newPassword))
         return { error: 'Password should be at least than 8 characters' };
-    if (!checkPasswordContain(newPassword)) 
+    if (!checkPasswordContain(newPassword))
         return { error: 'Password should contain at least one number and at least one letter' };
 
     // check whether the new password is suitable
-    if (!(oldPassword === data.users[authUserId].password)) 
+    if (!(oldPassword === data.users[authUserId].password))
         return { error: "password incorrecrt" };
-    if (oldPassword === newPassword) 
+    if (oldPassword === newPassword)
         return { error: "new Password can't be the old password" };
-    if (data.users[authUserId].pastPassword.includes(newPassword)) 
+    if (data.users[authUserId].pastPassword.includes(newPassword))
         return { error: "This password has been used in past" };
 
     // update new password
@@ -72,7 +72,7 @@ export function adminUserDetails(authUserId: number) {
 }
 
 // Register a new admin user with provided email, password, first name, last name.
-export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) : {error? : string} | {authUserId : number} {
+export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string): { error?: string } | { authUserId: number } {
     let check = checkEmailNameFirstNameLast(email, nameFirst, nameLast);
     if ("error" in check) {
         return check;
@@ -86,7 +86,7 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
     var data = getData();
     const nanoId = customAlphabet("0123456789", 5);
     let userId = parseInt(nanoId())
-    while(1) {
+    while (1) {
         if (data.users[userId] === undefined) {
             break;
         }
@@ -110,7 +110,7 @@ export function adminAuthLogin(email: string, password: string) {
         if (checkPasswordCorrect(password, email)) {
             let useId = findAuthUserIdByEmail(email)
             var data = getData();
-            if (!useId) return {error : "Email address does not exist"};
+            if (!useId) return { error: "Email address does not exist" };
             data.users[useId].numSuccessfulLogins += 1;
             data.users[useId].numFailedPasswordsSinceLastLogin = 0;
             setData(data);
@@ -119,7 +119,7 @@ export function adminAuthLogin(email: string, password: string) {
             };
         }
         let useId = findAuthUserIdByEmail(email)
-        if (!useId) return {error : "Email address does not exist"};
+        if (!useId) return { error: "Email address does not exist" };
         var data = getData();
         data.users[useId].numFailedPasswordsSinceLastLogin += 1;
         setData(data)
@@ -129,7 +129,7 @@ export function adminAuthLogin(email: string, password: string) {
 }
 
 // Updates the details of an autheticated admin user with the provided details.
-export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string) : object {
+export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string): object {
     console.log("adminUserDetailsUpdate")
     let check = checkEmailNameFirstNameLast(email, nameFirst, nameLast)
     if ("error" in check && !(check.error === "Email address already exist" && findAuthUserIdByEmail(email) === authUserId)) {
@@ -142,4 +142,15 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
     data.users[authUserId].name = nameFirst + " " + nameLast;
     setData(data);
     return {};
+}
+
+export function adminAuthLogout(token: string): { error?: string } | { success: boolean } {
+    let userId = findUserIdByToken(token);
+    if (!userId) {
+        return { error: "Token is empty or invalid (does not refer to a valid logged-in user session)" };
+    }
+    const data = getData();
+    delete data.tokenUserIdList[token];
+    setData(data);
+    return { success: true };
 }

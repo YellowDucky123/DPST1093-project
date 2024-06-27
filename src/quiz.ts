@@ -387,8 +387,10 @@ export function adminRestoreQuiz(authUserId: number, quizId: number) {
     }
 
     const data = getData();
-    data.quizzes[quizId] = data.quizzesDeleted[quizId];
-    data.users[authUserId].quizzesUserHave.push(quizId);
+    const newId = createId(data.quizzes);
+ 
+    data.quizzes[newId] = data.quizzesDeleted[quizId];
+    data.users[authUserId].quizzesUserHave.push(newId);
 
     delete data.quizzesDeleted[quizId];
     const index = data.users[authUserId].quizzesUserDeleted.indexOf(quizId);

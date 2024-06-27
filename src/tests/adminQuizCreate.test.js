@@ -8,13 +8,7 @@ beforeEach(() => {
 });
 describe('adminQuizCreate Tests', () => {
     test('invalid user id', () => {
-        let data = getData();
-        data.users = {
-            '123': {
-                authUserId: 123
-            }
-        };
-        setData(data);
+        const ID = adminAuthRegister("hello@gmail.com", "asdfghjkl", "first", "last");
 
         expect(adminQuizCreate(124, 'thisIsName', 'hello world')).toStrictEqual({ error: 'adminQuizCreate: invalid user id' });
     });

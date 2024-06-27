@@ -1,9 +1,6 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
-import { adminUserDetails } from '../auth';
-import { getData } from '../dataStore';
-import { after } from 'node:test';
-import { nameLen } from '../helpers';
+
 
 const OK = 200;
 //const INPUT_ERROR = 400;

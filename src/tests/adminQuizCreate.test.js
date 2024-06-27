@@ -8,22 +8,22 @@ beforeEach(() => {
 });
 describe('adminQuizCreate Tests', () => {
     test('invalid user id', () => {
-        const ID = adminAuthRegister("hello@gmail.com", "asdfghjkl", "first", "last");
+        const ID = adminAuthRegister("hello@gmail.com", "12345abcde", "first", "last");
 
         expect(adminQuizCreate(ID.authUserId+1, 'thisIsName', 'hello world')).toStrictEqual({ error: 'adminQuizCreate: invalid user id' });
     });
     test('quiz name length', () => {
-        const ID = adminAuthRegister("hello@gmail.com", "asdfghjkl", "first", "last");
+        const ID = adminAuthRegister("hello@gmail.com", "12345abcde", "first", "last");
 
         expect(adminQuizCreate(ID.authUserId, 'th', 'hello world')).toStrictEqual({error: 'adminQuizCreate: invalid quiz name length'});
     });
     test('invalid letters', () => {
-        const ID = adminAuthRegister("hello@gmail.com", "asdfghjkl", "first", "last");
+        const ID = adminAuthRegister("hello@gmail.com", "12345abcde", "first", "last");
 
         expect(adminQuizCreate(ID.authUserId, 'thisIsName%%%', 'hello world')).toStrictEqual({ error: 'adminQuizCreate: quiz name contains invalid letters' });
     });
     test('description too long', () => {
-        const ID = adminAuthRegister("hello@gmail.com", "asdfghjkl", "first", "last");
+        const ID = adminAuthRegister("hello@gmail.com", "12345abcde", "first", "last");
 
         let long = [];
         for (let i = 0; i < 120; ++i) {

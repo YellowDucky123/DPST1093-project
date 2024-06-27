@@ -1,7 +1,7 @@
 import { adminAuthRegister, adminUserPasswordUpdate } from "../auth";
 
 let idForCommonOne = adminAuthRegister("commonMan@163.com", "Suitable123", "common", "human")
-if (typeof idForCommonOne === "boolean" || "error" in idForCommonOne) throw "error"
+if (!("authUserId" in idForCommonOne)) throw "error"
 test("Change password correctly", () => {
   expect(adminUserPasswordUpdate(idForCommonOne.authUserId, "Suitable123", "Suitable456")).toEqual({});
 })

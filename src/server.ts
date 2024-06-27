@@ -4,10 +4,16 @@ import {
   question,
   setDataStorebyJSON,
   setJSONbyDataStore,
-  getData,
-  setData
+  getData
 } from './dataStore';
-import { adminUserDetails, adminUserDetailsUpdate, adminAuthRegister, adminAuthLogin, adminUserPasswordUpdate } from './auth';
+import {
+  adminUserDetails,
+  adminUserDetailsUpdate,
+  adminAuthRegister,
+  adminAuthLogin,
+  adminAuthLogout,
+  adminUserPasswordUpdate
+} from './auth';
 import { echo } from './newecho';
 import morgan from 'morgan';
 import config from './config.json';
@@ -37,7 +43,10 @@ import {
 // set up data
 setDataStorebyJSON()
 //our imports below:
+import { string } from 'yaml/dist/schema/common/string';
+import { skipPartiallyEmittedExpressions } from 'typescript';
 import { clear } from './other';
+
 
 // Set up web app
 const app = express();
@@ -55,10 +64,50 @@ app.use('/docs', sui.serve, sui.setup(YAML.parse(file), { swaggerOptions: { docE
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
 
+
+app.post("/v1/admin/auth/logout", (req: Request, res: Response) => {
+  const token = req.body.token as string;
+  if (!token) {
+    res.status(401).json({ error: "A token is required" });
+    return;
+  }
+  let ans = adminAuthLogout(token);
+  let status = 200
+  if ("error" in ans) {
+    status = 401;
+  }
+  res.status(status).json(ans);
+})
+
+app.put("/v1/admin/user/password", (req: Request, res: Response) => {
+  const token = req.body.token as string;
+  const oldPassword = req.body.oldPassword as string;
+  const newPassword = req.body.newPassword as string;
+  if (!oldPassword || !newPassword) {
+    res.status(400).json({ error: "Missing some contents" });
+    return;
+  }
+  if (!token) {
+    res.status(401).json({ error: "A token is required" });
+    return;
+  }
+  let userId = findUserIdByToken(token)
+  if (!userId) {
+    res.status(401).json({ error: "the token is incorrect or not found" })
+  }
+  let ans = adminUserPasswordUpdate(userId, oldPassword, newPassword);
+  let status = 200;
+  if ("error" in ans) {
+    status = 400;
+  }
+  res.status(status).json(ans);
+})
+
 app.delete("/v1/clear", (req:Request, res : Response) => {
   clear()
   res.status(200).json({})
 })
+
 
 app.get("/v1/admin/user/details", (req: Request, res: Response) => {
   let token = req.query.token as string
@@ -102,11 +151,11 @@ app.put("/v1/admin/user/details", (req: Request, res: Response) => {
   const nameFirst = req.body.nameFirst as string;
   const nameLast = req.body.nameLast as string;
   if (!token) {
-    res.status(400).json({ error: "A token is required" });
+    res.status(401).json({ error: "A token is required" });
     return;
   }
   if (!email || !nameFirst || !nameLast) {
-    res.status(401).json({ error: "Missing some contents" });
+    res.status(400).json({ error: "Missing some contents" });
     return;
   }
   const UserId = findUserIdByToken(token)
@@ -116,7 +165,7 @@ app.put("/v1/admin/user/details", (req: Request, res: Response) => {
   }
   let ans = adminUserDetailsUpdate(UserId, email, nameFirst, nameLast)
   if ("error" in ans) {
-    res.status(401).json(ans);
+    res.status(400).json(ans);
   } else {
     res.status(200).json(ans);
   }
@@ -308,7 +357,6 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   }
   res.status(status).json(ans);
 })
-
 // ====================================================================
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
@@ -334,8 +382,8 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
     const token = Math.floor(10000 + Math.random() * 90000).toString();
     if ("authUserId" in result) {
       getData().tokenUserIdList[token] = result.authUserId;
-      return res.status(200).json({ token: token });
     }
+    return res.status(200).json({ token: token });
   }
 });
 
@@ -353,36 +401,26 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
   }
 })
 
-// Log out an admin user
-app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
-  const token = req.body.token as string;
+// Update quize question
+app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const questionId = parseInt(req.params.questionId);
+  const { token, questionBody } = req.body;
   const userId = findUserIdByToken(token);
   if (!userId) {
-    return res.status(401).json({ error: "Token is empty or invalid (does not refer to valid logged in user session)" });
+    return res.status(401).json({ error: 'userId not found' });
   }
-  let data = getData()
-  delete(data.tokenUserIdList[token]);
-  setData(data);
-  return res.status(200).json({});
-})
-
-// Update the password of this admin user.
-app.put('/v1/admin/auth/password', (req: Request, res: Response) => {
-  const token = req.body.token as string;
-  const oldPassword = req.body.oldPassword as string;
-  const newPassword = req.body.newPassword as string;
-  const userId = findUserIdByToken(token);
-  if (!userId) {
-    return res.status(401).json({ error: "Token is empty or invalid (does not refer to valid logged in user session)" });
-  }
-  const ans = adminUserPasswordUpdate(userId, oldPassword, newPassword);
+  let result = adminQuizQuestionUpdate(userId, quizId, questionId, questionBody);
   let status = 200;
-  if ("error" in ans) {
-    status = 400;
+  if ('error' in result) {
+    if (result.error == 'This user does not own this quiz') {
+      status = 403;
+    } else {
+      status = 400;
+    }
   }
-  return res.status(status).json(ans);
+  return res.status(status).json(result);
 })
-
 //update quiz name
 app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
@@ -443,27 +481,6 @@ app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
     }
   }
   res.status(200).send(JSON.stringify({}));
-})
-
-// Update quiz question
-app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
-  const quizId = parseInt(req.params.quizId);
-  const questionId = parseInt(req.params.questionId);
-  const { token, questionBody } = req.body;
-  const userId = findUserIdByToken(token);
-  if (!userId) {
-    return res.status(401).json({ error: 'userId not found' });
-  }  
-  let result = adminQuizQuestionUpdate(userId, quizId, questionId, questionBody);
-  let status = 200;
-  if ('error' in result) {
-    if (result.error == 'This user does not own this quiz') {
-      status = 403;
-    } else {
-      status = 400;
-    }
-  }
-  return res.status(status).json(result);
 })
 
 //duplicate question

@@ -8,6 +8,10 @@ const url = config.url;
 
 const SERVER_URL = `${url}:${port}`;
 
+afterAll(() => {
+    request('DELETE', SERVER_URL + '/v1/clear');
+})
+
 request('DELETE', `${url}:${port}/v1/clear`);
 
 const res = request(

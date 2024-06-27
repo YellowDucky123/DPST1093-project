@@ -1,6 +1,6 @@
 import { create } from 'domain'
 import { findUserIdByToken, getData, question, quiz, setData } from './dataStore'
-import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership } from './helpers'
+import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId } from './helpers'
 import { quizIdValidator } from './helpers'
 import { quizOwnership } from './helpers'
 import { isNameAlphaNumeric } from './helpers'
@@ -100,9 +100,7 @@ export function adminQuizList(authUserId: number) {
         return { error: "can not find such a member" };
     }
     let dataBase = datas.users[authUserId];
-    console.log("here");
-    console.log(dataBase);
-    console.log(dataBase.quizzesUserHave);
+    
     for (const Id of dataBase.quizzesUserHave) {
         quizzes.push({
             quizId: Id,
@@ -180,15 +178,7 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
     let data = getData();
     // creating Id for question
     const nanoId = customAlphabet("01234567890", 3);
-    let questionId = parseInt(nanoId())
-    questionId = questionId * Math.pow(10, quizId.toString().length) + quizId;
-    console.log("creating unique question id")
-    while (1) {
-        if (data.quizzes[quizId].questions.every(question => (question.questionId !== questionId * Math.pow(10, quizId.toString().length) + quizId))) {
-            break;
-        }
-        questionId = parseInt(nanoId())
-    }
+    let questionId = createQuestionId(quizId);
     console.log("question id: " + questionId)
     for (let answer of question.answers) {
         answer.answerId = parseInt(nanoId()) * Math.pow(10, quizId.toString().length) + quizId;

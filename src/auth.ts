@@ -106,24 +106,21 @@ console.log(getData())
 // Authenticates an admin user with the provided email and password.
 export function adminAuthLogin(email: string, password: string) {
     console.log("adminAuthLogin")
-    if (emailExist(email)) {
-        if (checkPasswordCorrect(password, email)) {
-            let useId = findAuthUserIdByEmail(email)
-            var data = getData();
-            if (!useId) return { error: "Email address does not exist" };
-            data.users[useId].numSuccessfulLogins += 1;
-            data.users[useId].numFailedPasswordsSinceLastLogin = 0;
+    let data = getData()
+    let authUserId = findAuthUserIdByEmail(email)
+    if (authUserId) {
+        if (data.users[authUserId].password === password) {
+            data.users[authUserId].numSuccessfulLogins += 1;
+            data.users[authUserId].numFailedPasswordsSinceLastLogin = 0;
             setData(data);
             return {
-                authUserId: useId
+                authUserId: authUserId
             };
+        } else {
+            data.users[authUserId].numFailedPasswordsSinceLastLogin += 1;
+            setData(data)
+            return { error: 'Passord is not correct for the given email' };
         }
-        let useId = findAuthUserIdByEmail(email)
-        if (!useId) return { error: "Email address does not exist" };
-        var data = getData();
-        data.users[useId].numFailedPasswordsSinceLastLogin += 1;
-        setData(data)
-        return { error: 'Passord is not correct for the given email' };
     }
     return { error: 'Email address does not exist' };
 }
@@ -132,7 +129,7 @@ export function adminAuthLogin(email: string, password: string) {
 export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string): object {
     console.log("adminUserDetailsUpdate")
     let check = checkEmailNameFirstNameLast(email, nameFirst, nameLast)
-    if ("error" in check && !(check.error === "Email address already exist" && findAuthUserIdByEmail(email) === authUserId)) {
+    if ("error" in check && !(check.error === "email existed" && getData().users[authUserId].email === email)) {
         return check
     }
     let data = getData()

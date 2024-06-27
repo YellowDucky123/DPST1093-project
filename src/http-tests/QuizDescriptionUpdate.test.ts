@@ -82,12 +82,12 @@ describe('Update Quiz Name http test: ', () => {
     test('test succesfull: ', () => {
         const res = request(
             'PUT',
-            SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/name`,
+            SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/description`,
             {
                 json: {
                     token: t_id.token,
                     quizId: q_id.quizId,
-                    name: 'new name'
+                    description: 'new description'
                 },
                 timeout: 100
             }
@@ -101,12 +101,12 @@ describe('Update Quiz Name http test: ', () => {
     test('invalid quizId: ', () => {
         const res = request(
             'PUT',
-            SERVER_URL + `/v1/admin/quiz/${q_id.quizId + 1}/name`,
+            SERVER_URL + `/v1/admin/quiz/${q_id.quizId + 1}/description`,
             {
                 json: {
                     token: t2_id.token,
                     quizId: q_id.quizId + 1,
-                    name: 'new name'
+                    description: 'new description'
                 }
             }
         )
@@ -118,12 +118,12 @@ describe('Update Quiz Name http test: ', () => {
     test('invalid token', () => {
         const res = request(
             'PUT',
-            SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/name`,
+            SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/description`,
             {
                 json: {
                     token: t2_id.token + 1,
                     quizId: q_id.quizId,
-                    name: 'new name'
+                    description: 'new description'
                 }
             }
         )
@@ -131,72 +131,42 @@ describe('Update Quiz Name http test: ', () => {
         expect(res.statusCode).toBe(TOKEN_ERROR);
         expect(result).toStrictEqual({ error: 'Token is empty or invalid' });
     })
-
-    test('invalid name length (too short):', () => {
-        const res = request(
-            'PUT',
-            SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/name`,
-            {
-                json: {
-                    token: t2_id.token,
-                    quizId: q_id.quizId,
-                    name: ''
-                }
-            }
-        )
-        const result = JSON.parse(res.body as string);
-        expect(res.statusCode).toBe(INPUT_ERROR);
-        expect(result).toStrictEqual({ error: 'Invalid name length' });
-    })
     
-    test('invalid name length (too long):', () => {
+    test('description too long:', () => {
+        let input: any = [];
+        for(let i = 0; i < 101; i++) {
+            input[i] += 'a';
+        }
         const res = request(
             'PUT',
-            SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/name`,
+            SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/description`,
             {
                 json: {
                     token: t2_id.token,
                     quizId: q_id.quizId,
-                    name: 'lllllllllllllllllllllllllllllll'
+                    description: input
                 }
             }
         )
         const result = JSON.parse(res.body as string);
         expect(res.statusCode).toBe(INPUT_ERROR);
-        expect(result).toStrictEqual({ error: 'Invalid name length' });
+        expect(result).toStrictEqual({ error: 'Description too long' });
     })
 
     test('User does not have ownership: ', () => {
         const res = request(
             'PUT',
-            SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/name`,
+            SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/description`,
             {
                 json: {
                     token: t2_id.token,
                     quizId: q2_id.quizId,
-                    name: 'New Name'
+                    description: 'new description'
                 }
             }
         )
         const result = JSON.parse(res.body as string);
         expect(res.statusCode).toBe(403);
         expect(result).toStrictEqual({ error: 'This user does not own this quiz'});
-    })
-
-    test('Name contains Invalid Characters :', () => {
-        const res = request(
-            'PUT',
-            SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/name`,
-            {
-                json: {
-                    token: t2_id.token,
-                    quizId: q_id.quizId,
-                    name: 'k@#lvin'
-                }
-            }
-        )
-        const result = JSON.parse(res.body as string);
-        expect(res.statusCode).toBe(INPUT_ERROR);
-        expect(result).toStrictEqual({ error: 'Invalid character used in name' });
     })
 });

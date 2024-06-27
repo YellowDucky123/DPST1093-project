@@ -1,1 +1,1 @@
-{"users":{"31241":{"name":"Kelvin Yoga","nameFirst":"Kelvin","nameLast":"Yoga","authUserId":31241,"email":"test@email.com","password":"newPassword123","numSuccessfulLogins":1,"numFailedPasswordsSinceLastLogin":0,"quizzesUserHave":[],"quizzesUserDeleted":[],"pastPassword":[]}},"quizzes":{},"quizzesDeleted":{},"tokenUserIdList":{"29399":31241}}
+{"users":{},"quizzes":{},"quizzesDeleted":{},"tokenUserIdList":{}}

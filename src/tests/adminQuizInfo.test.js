@@ -1,6 +1,6 @@
-import { adminQuizInfo } from '../quiz.ts'
-import { getData, setData } from '../dataStore.ts'
-import { clear } from '../other.ts'
+import { adminQuizInfo } from '../quiz'
+import { getData, setData } from '../dataStore'
+import { clear } from '../other'
 
 beforeEach(() => {
     clear();
@@ -28,7 +28,7 @@ beforeEach(() => {
         };
         setData(data);
 
-      expect(adminQuizInfo('125', '111')).toStrictEqual({error: 'adminQuizInfo: invalid user id'});
+      expect(adminQuizInfo(125, 111)).toStrictEqual({error: 'adminQuizInfo: invalid user id'});
     });
     test('invalid quiz id', () => {
         let data = getData();
@@ -49,7 +49,7 @@ beforeEach(() => {
         };
         setData(data);
 
-        expect(adminQuizInfo('123', '2')).toStrictEqual({error: 'adminQuizInfo: invalid quiz id'});
+        expect(adminQuizInfo(123, 2)).toStrictEqual({error: 'adminQuizInfo: invalid quiz id'});
     });
     test('do not own this', () => {
         let data = getData();
@@ -70,6 +70,6 @@ beforeEach(() => {
         };
         setData(data);
 
-        expect(adminQuizInfo('124', '321')).toStrictEqual({error: 'adminQuizInfo: you do not own this quiz'});
+        expect(adminQuizInfo(124, 321)).toStrictEqual({error: 'adminQuizInfo: you do not own this quiz'});
     });
 });

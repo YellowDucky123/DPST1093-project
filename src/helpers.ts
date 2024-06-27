@@ -1,12 +1,12 @@
 import { setData, getData, data, users, quizzes, quiz } from './dataStore'
 import validator from 'validator';
-import { user } from './dataStore'; 
+import { user } from './dataStore';
 
 export function userIdValidator(UserId: number) {
     let wh_data = getData();
     let data = wh_data.users;
-    for(const i in data) {
-        if(parseInt(i) === UserId) {
+    for (const i in data) {
+        if (parseInt(i) === UserId) {
             return true;
         }
     }
@@ -17,8 +17,8 @@ export function userIdValidator(UserId: number) {
 export function quizIdValidator(quizId: number) {
     let wh_data = getData();
     let data = wh_data.quizzes;
-    for(const i in data) {
-        if(parseInt(i) === quizId) {
+    for (const i in data) {
+        if (parseInt(i) === quizId) {
             return true;
         }
     }
@@ -29,8 +29,8 @@ export function quizIdValidator(quizId: number) {
 export function deletedQuizIdValidator(quizId: number) {
     let wh_data = getData();
     let data = wh_data.quizzesDeleted;
-    for(const i in data) {
-        if(parseInt(i) === quizId) {
+    for (const i in data) {
+        if (parseInt(i) === quizId) {
             return true;
         }
     }
@@ -44,14 +44,14 @@ export function quizOwnership(userId: number, quizId: number) {
     let owned_quizzes = wh_data['users'][userId]['quizzesUserHave'];
     let flag = 0;
 
-    for(const i in q_data) {
-        if(parseInt(`${i}`) === quizId) {
+    for (const i in q_data) {
+        if (parseInt(`${i}`) === quizId) {
             // let q_name = q_data[i]['name'];
 
-            for(const n of owned_quizzes) {
-                if(n === parseInt(i)) return true;
+            for (const n of owned_quizzes) {
+                if (n === parseInt(i)) return true;
             }
-            
+
             return false;
         }
     }
@@ -63,24 +63,24 @@ export function deletedQuizOwnership(userId: number, quizId: number) {
     let owned_quizzes = wh_data['users'][userId].quizzesUserDeleted;
     let flag = 0;
 
-    for(const i in q_data) {
-        if(parseInt(`${i}`) === quizId) {
+    for (const i in q_data) {
+        if (parseInt(`${i}`) === quizId) {
             // let q_name = q_data[i]['name'];
 
-            for(const n of owned_quizzes) {
-                if(n === parseInt(i)) return true;
+            for (const n of owned_quizzes) {
+                if (n === parseInt(i)) return true;
             }
-            
+
             return false;
         }
     }
 }
 
 export function nameLen(name: string) {
-    if(name.length < 3) {
+    if (name.length < 3) {
         return false;
     }
-    else if(name.length > 30) {
+    else if (name.length > 30) {
         return false;
     }
 
@@ -91,29 +91,29 @@ export function isNameAlphaNumeric(str: string) {
     var code, i, len;
 
     for (i = 0, len = str.length; i < len; i++) {
-      code = str.charCodeAt(i);
-      if (!(code > 47 && code < 58) && // numeric (0-9)
-          !(code > 64 && code < 91) && // upper alpha (A-Z)
-          !(code > 96 && code < 123) && // lower alpha (a-z)
-          !(code == 32)) { // space ' '
-        return false;
-      }
+        code = str.charCodeAt(i);
+        if (!(code > 47 && code < 58) && // numeric (0-9)
+            !(code > 64 && code < 91) && // upper alpha (A-Z)
+            !(code > 96 && code < 123) && // lower alpha (a-z)
+            !(code == 32)) { // space ' '
+            return false;
+        }
     }
     return true;
-  };
+};
 
 export function description_length_valid(description: string) {
-    if(description.length > 100) {
+    if (description.length > 100) {
         return false;
     }
 
     return true;
 }
 
-export function isUsedQuizName(name: string){
+export function isUsedQuizName(name: string, userId : number) {
     const data = getData();
-    for(let item in data.quizzes){
-        if(data.quizzes[item].name == name) {
+    for (let item of data.users[userId].quizzesUserHave) {
+        if (data.quizzes[item].name === name) {
             return false;
         }
     }
@@ -123,12 +123,12 @@ export function isUsedQuizName(name: string){
 // Check whether user ID is duplicate.
 export function checkDuplicateUserId(useId: number) {
     const currentData = getData();
-    for (let index in currentData.users) {       
+    for (let index in currentData.users) {
         if (useId === currentData.users[index].authUserId) {
             return true;
         }
     }
-    return useId;    
+    return useId;
 }
 
 // Create a new authticated user with the provided details.
@@ -153,10 +153,7 @@ export function createNewAuth(nameFirst: string, nameLast: string, userId: numbe
 }
 
 // Checks the validity of the provided email, first name, and last name.
-export function checkEmailNameFirstNameLast(email: string, nameFirst: string, nameLast: string) {
-    if (emailExist(email) === true) {
-        return { error: 'email existed' };
-    }
+export function checkEmailNameFirstNameLast(email: string, nameFirst: string, nameLast: string) : {error? : string} {
     if (validator.isEmail(email) === false) {
         return { error: 'email should have specific format' };
     }
@@ -172,7 +169,10 @@ export function checkEmailNameFirstNameLast(email: string, nameFirst: string, na
     if (checkNameFirstLength(nameLast) === false) {
         return { error: 'NameLast should be between 2 to 20 characters' };
     }
-    return undefined;
+    if (emailExist(email) === true) {
+        return { error: 'email existed' };
+    }
+    return {};
 }
 
 // Check whether password length is valid.
@@ -202,7 +202,7 @@ export function checkPasswordContain(password: string) {
 }
 
 // Check whether name contains is valid.
-export function checkNameContains (nameFirst: string) {
+export function checkNameContains(nameFirst: string) {
     for (let i = 0; i < nameFirst.length; i++) {
         if ((!validator.isAlpha(nameFirst[i])) && (nameFirst[i] !== '-') && (nameFirst[i] !== ' ') && (nameFirst[i] !== '\'')) {
             return false;
@@ -263,22 +263,22 @@ export function findPasswordByAuthUserId(authUserId: number) {
             return currentData.users[index].password;
         }
     }
-    return false;    
+    return false;
 }
 
 //checks whether the question exists within the specified quiz
 export function questionFinder(quizId: number, questionId: number): Boolean {
     const data = getData();
-    for(const d of data.quizzes[quizId].questions) {
-        if(d.questionId === questionId) return true;
+    for (const d of data.quizzes[quizId].questions) {
+        if (d.questionId === questionId) return true;
     }
     return false;
 }
 
 function checkIdDuplicate(id: number, object: users | quizzes): boolean {
     let flag: boolean = false;
-    for(const item in object) {
-        if(id === parseInt(item)) {
+    for (const item in object) {
+        if (id === parseInt(item)) {
             flag = true;
         }
     }
@@ -288,10 +288,10 @@ function checkIdDuplicate(id: number, object: users | quizzes): boolean {
 //create an Id, and check duplication within given object
 export function createId(obejct: users | quizzes): number {
     const Digit = 1000;
-    let id: number = Math.floor(Math.random()*Digit);
+    let id: number = Math.floor(Math.random() * Digit);
 
-    while(checkIdDuplicate(id, obejct) != false) {
-        id = Math.floor(Math.random()*Digit);
+    while (checkIdDuplicate(id, obejct) != false) {
+        id = Math.floor(Math.random() * Digit);
     }
 
     return id;

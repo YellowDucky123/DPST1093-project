@@ -6,8 +6,9 @@ beforeEach(() => {
   });
   describe('adminUserDetailsUpdate Tests', () => {
     test('Error email existed', () => {
-        const userId = adminAuthRegister("good@gmail.com", 'abcd1234', 'victor', 'xiao').authUserId;
-        expect(adminUserDetailsUpdate(userId, "good@gmail.com", 'victor', 'xiao')).toStrictEqual({error : 'email existed'});
+        adminAuthRegister("good@gmail.com", 'abcd1234', 'victor', 'xiao').authUserId;
+        const userId2 = adminAuthRegister("good2@gmail.com", 'abcd1234', 'victor', 'xiao').authUserId;
+        expect(adminUserDetailsUpdate(userId2, "good@gmail.com", 'victor', 'xiao')).toStrictEqual({error : 'email existed'});
     });
     test('Error email format', () => {
         const userId = adminAuthRegister("good@gmail.com", 'abcd1234', 'victor', 'xiao').authUserId;

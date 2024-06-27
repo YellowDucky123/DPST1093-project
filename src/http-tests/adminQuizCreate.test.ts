@@ -8,7 +8,18 @@ const port = config.port;
 const url = config.url;
 
 const SERVER_URL = `${url}:${port}`;
+
+
 request(
+    'DELETE',
+    SERVER_URL + '/v1/clear',
+    {
+        qs: {},
+        timeout: 100
+    }
+)
+
+const u1 = request(
     'POST',
     SERVER_URL + '/v1/admin/auth/register',
     {
@@ -20,21 +31,24 @@ request(
         }
     }
 )
+const u_id = JSON.parse(u1.body as string)
 
 describe('Quiz create test: ', () => {
     test('test succesfull: ', () => {
         const res = request(
-            'PUT',
-            SERVER_URL + '/v1/admin/quiz/:quizId/name',
+            'POST',
+            SERVER_URL + '/v1/admin/quiz',
             {
                 json: {
-
+                    authUserId: u_id.authUserId,
+                    name: 'old quiz name',
+                    description: 'describing'
                 }
             }
         )
         const result = JSON.parse(res.body as string);
         expect(res.statusCode).toBe(OK);
-        expect(result).toStrictEqual({});
+        expect(result).toStrictEqual({ quizId: expect.any(Number) });
     });
 
     test('invalid questionId: ', () => {

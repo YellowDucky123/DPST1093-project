@@ -429,9 +429,9 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
   const userId: number = findUserIdByToken(token);
 
   let result = adminQuizNameUpdate(userId, quizId, newName);
-  if ('error' in result) {
-    if (!findUserIdByToken(token)) {
-      res.status(400).send(JSON.stringify({ error: 'token not found' }));
+  if('error' in result) {
+    if(!findUserIdByToken(token)) {
+      res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
     }
     else if (result.error === 'Invalid name length') {
       res.status(400).send(JSON.stringify({ error: `${result.error}` }));
@@ -442,8 +442,8 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
     else if (result.error === 'User Id invalid') {
       res.status(401).send(JSON.stringify({ error: `${result.error}` }));
     }
-    else if (result.error === 'Quiz Id invalid') {
-      res.status(401).send(JSON.stringify({ error: `${result.error}` }));
+    else if(result.error === 'Quiz Id invalid') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
     }
     else if (result.error === 'This user does not own this quiz') {
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
@@ -452,7 +452,7 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     }
   }
-  res.status(200).send(JSON.stringify({}));
+  res.status(200).json({});
 })
 
 //update quiz description
@@ -463,15 +463,18 @@ app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
   const userId: number = findUserIdByToken(token);
   let result = adminQuizDescriptionUpdate(userId, quizId, newDescription);
 
-  if ('error' in result) {
-    if (result.error === 'Description too long') {
+  if('error' in result) {
+    if(!findUserIdByToken(token)) {
+      res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
+    }
+    else if(result.error === 'Description too long') {
       res.status(400).send(JSON.stringify({ error: 'Description too long' }))
     }
     else if (result.error === 'User Id invalid') {
       res.status(401).send(JSON.stringify({ error: 'User Id invalid' }))
     }
-    else if (result.error === 'Quiz Id invalid') {
-      res.status(401).send(JSON.stringify({ error: 'Quiz Id invalid' }))
+    else if(result.error === 'Quiz Id invalid') {
+      res.status(400).send(JSON.stringify({ error: 'Quiz Id invalid' }))
     }
     else if (result.error === 'This user does not own this quiz') {
       res.status(403).send(JSON.stringify({ error: 'This user does not own this quiz' }))
@@ -488,26 +491,33 @@ app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request,
   const userId: number = findUserIdByToken(token);
 
   let result = duplicateQuestion(userId, quizId, questionId);
-  if ('error' in result) {
-    if (result.error == 'Question Id does not refer to a valid question within this quiz') {
+  if('error' in result) {
+    if(!findUserIdByToken(token)) {
+      res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
+    }
+    else if(result.error == 'Question Id does not refer to a valid question within this quiz') {
       res.status(400).send(JSON.stringify({ error: `${result.error}` }));
     }
     else if (result.error == 'This user does not own this quiz') {
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     }
   }
+  res.status(200).send(JSON.stringify({ questionId: }));
 })
 
 //delete question
 app.delete('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);
-  const token = req.body.token;
+  const token = String(req.query.token);
   const userId: number = findUserIdByToken(token);
 
   let result = deleteQuestion(userId, quizId, questionId);
-  if ('error' in result) {
-    if (result.error == 'Question Id does not refer to a valid question within this quiz') {
+  if('error' in result) {
+    if(!findUserIdByToken(token)) {
+      res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
+    }
+    else if(result.error == 'Question Id does not refer to a valid question within this quiz') {
       res.status(400).send(JSON.stringify({ error: `${result.error}` }));
     }
     else if (result.error == 'This user does not own this quiz') {
@@ -526,8 +536,11 @@ app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: 
   const userId: number = findUserIdByToken(token);
 
   let result = moveQuestion(userId, quizId, questionId, newPosition);
-  if ('error' in result) {
-    if (result.error == 'Question Id does not refer to a valid question within this quiz') {
+  if('error' in result) {
+    if(!findUserIdByToken(token)) {
+      res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
+    }
+    else if(result.error == 'Question Id does not refer to a valid question within this quiz') {
       res.status(400).send(JSON.stringify({ error: `${result.error}` }));
     }
     else if (result.error == 'This user does not own this quiz') {
@@ -537,6 +550,11 @@ app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: 
   res.status(200).send(JSON.stringify({}));
 })
 
+//rids the server of everything
+app.delete('/v1/clear', (req: Request, res: Response) => {
+  let result = clear();
+  res.status(200).send(JSON.stringify(result));
+})
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================

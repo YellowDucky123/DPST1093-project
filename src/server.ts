@@ -401,6 +401,26 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
   }
 })
 
+// Update quize question
+app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const questionId = parseInt(req.params.questionId);
+  const { token, questionBody } = req.body;
+  const userId = findUserIdByToken(token);
+  if (!userId) {
+    return res.status(401).json({ error: 'userId not found' });
+  }
+  let result = adminQuizQuestionUpdate(userId, quizId, questionId, questionBody);
+  let status = 200;
+  if ('error' in result) {
+    if (result.error == 'This user does not own this quiz') {
+      status = 403;
+    } else {
+      status = 400;
+    }
+  }
+  return res.status(status).json(result);
+})
 //update quiz name
 app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);

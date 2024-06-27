@@ -112,9 +112,7 @@ export function adminQuizList(authUserId: number) {
         return { error: "can not find such a member" };
     }
     let dataBase = datas.users[authUserId];
-    console.log("here");
-    console.log(dataBase);
-    console.log(dataBase.quizzesUserHave);
+    
     for (const Id of dataBase.quizzesUserHave) {
         quizzes.push({
             quizId: Id,

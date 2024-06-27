@@ -7,6 +7,7 @@ const TOKEN_ERROR = 401;
 const port = config.port;
 const url = config.url;
 request('DELETE', `${url}:${port}/v1/clear`)
+beforeAll(() => {request('DELETE', `${url}:${port}/v1/clear`)})
 afterAll(() => {request('DELETE', `${url}:${port}/v1/clear`)})
 
 describe('/v1/admin/quiz/List', () => {
@@ -31,11 +32,11 @@ describe('/v1/admin/quiz/List', () => {
     expect(JSON.parse(res.body as string)).toEqual({quizzes : []})
   })
   test("the one with quizzes", () => {
-    let res = request('POST', `${url}:${port}/v1/admin/quiz`, {json : {token : token.token, quizName : "test", description : ""}})
+    let res = request('POST', `${url}:${port}/v1/admin/quiz`, {json : {token : token.token, name : "test", description : ""}})
     let quizId = JSON.parse(res.body as string).quizId
-    res = request('POST', `${url}:${port}/v1/admin/quiz`, {json : {token : token.token, quizName : "test1", description : ""}})
+    res = request('POST', `${url}:${port}/v1/admin/quiz`, {json : {token : token.token, name : "test1", description : ""}})
     let quizId1 = JSON.parse(res.body as string).quizId
-    res = request('POST', `${url}:${port}/v1/admin/quiz`, {json : {token : token.token, quizName : "test2", description : ""}})
+    res = request('POST', `${url}:${port}/v1/admin/quiz`, {json : {token : token.token, name : "test2", description : ""}})
     let quizId2 = JSON.parse(res.body as string).quizId
     res = request('GET', `${url}:${port}/v1/admin/quiz/List`, {qs : token})
     expect(res.statusCode).toBe(OK)

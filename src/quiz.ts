@@ -148,7 +148,7 @@ function checkQuestionInfo(quizId: number, question: question) {
     // Check if the question has a valid length
     if (!("question" in question) || question.question.length < 5 || question.question.length > 50) return { error: 'Invalid question length' };
     // Check if the answers number is valid
-    if (!("answers" in question) || question.answers.length < 2 || question.answers.length > 6) return { error: 'Invalid answer length' };
+    if (!("answers" in question) || question.answers.length < 2 || question.answers.length > 6) return { error: 'Invalid answers number' };
     // Check if the duration is valid
     if (!("duration" in question) || question.duration < 0) return { error: 'Invalid duration' };
 
@@ -160,7 +160,7 @@ function checkQuestionInfo(quizId: number, question: question) {
     // Check if the points are valid
     if (!("points" in question) || question.points < 1 || question.points > 10) return { error: 'Invalid points' };
     // Check if the answers have a valid length
-    if (question.answers.filter((answer) => (answer.answer.length < 1 || answer.answer.length > 30))) return { error: 'Invalid answer length' };
+    if (question.answers.filter((answer) => (answer.answer.length < 1 || answer.answer.length > 30)).length > 0) return { error: 'Invalid answer length' };
     // Check if there are any duplicate answers
     for (let i = 0; i < question.answers.length; i++) {
         for (let j = i + 1; j < question.answers.length; j++) {
@@ -171,20 +171,16 @@ function checkQuestionInfo(quizId: number, question: question) {
     }
     // Check if there is at least one correct answer
     if (question.answers.filter((answer) => (answer.correct === true)).length === 0) return { error: 'No correct answer' }
+    return {}
 }
 export function adminQuestionCreate(authUserId: number, quizId: number, question: question) {
     // Error checks
-    if (!checkQuestionInfo(quizId, question)) {
-        return { error: 'Invalid question' };
-    }
-    if (!userIdValidator(authUserId)) {
-        return { error: 'User Id invalid' };
-    }
-    if (!quizIdValidator(quizId)) {
-        return { error: 'Quiz Id invalid' };
-    }
     if (!quizOwnership(authUserId, quizId)) {
         return { error: 'This user does not own this quiz' };
+    }
+    let error:{ error?: string}
+    if ("error" in (error = checkQuestionInfo(quizId, question))) {
+        return error;
     }
     // If no errors then create question
     let data = getData();

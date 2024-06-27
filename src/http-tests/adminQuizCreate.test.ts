@@ -29,7 +29,7 @@ describe('Quiz create test: ', () => {
             SERVER_URL + '/v1/admin/quiz',
             {
                 json: {
-                    token: token1,
+                    token: token1.token,
                     name: "Test Quiz",
                     description: "This is a quiz for test"
                 }

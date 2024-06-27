@@ -220,7 +220,7 @@ app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
   res.status(status).json(ans);
 })
 
-app.post('/v1/admin/quiz/', (req: Request, res: Response) => {
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   const token = req.body.token as string;
   const name = req.body.name as string;
   const description = req.body.description as string;

@@ -1,6 +1,6 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
-import { adminQuizNameUpdate } from '../quiz';
+import { findUserIdByToken } from '../dataStore';
 
 const OK = 200;
 const INPUT_ERROR = 400;
@@ -8,7 +8,8 @@ const port = config.port;
 const url = config.url;
 
 const SERVER_URL = `${url}:${port}`;
-request(
+
+const res = request(
     'POST',
     SERVER_URL + '/v1/admin/auth/register',
     {
@@ -19,33 +20,24 @@ request(
             nameLast: 'Yoga'
         }
     }
-)
+);
 
 describe('Quiz create test: ', () => {
     test('test succesfull: ', () => {
-        const res = request(
-            'PUT',
-            SERVER_URL + '/v1/admin/quiz/:quizId/name',
+        const token1 = JSON.parse(res.body as string);
+        const res1 = request(
+            'POST',
+            SERVER_URL + '/v1/admin/quiz',
             {
                 json: {
-
+                    qs: token1,
+                    name: "Test Quiz",
+                    description: "This is a quiz for test"
                 }
             }
         )
-        const result = JSON.parse(res.body as string);
-        expect(res.statusCode).toBe(OK);
+        const result = JSON.parse(res1.body as string);
+        expect(res1.statusCode).toBe(OK);
         expect(result).toStrictEqual({});
     });
-
-    test('invalid questionId: ', () => {
-        const res = request(
-            'PUT',
-            SERVER_URL + '/v1/admin/quiz/:quizId/name',
-            {
-                json: {
-
-                }
-            }
-        )
-    })
 });

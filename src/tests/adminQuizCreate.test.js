@@ -13,15 +13,9 @@ beforeEach(() => {
         expect(adminQuizCreate(ID+1, 'thisIsName', 'hello world')).toStrictEqual({error: 'adminQuizCreate: invalid user id'});
     });
     test('quiz name length', () => {
-        let data = getData();
-        data.users = {
-            '123': {
-                authUserId: '123'
-            }
-        };
-        setData(data);
+        const ID = adminAuthRegister("hello@gmail.com", "asdfghjkl", "first", "last");
 
-        expect(adminQuizCreate('123', 'th', 'hello world')).toStrictEqual({error: 'adminQuizCreate: invalid quiz name length'});
+        expect(adminQuizCreate(ID, 'th', 'hello world')).toStrictEqual({error: 'adminQuizCreate: invalid quiz name length'});
     });
     test('invalid letters', () => {
         let data = getData();

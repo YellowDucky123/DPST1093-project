@@ -8,6 +8,8 @@ const url = config.url;
 
 const SERVER_URL = `${url}:${port}`;
 
+request('DELETE', `${url}:${port}/v1/clear`);
+
 const res = request(
     'POST',
     SERVER_URL + '/v1/admin/auth/register',
@@ -40,5 +42,3 @@ describe('Quiz create test: ', () => {
         expect(result).toStrictEqual({});
     });
 });
-
-request('DELETE', `${url}:${port}/v1/clear`);

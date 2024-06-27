@@ -243,29 +243,6 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   res.status(status).json(ans);
 })
 
-app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
-  const token = req.body.token as string;
-  const quizId = parseInt(req.params.quizId as string);
-  if (!token) {
-    res.status(401).json({ error: "A correct token is required" });
-  }
-  const UserId = findUserIdByToken(token)
-  if (!UserId) {
-    res.status(401).json({ error: "token incorrect or not found" });
-    return;
-  }
-  const ans = adminQuizRemove(UserId, quizId);
-  let status = 200;
-  if ("error" in ans) {
-    if (ans.error === "This user does not own this quiz") {
-      status = 403;
-    } else {
-      status = 400;
-    }
-  }
-  res.status(status).json(ans);
-})
-
 app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const token = req.body.token as string;
   const quizId = parseInt(req.params.quizId as string);
@@ -278,6 +255,29 @@ app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
     return;
   }
   const ans = adminQuizInfo(UserId, quizId);
+  let status = 200;
+  if ("error" in ans) {
+    if (ans.error === "This user does not own this quiz") {
+      status = 403;
+    } else {
+      status = 400;
+    }
+  }
+  res.status(status).json(ans);
+})
+
+app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
+  const token = req.body.token as string;
+  const quizId = parseInt(req.params.quizId as string);
+  if (!token) {
+    res.status(401).json({ error: "A correct token is required" });
+  }
+  const UserId = findUserIdByToken(token)
+  if (!UserId) {
+    res.status(401).json({ error: "token incorrect or not found" });
+    return;
+  }
+  const ans = adminQuizRemove(UserId, quizId);
   let status = 200;
   if ("error" in ans) {
     if (ans.error === "This user does not own this quiz") {
@@ -499,7 +499,7 @@ app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request,
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     }
   }
-  res.status(200).send(JSON.stringify({ questionId: }));
+  res.status(200).send(JSON.stringify({}));
 })
 
 //delete question

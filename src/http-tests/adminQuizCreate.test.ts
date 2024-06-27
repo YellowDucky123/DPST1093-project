@@ -1,6 +1,5 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
-import { findUserIdByToken } from '../dataStore';
 
 const OK = 200;
 const INPUT_ERROR = 400;

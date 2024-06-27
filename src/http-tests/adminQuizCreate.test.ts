@@ -39,6 +39,8 @@ describe('Quiz create test: ', () => {
         )
         const result = JSON.parse(res1.body as string);
         expect(res1.statusCode).toBe(OK);
-        expect(result).toStrictEqual({});
+        expect(result).toStrictEqual({
+            quizId: result.quizId
+        });
     });
 });

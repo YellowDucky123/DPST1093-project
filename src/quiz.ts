@@ -285,6 +285,7 @@ export function duplicateQuestion(authUserId: number, quizId: number, questionId
     for (const d of qs) {
         if (d.questionId === questionId) {
             qs.splice(qs.indexOf(d) + 1, 0, d);
+            
             break;
         }
     }

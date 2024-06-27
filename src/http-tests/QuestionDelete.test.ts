@@ -75,7 +75,7 @@ describe('Delete Question test :', () => {
     test('test succesfull:', () => {
         const res = request(
             'DELETE',
-            SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/question/${ques_id.questionId}`,
+            SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/question/${ques_id.questionId}/duplicate`,
             {
                 qs: {
                     token: t_id.token

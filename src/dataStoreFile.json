@@ -1,1 +1,1 @@
-{"users":{},"quizzes":{}}
+{"users":{"1":{"name":"Kelvin Yoga","nameFirst":"Kelvin","nameLast":"Yoga","authUserId":1,"email":"test@email.com","password":"newPassword123","numSuccessfulLogins":1,"numFailedPasswordsSinceLastLogin":0,"quizzesUserHave":[],"pastPassword":[]},"2":{"name":"Kelvin Yoga","nameFirst":"Kelvin","nameLast":"Yoga","authUserId":2,"email":"tes5t@email.com","password":"newPassword123","numSuccessfulLogins":1,"numFailedPasswordsSinceLastLogin":0,"quizzesUserHave":[],"pastPassword":[]}},"quizzes":{}}

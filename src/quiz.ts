@@ -61,7 +61,7 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
     }
     let data = getData();
     data.quizzesDeleted[quizId] = data.quizzes[quizId];
-    data.users[authUserId].quizzesUserDeleted[quizId] = quizId;
+    data.users[authUserId].quizzesUserDeleted.push(quizId);
 
     delete data.quizzes[quizId];
     const index = data.users[authUserId].quizzesUserHave.indexOf(quizId);
@@ -85,19 +85,7 @@ export function adminQuizInfo(authUserId: number, quizId: number) {
 
     const data = getData();
 
-    return {
-        quizId: data.quizzes[quizId].quizId,
-        name: data.quizzes[quizId].name,
-        timeCreated: data.quizzes[quizId].timeCreated,
-        timeLastEdited: data.quizzes[quizId].timeLastEdited,
-        description: data.quizzes[quizId].description
-    }
-    //  return data.quizzes[quizId]
-    /*for (const item in data.quizzes) {
-        if (item.quizId === quizId) {
-            return item;
-        }
-    }*/
+    return data.quizzes[quizId];
 }
 
 /*********************************************************************************************|
@@ -359,10 +347,21 @@ export function adminViewDeletedQuizzes(authUserId: number) {
     }
 
     const data = getData();
-    const ret = data.users[authUserId].quizzesUserDeleted;
+    const list = data.users[authUserId].quizzesUserDeleted;
 
+    interface quiz {
+        quizId: number,
+        name: string
+    };
+    let ret: quiz[] = [];
+    for(const id of list) {
+        ret.push({
+            quizId: id,
+            name: data.quizzesDeleted[id].name
+        })
+    }
     return {
-        ret
+        quizzes: ret
     };
 }
 

@@ -220,12 +220,13 @@ app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
   res.status(status).json(ans);
 })
 
-app.post('/v1/admin/quiz/', (req: Request, res: Response) => {
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   const token = req.body.token as string;
   const name = req.body.name as string;
   const description = req.body.description as string;
   if (!token) {
     res.status(401).json({ error: "A correct token is required" });
+    return;
   }
   const UserId = findUserIdByToken(token)
   if (!UserId) {
@@ -236,8 +237,6 @@ app.post('/v1/admin/quiz/', (req: Request, res: Response) => {
   let status = 200;
   if ("error" in ans) {
     if (ans.error === "Quiz name or descrption invalid") {
-      status = 403;
-    } else {
       status = 400;
     }
   }
@@ -304,9 +303,7 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   let status = 200;
   if ("error" in ans) {
     if (ans.error === "UserId invalid") {
-      status = 403;
-    } else {
-      status = 400;
+      status = 401;
     }
   }
   res.status(status).json(ans);

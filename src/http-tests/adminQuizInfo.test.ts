@@ -23,24 +23,36 @@ const res = request(
     }
 );
 
-describe('Quiz create test: ', () => {
+const token1 = JSON.parse(res.body as string);
+const res1 = request(
+    'POST',
+    SERVER_URL + '/v1/admin/quiz',
+    {
+        json: {
+            token: token1.token,
+            name: "Test Quiz",
+            description: "This is a quiz for test"
+        }
+    }
+)
+const result = JSON.parse(res1.body as string);
+const targetId = result.quizId;
+
+describe('Quiz info test: ', () => {
     test('test succesfull: ', () => {
         const token1 = JSON.parse(res.body as string);
         const res1 = request(
-            'POST',
-            SERVER_URL + '/v1/admin/quiz',
+            'GET',
+            SERVER_URL + '/v1/admin/quiz/'+targetId,
             {
                 json: {
                     token: token1.token,
-                    name: "Test Quiz",
-                    description: "This is a quiz for test"
+                    quizId: targetId
                 }
             }
         )
         const result = JSON.parse(res1.body as string);
         expect(res1.statusCode).toBe(OK);
-        expect(result).toStrictEqual({
-            quizId: result.quizId
-        });
+        expect(result).toStrictEqual(result);
     });
 });

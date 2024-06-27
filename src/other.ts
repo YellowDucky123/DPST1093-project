@@ -2,10 +2,10 @@ import { setData } from './dataStore'
 
 function clear() {
     const newData = {
-        users : {},
-        quizzes : {},
-        quizzesDeleted : {},
-        tokenUserIdList : {}
+        users: {},
+        quizzes: {},
+        quizzesDeleted: {},
+        tokenUserIdList: {}
     }
 
     setData(newData);

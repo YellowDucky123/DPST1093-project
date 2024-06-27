@@ -4,7 +4,9 @@ import {
   question,
   setDataStorebyJSON,
   setJSONbyDataStore,
-  getData
+  getData,
+  checkDuplicateToken,
+  findTokenByUserId
 } from './dataStore';
 import {
   adminUserDetails,
@@ -103,7 +105,7 @@ app.put("/v1/admin/user/password", (req: Request, res: Response) => {
   res.status(status).json(ans);
 })
 
-app.delete("/v1/clear", (req:Request, res : Response) => {
+app.delete("/v1/clear", (req: Request, res: Response) => {
   clear()
   res.status(200).json({})
 })
@@ -376,7 +378,10 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
     res.status(400).json({ error: `${result.error}` });
   }
   else {
-    const token = Math.floor(10000 + Math.random() * 90000).toString();
+    let token = Math.floor(10000 + Math.random() * 90000).toString();
+    while (checkDuplicateToken(token)) {
+      token = Math.floor(10000 + Math.random() * 90000).toString();
+    }
     if ("authUserId" in result) {
       getData().tokenUserIdList[token] = result.authUserId;
     }
@@ -392,13 +397,19 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
     return res.status(400).json({ error: `${result.error}` });
   }
   else {
-    const token = Math.floor(10000 + Math.random() * 90000).toString();
+    let token = findTokenByUserId(result.authUserId);
+    if (!token) {
+      token = Math.floor(10000 + Math.random() * 90000).toString();
+      while (checkDuplicateToken(token)) {
+        token = Math.floor(10000 + Math.random() * 90000).toString();
+      }
+    }
     getData().tokenUserIdList[token] = result.authUserId;
     return res.status(200).json({ token: token });
   }
 })
 
-// Update quize question
+// Update quiz question
 app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);

@@ -200,6 +200,7 @@ function setDataStorebyJSON() {
 function findUserIdByToken(Token: string) {
   console.log("finding user id by token (from function 'findUserIdByToken')")
   if (Token.length === 0) return NaN;
+  let data = getData();
   if (data.tokenUserIdList[Token]) {
     console.log("found success")
     return data.tokenUserIdList[Token];

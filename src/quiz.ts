@@ -188,6 +188,7 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
             }
         }
     }
+    question.questionId = questionId;
     data.quizzes[quizId].questions.push(question);
     data.quizzes[quizId].numQuizQuestion++;
     setData(data);

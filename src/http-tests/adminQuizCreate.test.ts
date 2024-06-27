@@ -40,3 +40,5 @@ describe('Quiz create test: ', () => {
         expect(result).toStrictEqual({});
     });
 });
+
+request('DELETE', `${url}:${port}/v1/clear`);

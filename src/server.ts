@@ -151,11 +151,11 @@ app.put("/v1/admin/user/details", (req: Request, res: Response) => {
   const nameFirst = req.body.nameFirst as string;
   const nameLast = req.body.nameLast as string;
   if (!token) {
-    res.status(400).json({ error: "A token is required" });
+    res.status(401).json({ error: "A token is required" });
     return;
   }
   if (!email || !nameFirst || !nameLast) {
-    res.status(401).json({ error: "Missing some contents" });
+    res.status(400).json({ error: "Missing some contents" });
     return;
   }
   const UserId = findUserIdByToken(token)
@@ -165,7 +165,7 @@ app.put("/v1/admin/user/details", (req: Request, res: Response) => {
   }
   let ans = adminUserDetailsUpdate(UserId, email, nameFirst, nameLast)
   if ("error" in ans) {
-    res.status(401).json(ans);
+    res.status(400).json(ans);
   } else {
     res.status(200).json(ans);
   }

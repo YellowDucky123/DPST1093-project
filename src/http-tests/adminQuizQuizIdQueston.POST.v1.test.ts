@@ -1,6 +1,5 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
-import { describe } from 'node:test';
 
 const OK = 200;
 const INPUT_ERROR = 400;

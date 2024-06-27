@@ -144,6 +144,7 @@ export function createNewAuth(nameFirst: string, nameLast: string, userId: numbe
         numSuccessfulLogins: 1,
         numFailedPasswordsSinceLastLogin: 0,
         quizzesUserHave: [],
+        quizzesUserDeleted: [],
         pastPassword: []
     };
     let dataStore = getData();

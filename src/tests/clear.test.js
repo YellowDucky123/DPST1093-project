@@ -1,7 +1,7 @@
-import { clear } from '../src/other.js'
-import { adminAuthRegister } from '../src/auth.js'
-import { getData } from '../src/dataStore.js'
-import { adminQuizCreate } from '../src/quiz.js'
+import { clear } from '../src/other.ts'
+import { adminAuthRegister } from '../src/auth.ts'
+import { getData } from '../src/dataStore.ts'
+import { adminQuizCreate } from '../src/quiz.ts'
 
 test('testing clear --- return value', () => {
     expect(clear()).toEqual({})

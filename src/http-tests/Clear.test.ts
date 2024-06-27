@@ -13,7 +13,7 @@ const u1 = request(
     SERVER_URL + '/v1/admin/auth/register',
     {
         json: {
-            email: 'tes5t@email.com',
+            email: 'clear@email.com',
             password: 'newPassword123',
             nameFirst: 'Kelvin',
             nameLast: 'Yoga'
@@ -39,16 +39,15 @@ test('Clear Server Test: ', () => {
         'DELETE',
         SERVER_URL + '/v1/clear',
         {
-            qs: {}
+            qs: {},
+            timeout: 100
         }
     )
     const result = JSON.parse(res.body as string);
     expect(res.statusCode).toBe(OK);
-    expect(result).toStrictEqual(
-    {
-        users : {},
-        quizzes : {},
-        quizzesDeleted : {},
-        tokenUserIdList : {}
-    });
+    expect(result).toStrictEqual({});
+    // users : {},
+    // quizzes : {},
+    // quizzesDeleted : {},
+    // tokenUserIdList : {}
 })

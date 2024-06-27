@@ -9,6 +9,13 @@ const url = config.url;
 
 const SERVER_URL = `${url}:${port}`;
 
+request(
+    'DELETE',
+    SERVER_URL + '/v1/clear',
+    {
+        qs: {}
+    }
+)
 //create user 1
 const u1 = request(
     'POST',
@@ -30,7 +37,7 @@ const u2 = request(
     SERVER_URL + '/v1/admin/auth/register',
     {
         json: {
-            email: 'test@email.com',
+            email: 'testh@email.com',
             password: 'newPassword123',
             nameFirst: 'Kelvin',
             nameLast: 'Yoga'
@@ -78,9 +85,11 @@ describe('Update Quiz Name http test: ', () => {
                     authUserId: u_id.authUserId,
                     quizId: q_id.quizId,
                     name: 'new name'
-                }
+                },
+                timeout: 100
             }
         )
+        console.log(res.body);
         const result = JSON.parse(res.body as string);
         expect(res.statusCode).toBe(OK);
         expect(result).toStrictEqual({});

@@ -389,7 +389,7 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     }
   }
-  res.status(200).send(JSON.stringify({}));
+  res.status(200).json({});
 })
 
 //update quiz description

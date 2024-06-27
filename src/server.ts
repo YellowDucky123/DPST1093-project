@@ -445,7 +445,7 @@ app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
   res.status(200).send(JSON.stringify({}));
 })
 
-// Update quize question
+// Update quiz question
 app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);

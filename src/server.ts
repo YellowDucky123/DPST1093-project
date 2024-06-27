@@ -31,7 +31,8 @@ import {
   adminViewDeletedQuizzes,
   adminRestoreQuiz,
   adminQuizPermDelete,
-  adminQuizQuestionUpdate
+  adminQuizQuestionUpdate,
+  adminQuizCreate
 } from './quiz';
 // set up data
 setDataStorebyJSON()
@@ -170,7 +171,31 @@ app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
   res.status(status).json(ans);
 })
 
-app.delete('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
+app.post('/v1/admin/quiz/', (req: Request, res: Response) => {
+  const token = req.body.token as string;
+  const name = req.body.name as string;
+  const description = req.body.description as string;
+  if (!token) {
+    res.status(401).json({ error: "A correct token is required" });
+  }
+  const UserId = findUserIdByToken(token)
+  if (!UserId) {
+    res.status(401).json({ error: "token incorrect or not found" });
+    return;
+  }
+  const ans = adminQuizCreate(UserId, name, description);
+  let status = 200;
+  if ("error" in ans) {
+    if (ans.error === "Quiz name or descrption invalid") {
+      status = 403;
+    } else {
+      status = 400;
+    }
+  }
+  res.status(status).json(ans);
+})
+
+app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const token = req.body.token as string;
   const quizId = parseInt(req.params.quizId as string);
   if (!token) {
@@ -193,7 +218,7 @@ app.delete('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
   res.status(status).json(ans);
 })
 
-app.get('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
+app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const token = req.body.token as string;
   const quizId = parseInt(req.params.quizId as string);
   if (!token) {

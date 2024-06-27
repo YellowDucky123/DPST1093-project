@@ -9,30 +9,15 @@ const url = config.url;
 
 const SERVER_URL = `${url}:${port}`;
 
-// beforeAll(() => {
-//     request(
-//         'DELETE',
-//         SERVER_URL + '/v1/clear',
-//         {
-//             qs: {}
-//         }
-//     )
-// })
-// afterAll(() => {
-//     request(
-//         'DELETE',
-//         SERVER_URL + '/v1/clear',
-//         {
-//             qs: {}
-//         }
-//     )
-// })
+afterAll(() => {
+    request(
+        'DELETE', SERVER_URL + '/v1/clear'
+    )
+})
+
 request(
     'DELETE',
     SERVER_URL + '/v1/clear',
-    {
-        qs: {}
-    }
 )
 //create user 1
 const u1 = request(
@@ -100,7 +85,7 @@ describe('Update Quiz Name http test: ', () => {
             SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/name`,
             {
                 json: {
-                    token: t2_id.token,
+                    token: t_id.token,
                     quizId: q_id.quizId,
                     name: 'new name'
                 },
@@ -215,10 +200,3 @@ describe('Update Quiz Name http test: ', () => {
         expect(result).toStrictEqual({ error: 'Invalid character used in name' });
     })
 });
-request(
-    'DELETE',
-    SERVER_URL + '/v1/clear',
-    {
-        qs: {}
-    }
-)

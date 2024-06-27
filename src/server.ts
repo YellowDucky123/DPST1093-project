@@ -485,14 +485,14 @@ app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request,
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     }
   }
-  res.status(200).send(JSON.stringify({}));
+  res.status(200).send(JSON.stringify({ questionId: }));
 })
 
 //delete question
 app.delete('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);
-  const token = req.body.token;
+  const token = String(req.query.token);
   const userId: number = findUserIdByToken(token);
 
   let result = deleteQuestion(userId, quizId, questionId);

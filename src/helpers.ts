@@ -111,7 +111,7 @@ export function description_length_valid(description: string) {
     return true;
 }
 
-export function isUsedQuizName(name: string, userId : number) {
+export function isUsedQuizName(name: string, userId: number) {
     const data = getData();
     for (let item of data.users[userId].quizzesUserHave) {
         if (data.quizzes[item].name === name) {
@@ -154,7 +154,7 @@ export function createNewAuth(nameFirst: string, nameLast: string, userId: numbe
 }
 
 // Checks the validity of the provided email, first name, and last name.
-export function checkEmailNameFirstNameLast(email: string, nameFirst: string, nameLast: string) : {error? : string} {
+export function checkEmailNameFirstNameLast(email: string, nameFirst: string, nameLast: string): { error?: string } {
     if (validator.isEmail(email) === false) {
         return { error: 'email should have specific format' };
     }
@@ -242,7 +242,7 @@ export function findAuthUserIdByEmail(email: string) {
             return currentData.users[index].authUserId;
         }
     }
-    return false;
+    return NaN;
 }
 
 // Check whether password is correct for the user.

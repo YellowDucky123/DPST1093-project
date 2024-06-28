@@ -518,7 +518,7 @@ app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request,
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     }
   }
-  res.status(200).send(JSON.stringify({}));
+  res.status(200).send(JSON.stringify(result));
 })
 
 //delete question

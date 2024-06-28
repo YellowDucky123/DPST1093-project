@@ -179,11 +179,19 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   if (!token) {
     res.status(401).json({ error: "A token is required" });
   }
-  if (!quizId || !userEmail) {
-    res.status(400).json({ error: "Missing some contents" });
+  const UserId = findUserIdByToken(token)
+  if (!UserId) {
+    res.status(401).json({ error: "token incorrect or not found" });
+  }
+  if (!quizId) {
+    res.status(403).json({ error: "You must provide a quizId" });
     return;
   }
-  const UserId = findUserIdByToken(token)
+  if (!userEmail) {
+    res.status(400).json({ error: "You must provide a valid email" });
+    return;
+  }
+  
   const ans = adminQuizTransfer(quizId, UserId, userEmail);
   let status = 200;
   if ("error" in ans) {

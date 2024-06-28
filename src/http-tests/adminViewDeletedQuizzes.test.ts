@@ -45,7 +45,7 @@ request(
     'DELETE',
     SERVER_URL + '/v1/admin/quiz/'+targetId,
     {
-        json: {
+        qs: {
             token: token1,
             quizId: targetId
         }
@@ -58,7 +58,7 @@ describe('View deleted quiz test: ', () => {
             'GET',
             SERVER_URL + '/v1/admin/quiz/trash',
             {
-                json: {
+                qs: {
                     token: token1
                 }
             }

@@ -265,12 +265,16 @@ export function duplicateQuestion(authUserId: number, quizId: number, questionId
         return { error: 'Question Id does not refer to a valid question within this quiz' };
     }
 
+    let ques_id;
     const data = getData();
     let qs = data.quizzes[quizId].questions;
     for (const d of qs) {
         if (d.questionId === questionId) {
-            qs.splice(qs.indexOf(d) + 1, 0, d);
-            
+            let Dup_q = JSON.parse(JSON.stringify(d));
+            ques_id = createQuestionId(quizId);
+            Dup_q.questionId = ques_id;
+
+            qs.splice(qs.indexOf(d) + 1, 0, Dup_q);
             break;
         }
     }
@@ -278,7 +282,7 @@ export function duplicateQuestion(authUserId: number, quizId: number, questionId
     data.quizzes[quizId].questions = qs;
     setData(data);
 
-    return {}
+    return { questionId: ques_id};
 }
 
 export function deleteQuestion(authUserId: number, quizId: number, questionId: number) {

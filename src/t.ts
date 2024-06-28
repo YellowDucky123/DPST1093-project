@@ -1,26 +1,17 @@
-import { adminQuestionCreate, adminQuizCreate } from './quiz'
-import { adminAuthRegister } from './auth'
-import { exit } from 'process';
+let a = [
+    {k: 1,
+     l: 1
+    },
+    {
+        k:2,
+        l:2
+    }
+]
 
-let authid = adminAuthRegister('test@gmail.com', 'pa223ssd', 'kelvin', 'yoga');
-if('error' in authid) {
-    console.log(authid);
-    exit;
+for(const d of a) {
+    if(d.k == 1) {
+        d.k = 4
+    }
 }
-console.log(authid)
-let id = JSON.stringify(authid);
-console.log(id.slice(14,19));
-let qid = adminQuizCreate(parseInt(id), 'new name', 'dno');
 
-console.log(adminQuestionCreate(parseInt(id), qid.quizId, {
-    question: "Who is the Monarch of England?",
-    duration: 4,
-    points: 5,
-    answers: [
-        {
-            answer: "Prince Charles",
-            answerId
-            correct: true
-        }
-    ]
-}))
+console.log(a)

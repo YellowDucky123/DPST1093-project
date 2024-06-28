@@ -117,7 +117,7 @@ describe('Duplicate Question test :', () => {
         )
         const result = JSON.parse(res.body as string);
         expect(res.statusCode).toBe(OK);
-        expect(result).toStrictEqual({});
+        expect(result).toStrictEqual({ questionId: expect.any(Number) });
     })
 
     test('Duplicate confirmation test: ', () => {
@@ -134,7 +134,7 @@ describe('Duplicate Question test :', () => {
         expect(res.statusCode).toBe(OK);
         expect(result.questions).toEqual([
             {
-                questionId: expect.any(Number),
+                questionId: ques_id.questionId,
                 question: "Who is the Monarch of England?",
                 duration: 4,
                 points: 5,

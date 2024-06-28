@@ -238,16 +238,14 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   const ans = adminQuizCreate(UserId, name, description);
   let status = 200;
   if ("error" in ans) {
-    if (ans.error === "Quiz name or descrption invalid") {
-      status = 400;
-    }
+    status = 400;
   }
   res.status(status).json(ans);
 })
 
 app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const token = req.query.token as string;
-  const quizId = parseInt(req.params.quizId as string);
+  const quizId = parseInt(req.query.quizId as string);
   if (!token) {
     res.status(401).json({ error: "A correct token is required" });
   }
@@ -259,30 +257,7 @@ app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const ans = adminQuizRemove(UserId, quizId);
   let status = 200;
   if ("error" in ans) {
-    if (ans.error === "This user does not own this quiz") {
-      status = 403;
-    } else {
-      status = 400;
-    }
-  }
-  res.status(status).json(ans);
-})
-
-app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
-  const token = req.query.token as string;
-  const quizId = parseInt(req.params.quizId as string);
-  if (!token) {
-    res.status(401).json({ error: "A correct token is required" });
-  }
-  const UserId = findUserIdByToken(token);
-  if (!UserId) {
-    res.status(401).json({ error: "token incorrect or not found" });
-    return;
-  }
-  const ans = adminQuizInfo(UserId, quizId);
-  let status = 200;
-  if ("error" in ans) {
-    if (ans.error === "This user does not own this quiz") {
+    if (ans.error === "adminQuizRemove: you do not own this quiz") {
       status = 403;
     }
   }
@@ -302,8 +277,27 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   const ans = adminViewDeletedQuizzes(UserId);
   let status = 200;
   if ("error" in ans) {
-    if (ans.error === "UserId invalid") {
-      status = 401;
+    status = 401;
+  }
+  res.status(status).json(ans);
+})
+
+app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  const quizId = parseInt(req.query.quizId as string);
+  if (!token) {
+    res.status(401).json({ error: "A correct token is required" });
+  }
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    res.status(401).json({ error: "token incorrect or not found" });
+    return;
+  }
+  const ans = adminQuizInfo(UserId, quizId);
+  let status = 200;
+  if ("error" in ans) {
+    if (ans.error === "adminQuizInfo: you do not own this quiz") {
+      status = 403;
     }
   }
   res.status(status).json(ans);
@@ -323,7 +317,7 @@ app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
   const ans = adminRestoreQuiz(UserId, quizId);
   let status = 200;
   if ("error" in ans) {
-    if (ans.error === "UserId invalid") {
+    if (ans.error === "adminQuizInfo: you do not own this quiz") {
       status = 403;
     } else {
       status = 400;
@@ -334,7 +328,7 @@ app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
 
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const token = req.query.token as string;
-  const quizId = parseInt(req.params.quizId as string);
+  const quizIds = (req.query.quizIds as string[]).map(Number);
   if (!token) {
     res.status(401).json({ error: "A correct token is required" });
   }
@@ -343,10 +337,10 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
     res.status(401).json({ error: "token incorrect or not found" });
     return;
   }
-  const ans = adminQuizPermDelete(UserId, quizId);
+  const ans = adminQuizPermDelete(UserId, quizIds);
   let status = 200;
   if ("error" in ans) {
-    if (ans.error === "UserId invalid") {
+    if (ans.error === "adminQuizInfo: you do not own this quiz") {
       status = 403;
     } else {
       status = 400;

@@ -14,7 +14,7 @@ afterAll(() => {
 
 request('DELETE', `${url}:${port}/v1/clear`);
 
-const register = request(
+const reg1 = request(
     'POST',
     SERVER_URL + '/v1/admin/auth/register',
     {
@@ -26,9 +26,23 @@ const register = request(
         }
     }
 );
+const token1 = JSON.parse(reg1.body as string).token;
 
-const token1 = JSON.parse(register.body as string).token;
-const QC = request(
+const reg2 = request(
+    'POST',
+    SERVER_URL + '/v1/admin/auth/register',
+    {
+        json: {
+            email: 'test2@email.com',
+            password: 'newPassword123',
+            nameFirst: 'Kei',
+            nameLast: 'Ikushima'
+        }
+    }
+);
+const token2 = JSON.parse(reg2.body as string).token;
+
+const QC1 = request(
     'POST',
     SERVER_URL + '/v1/admin/quiz',
     {
@@ -39,8 +53,8 @@ const QC = request(
         }
     }
 )
+const targetId = JSON.parse(QC1.body as string).quizId;
 
-const targetId = JSON.parse(QC.body as string).quizId;
 request(
     'DELETE',
     SERVER_URL + '/v1/admin/quiz/'+targetId,
@@ -53,6 +67,20 @@ request(
 )
 
 describe('View deleted quiz test: ', () => {
+    test('test token error: ', () => {
+        const res = request(
+            'GET',
+            SERVER_URL + '/v1/admin/quiz/trash',
+            {
+                qs: {
+                    token: token1+1
+                }
+            }
+        )
+        const result = JSON.parse(res.body as string);
+        expect(res.statusCode).toBe(401);
+    });
+
     test('test succesfull: ', () => {
         const res = request(
             'GET',
@@ -64,7 +92,7 @@ describe('View deleted quiz test: ', () => {
             }
         )
         const result = JSON.parse(res.body as string);
-        //expect(res.statusCode).toBe(OK);
-        expect(result).toStrictEqual({});
+        expect(res.statusCode).toBe(OK);
+        expect(result.quizzes[0].name).toStrictEqual("Test Quiz");
     });
 });

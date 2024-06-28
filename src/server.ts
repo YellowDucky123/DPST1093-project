@@ -269,7 +269,7 @@ app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
 })
 
 app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
-  const token = req.body.token as string;
+  const token = req.query.token as string;
   const quizId = parseInt(req.params.quizId as string);
   if (!token) {
     res.status(401).json({ error: "A correct token is required" });
@@ -510,7 +510,7 @@ app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request,
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     }
   }
-  res.status(200).send(JSON.stringify({ questionId: }));
+  res.status(200).send(JSON.stringify({}));
 })
 
 //delete question

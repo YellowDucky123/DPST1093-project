@@ -92,7 +92,6 @@ describe('Update Quiz Name http test: ', () => {
                 timeout: 100
             }
         )
-        console.log(res.body);
         const result = JSON.parse(res.body as string);
         expect(res.statusCode).toBe(OK);
         expect(result).toStrictEqual({});

@@ -184,6 +184,7 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
             }
         }
     }
+    question.questionId = questionId;
     data.quizzes[quizId].questions.push(question);
     data.quizzes[quizId].numQuizQuestion++;
     setData(data);
@@ -269,6 +270,7 @@ export function duplicateQuestion(authUserId: number, quizId: number, questionId
     for (const d of qs) {
         if (d.questionId === questionId) {
             qs.splice(qs.indexOf(d) + 1, 0, d);
+            
             break;
         }
     }

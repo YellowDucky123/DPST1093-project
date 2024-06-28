@@ -134,6 +134,9 @@ export function adminQuizTransfer(quizId: number, fromId: number, sendToEmail: s
     if (!data.users[fromId].quizzesUserHave.includes(quizId)) {
         return { error: 'You do not own this quiz' };
     }
+    if (!isUsedQuizName(data.quizzes[quizId].name, userId)) {
+        return { error : "Quiz ID refers to a quiz that has a name that is already used by the target user"}
+    }
     data.users[userId].quizzesUserHave.push(quizId);
     console.log(userId)
     console.log(data.users[userId].quizzesUserHave, "\n")

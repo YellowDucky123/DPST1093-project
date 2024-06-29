@@ -74,13 +74,13 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
 
 export function adminQuizInfo(authUserId: number, quizId: number) {
     if (userIdValidator(authUserId) == false) {
-        return { error: 'adminQuizInfo: invalid user id' }
+        return { error: 'invalid user id' }
     }
     if (quizIdValidator(quizId) == false) {
-        return { error: 'adminQuizInfo: invalid quiz id' }
+        return { error: 'invalid quiz id' }
     }
     if (quizOwnership(authUserId, quizId) == false) {
-        return { error: 'adminQuizInfo: you do not own this quiz' }
+        return { error: 'you do not own this quiz' }
     }
 
     const data = getData();
@@ -371,20 +371,24 @@ export function adminViewDeletedQuizzes(authUserId: number) {
 
 export function adminRestoreQuiz(authUserId: number, quizId: number) {
     if (userIdValidator(authUserId) == false) {
-        return { error: 'adminQuizInfo: invalid user id' }
+        return { error: 'invalid user id' }
     }
     if (deletedQuizIdValidator(quizId) == false) {
-        return { error: 'adminQuizInfo: invalid quiz id' }
+        return { error: 'invalid quiz id' }
     }
     if (deletedQuizOwnership(authUserId, quizId) == false) {
-        return { error: 'adminQuizInfo: you do not own this quiz' }
+        return { error: 'you do not own this quiz' }
     }
 
     const data = getData();
-    const newId = createId(data.quizzes);
- 
-    data.quizzes[newId] = data.quizzesDeleted[quizId];
-    data.users[authUserId].quizzesUserHave.push(newId);
+
+    const name = data.quizzesDeleted[quizId].name;
+    const description = data.quizzesDeleted[quizId].description;
+
+    const ans = adminQuizCreate(authUserId, name, description);
+    if("error" in ans) {
+        return {"error": "creation failed"}
+    }
 
     delete data.quizzesDeleted[quizId];
     const index = data.users[authUserId].quizzesUserDeleted.indexOf(quizId);
@@ -395,23 +399,33 @@ export function adminRestoreQuiz(authUserId: number, quizId: number) {
     return {};
 }
 
-export function adminQuizPermDelete(authUserId: number, quizId: number) {
+export function adminQuizPermDelete(authUserId: number, quizIds: number[]) {
     if (userIdValidator(authUserId) == false) {
-        return { error: 'adminQuizInfo: invalid user id' }
+        return { error: 'invalid user id' }
     }
-    if (deletedQuizIdValidator(quizId) == false) {
-        return { error: 'adminQuizInfo: invalid quiz id' }
+    for(const item of quizIds){
+        if (deletedQuizIdValidator(item) == false) {
+            return { error: 'invalid quiz id' }
+        }
+        if (deletedQuizOwnership(authUserId, item) == false) {
+            return { error: 'you do not own this quiz' }
+        }
+        
     }
-    if (deletedQuizOwnership(authUserId, quizId) == false) {
-        return { error: 'adminQuizInfo: you do not own this quiz' }
-    }
-
     const data = getData();
+    for(const item of quizIds) {
+        if(data.users[authUserId].quizzesUserDeleted.includes(item) === false) {
+            return { error: 'Target quiz id does not exist'}
+        }
+    }
 
-    const index = data.users[authUserId].quizzesUserDeleted.indexOf(quizId);
-    data.users[authUserId].quizzesUserDeleted.splice(index, 1);
 
-    delete data.quizzesDeleted[quizId];
+    for(const item of quizIds){
+        const index = data.users[authUserId].quizzesUserDeleted.indexOf(item);
+        data.users[authUserId].quizzesUserDeleted.splice(index, 1);
+    
+        delete data.quizzesDeleted[item];
+    }
 
     setData(data);
 

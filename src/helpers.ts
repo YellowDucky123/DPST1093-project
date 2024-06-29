@@ -113,11 +113,12 @@ export function description_length_valid(description: string) {
 
 export function isUsedQuizName(name: string, userId: number) {
     const data = getData();
-    for (let item of data.users[userId].quizzesUserHave) {
+    for(let item in data.quizzes){
         if (data.quizzes[item].name === name) {
             return false;
         }
     }
+    
     return true;
 }
 

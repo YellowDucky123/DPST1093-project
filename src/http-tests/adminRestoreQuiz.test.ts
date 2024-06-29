@@ -71,7 +71,7 @@ const QC2 = request(
     SERVER_URL + '/v1/admin/quiz',
     {
         json: {
-            token: token1,
+            token: token2,
             name: "Test Quiz",
             description: "This is a quiz for test"
         }
@@ -84,7 +84,7 @@ request(
     SERVER_URL + '/v1/admin/quiz/'+targetId2,
     {
         qs: {
-            token: token1,
+            token: token2,
             quizId: targetId2
         }
     }
@@ -205,7 +205,7 @@ describe('Restore quiz test: ', () => {
             }
         )
         const result = JSON.parse(list.body as string);
-        expect(restore2.statusCode).toBe(400);
+        expect(restore2.statusCode).toBe(403);
     });
 
     test('test succesfull: ', () => {

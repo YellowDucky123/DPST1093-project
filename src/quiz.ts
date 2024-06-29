@@ -74,13 +74,13 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
 
 export function adminQuizInfo(authUserId: number, quizId: number) {
     if (userIdValidator(authUserId) == false) {
-        return { error: 'adminQuizInfo: invalid user id' }
+        return { error: 'invalid user id' }
     }
     if (quizIdValidator(quizId) == false) {
-        return { error: 'adminQuizInfo: invalid quiz id' }
+        return { error: 'invalid quiz id' }
     }
     if (quizOwnership(authUserId, quizId) == false) {
-        return { error: 'adminQuizInfo: you do not own this quiz' }
+        return { error: 'you do not own this quiz' }
     }
 
     const data = getData();
@@ -364,13 +364,13 @@ export function adminViewDeletedQuizzes(authUserId: number) {
 
 export function adminRestoreQuiz(authUserId: number, quizId: number) {
     if (userIdValidator(authUserId) == false) {
-        return { error: 'adminQuizInfo: invalid user id' }
+        return { error: 'invalid user id' }
     }
     if (deletedQuizIdValidator(quizId) == false) {
-        return { error: 'adminQuizInfo: invalid quiz id' }
+        return { error: 'invalid quiz id' }
     }
     if (deletedQuizOwnership(authUserId, quizId) == false) {
-        return { error: 'adminQuizInfo: you do not own this quiz' }
+        return { error: 'you do not own this quiz' }
     }
 
     const data = getData();
@@ -394,14 +394,14 @@ export function adminRestoreQuiz(authUserId: number, quizId: number) {
 
 export function adminQuizPermDelete(authUserId: number, quizIds: number[]) {
     if (userIdValidator(authUserId) == false) {
-        return { error: 'adminQuizInfo: invalid user id' }
+        return { error: 'invalid user id' }
     }
     for(const item of quizIds){
         if (deletedQuizIdValidator(item) == false) {
-            return { error: 'adminQuizInfo: invalid quiz id' }
+            return { error: 'invalid quiz id' }
         }
         if (deletedQuizOwnership(authUserId, item) == false) {
-            return { error: 'adminQuizInfo: you do not own this quiz' }
+            return { error: 'you do not own this quiz' }
         }
         
     }

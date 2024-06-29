@@ -304,7 +304,7 @@ app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const ans = adminQuizInfo(UserId, quizId);
   let status = 200;
   if ("error" in ans) {
-    if (ans.error === "you do not own this quiz") {
+    if (ans.error === "adminQuizInfo: you do not own this quiz") {
       status = 403;
     }
   }
@@ -325,7 +325,7 @@ app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
   const ans = adminRestoreQuiz(UserId, quizId);
   let status = 200;
   if ("error" in ans) {
-    if (ans.error === "you do not own this quiz") {
+    if (ans.error === "adminRestoreQuiz: you do not own this quiz") {
       status = 403;
     } else {
       status = 400;
@@ -348,7 +348,7 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const ans = adminQuizPermDelete(UserId, quizIds);
   let status = 200;
   if ("error" in ans) {
-    if (ans.error === "you do not own this quiz") {
+    if (ans.error === "adminQuizPermDelete: you do not own this quiz") {
       status = 403;
     } else {
       status = 400;

@@ -1,6 +1,7 @@
 import { setData, getData, data, users, quizzes, quiz } from './dataStore'
 import validator from 'validator';
 import { user } from './dataStore';
+import { customAlphabet } from 'nanoid'
 
 export function userIdValidator(UserId: number) {
     let wh_data = getData();
@@ -153,7 +154,7 @@ export function createNewAuth(nameFirst: string, nameLast: string, userId: numbe
 }
 
 // Checks the validity of the provided email, first name, and last name.
-export function checkEmailNameFirstNameLast(email: string, nameFirst: string, nameLast: string) : {error? : string} {
+export function checkEmailNameFirstNameLast(email: string, nameFirst: string, nameLast: string): { error?: string } {
     if (validator.isEmail(email) === false) {
         return { error: 'email should have specific format' };
     }
@@ -241,7 +242,7 @@ export function findAuthUserIdByEmail(email: string) {
             return currentData.users[index].authUserId;
         }
     }
-    return false;
+    return NaN;
 }
 
 // Check whether password is correct for the user.
@@ -295,4 +296,21 @@ export function createId(obejct: users | quizzes): number {
     }
 
     return id;
+}
+
+export function createQuestionId(quizId: number) {
+    let data = getData();
+
+    const nanoId = customAlphabet("01234567890", 3);
+    let questionId = parseInt(nanoId())
+    questionId = questionId * Math.pow(10, quizId.toString().length) + quizId;
+    console.log("creating unique question id")
+    while (1) {
+        if (data.quizzes[quizId].questions.every(question => (question.questionId !== questionId * Math.pow(10, quizId.toString().length) + quizId))) {
+            break;
+        }
+        questionId = parseInt(nanoId())
+    }
+
+    return questionId;
 }

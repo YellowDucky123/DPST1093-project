@@ -113,12 +113,12 @@ export function description_length_valid(description: string) {
 
 export function isUsedQuizName(name: string, userId: number) {
     const data = getData();
-    for(let item in data.quizzes){
+    for (let item in data.quizzes) {
         if (data.quizzes[item].name === name) {
             return false;
         }
     }
-    
+
     return true;
 }
 
@@ -271,8 +271,19 @@ export function findPasswordByAuthUserId(authUserId: number) {
 //checks whether the question exists within the specified quiz
 export function questionFinder(quizId: number, questionId: number): Boolean {
     const data = getData();
-    for (const d of data.quizzes[quizId].questions) {
-        if (d.questionId === questionId) return true;
+    if (!data.quizzes[quizId]) {
+        return false;
+    }
+
+    const questions = data.quizzes[quizId].questions;
+    if (!questions || questions.length === 0) {
+        return false;
+    }
+
+    for (let i = 0; i < data.quizzes[quizId].questions.length; i++) {
+        if (data.quizzes[quizId].questions[i].questionId === questionId) {
+            return true;
+        }
     }
     return false;
 }

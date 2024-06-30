@@ -193,8 +193,14 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
             }
         }
     }
-    question.questionId = questionId;
-    data.quizzes[quizId].questions.push(question);
+    let  ans : question  = {
+        questionId : questionId,
+        question : question.question,
+        duration : question.duration,
+        points : question.points,
+        answers : question.answers,
+    }
+    data.quizzes[quizId].questions.push(ans);
     data.quizzes[quizId].numQuizQuestion++;
     setData(data);
     return { questionId };

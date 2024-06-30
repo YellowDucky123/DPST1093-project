@@ -4,12 +4,7 @@ const dataStoreFile = "./src/dataStoreFile.json"
 ///////////////////type definition start here////////////////
 /////////////////////////////////////////////////////////////
 export type Id = number;
-function isId(id: any): boolean {
-  if (id && typeof id === "number") {
-    return true;
-  }
-  return false;
-}
+
 ///////////definition of type question
 export type answer = {
   answerId: number,
@@ -18,12 +13,13 @@ export type answer = {
   correct: boolean
 }
 function isanswer(answer: any): boolean {
-  if (answer.answerId && typeof answer.answerId === "number"
-    && answer.answer && typeof answer.answer === "string" && answer.answer.length >= 1 && answer.answer.length <= 30
-    && answer.colour && typeof answer.colour === "string"
-    && answer.correct && typeof answer.correct === "boolean") {
+  if ("answerId" in answer && typeof answer.answerId === "number"
+    && "answer" in answer && typeof answer.answer === "string" && answer.answer.length >= 1 && answer.answer.length <= 30
+    && "colour" in answer && typeof answer.colour === "string"
+    && "correct" in answer && typeof answer.correct === "boolean") {
     return true;
   }
+  console.log("this answer is incorrect : ", answer)
   return false;
 }
 export type question = {
@@ -34,21 +30,23 @@ export type question = {
   answers: answer[]
 }
 function isAnswers(answers: any): boolean {
-  if (answers && Array.isArray(answers) && answers.every(isanswer)
-    && answers.filter((answer) => (answer.correct === true))) {
+  if (Array.isArray(answers) && answers.every(isanswer)
+    && answers.filter((answer) => (answer.correct === true)).length > 0) {
     return true;
   }
-
+  console.log("answers incorrect");
   return false;
 }
 function isQuestion(question: any): boolean {
-  if (question.questionId && typeof question.questionId === "number"
-    && question.question && typeof question.question === "string" && question.question.length >= 5 && question.question.length <= 50
-    && question.duration && typeof question.duration === "number" && question.duration > 0
-    && question.points && typeof question.points === "number" && question.points > 0 && question.points <= 10
-    && question.answers && Array.isArray(question.answers) && isAnswers(question.answers)) {
+  if ("questionId" in question && typeof question.questionId === "number"
+    && "question" in question && typeof question.question === "string" && question.question.length >= 5 && question.question.length <= 50
+    && "duration" in question && typeof question.duration === "number" && question.duration > 0
+    && "points" in question && typeof question.points === "number" && question.points > 0 && question.points <= 10
+    && "answers" in question.answers && Array.isArray(question.answers) && isAnswers(question.answers)) {
     return true;
   }
+  console.log("This question is invalid", question);
+  return false;
 }
 /////////definition of type question
 
@@ -67,19 +65,18 @@ export type user = {
   pastPassword: string[],
 }
 function isUser(user: any): boolean {
-  if (user.authUserId && typeof user.authUserId === "number"
-    && user.email && typeof user.email === "string"
-    && user.password && typeof user.password === "string"
-    && user.name && typeof user.name === "string"
+  if ("authUserId" in user && typeof user.authUserId === "number"
+    && "email" in user && typeof user.email === "string"
+    && "password" in user && typeof user.password === "string"
+    && "name" in user && typeof user.name === "string"
     && "numSuccessfulLogins" in user && typeof user.numSuccessfulLogins === "number"
     && "numFailedPasswordsSinceLastLogin" in user && typeof user.numFailedPasswordsSinceLastLogin === "number"
-    && user.quizzesUserHave && Array.isArray(user.quizzesUserHave)
-    && user.quizzesUserDeleted && Array.isArray(user.quizzesUserDeleted)
-    && user.pastPassword && Array.isArray(user.pastPassword)) {
+    && "quizzesUserHave" in user && Array.isArray(user.quizzesUserHave)
+    && "quizzesUserDeleted" in user && Array.isArray(user.quizzesUserDeleted)
+    && "pastPassword" in user && Array.isArray(user.pastPassword)) {
     return true;
   }
-  console.log(typeof user.numFailedPasswordsSinceLastLogin)
-  //console.log('user is not valid, which is \n' , user , '\n');
+  console.log('user is not valid, which is \n' , user , '\n');
   return false;
 }
 ///////////definition of type user
@@ -96,15 +93,16 @@ export type quiz = {
 };
 function isQuestions(questions: any): boolean {
   if (questions.every(isQuestion)) return true;
+  console.log("questions incorrect")
   return false;
 }
 function isQuiz(quiz: any): boolean {
-  if (quiz.quizId && typeof quiz.quizId === "number"
-    && quiz.name && typeof quiz.name === "string"
-    && quiz.timeCreated && typeof quiz.timeCreated === "number"
-    && quiz.timeLastEdited && typeof quiz.timeLastEdited === "number"
-    && quiz.numQuizQuestion && typeof quiz.numQuizQuestion === "number"
-    && quiz.questions && Array.isArray(quiz.questions) && isQuestions(quiz.questions)
+  if ("quizId" in quiz && typeof quiz.quizId === "number"
+    && "name" in quiz && typeof quiz.name === "string"
+    && "timeCreated" in quiz && typeof quiz.timeCreated === "number"
+    && "timeLastEdited" in quiz && typeof quiz.timeLastEdited === "number"
+    && "numQuizQuestion" in quiz && typeof quiz.numQuizQuestion === "number"
+    && "questions" in quiz && Array.isArray(quiz.questions) && isQuestions(quiz.questions)
   ) {
     if ("description" in quiz && typeof quiz.description !== "string") return false;
     return true;
@@ -165,7 +163,7 @@ export type data = {
   tokenUserIdList: tokenUserIdList
 };
 function isdata(data: any): boolean {
-  if (data.users && data.quizzes && data.quizzesDeleted && data.tokenUserIdList) {
+  if ("users" in data && "quizzes" in data && "quizzesDeleted" in data && "tokenUserIdList" in data) {
     if (isUsers(data.users) && isQuizzes(data.quizzes) && isQuizzes(data.quizzesDeleted) && isTokenUserIdList(data.tokenUserIdList)) {
       console.log("data check pass");
       return true;

@@ -111,14 +111,13 @@ export function description_length_valid(description: string) {
     return true;
 }
 
-export function isUsedQuizName(name: string, userId: number) {
+export function isUsedQuizName(name: string, userId : number) {
     const data = getData();
-    for (let item in data.quizzes) {
-        if (data.quizzes[item].name === name) {
+    for (let item of data.users[userId].quizzesUserHave) {
+        if (data.quizzes[`${item}`].name === name) {
             return false;
         }
     }
-
     return true;
 }
 

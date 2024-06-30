@@ -1,7 +1,5 @@
 import request from 'sync-request-curl';
 import { port, url } from '../config.json';
-import { getData } from '../dataStore';
-import { get } from 'http';
 
 const SERVER_URL = `${url}:${port}`;
 const adminUserRegister = `${SERVER_URL}/v1/admin/auth/register`;
@@ -9,60 +7,58 @@ const createNewQuiz = `${SERVER_URL}/v1/admin/quiz`;
 beforeAll(() => {
     request('DELETE', SERVER_URL + '/v1/clear');
 });
-
+let token: string
+let quiz_id: number
+let questionId: number
 beforeEach(() => {
     request('DELETE', SERVER_URL + '/v1/clear');
+    const user = {
+        email: 'test@163.com',
+        password: '123456aaaa',
+        nameFirst: 'Victor',
+        nameLast: 'Xiao'
+    }
+    let response = request('POST', adminUserRegister, {
+        json: user
+    });
+    token = JSON.parse(response.body as string).token;
+
+    let quiz_data = {
+        "token": token,
+        "name": "My Quiz Name",
+        "description": "A description of my quiz"
+    }
+    let quiz_res = request('POST', createNewQuiz, {
+        json: quiz_data
+    })
+    quiz_id = JSON.parse(quiz_res.body as string).quizId;
+
+    let details = {
+        token: token,
+        questionBody: {
+            question: "hello world",
+            duration: 10,
+            points: 5,
+            answers: [
+                {
+                    answer: "yes",
+                    correct: true
+                },
+                {
+                    answer: "no",
+                    correct: false
+                }
+            ]
+        }
+    }
+    let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
+        json: details
+    })
+    questionId = JSON.parse(createQuizRes.body as string).questionId;
 })
 
 describe('Quiz question update', () => {
     test('should return 200, correct input', () => {
-
-        const user = {
-            email: 'test@163.com',
-            password: '123456aaaa',
-            nameFirst: 'Victor',
-            nameLast: 'Xiao'
-        }
-        let response = request('POST', adminUserRegister, {
-            json: user
-        });
-        let token = JSON.parse(response.body as string).token;
-
-        let quiz_data = {
-            "token": token,
-            "name": "My Quiz Name",
-            "description": "A description of my quiz"
-        }
-        let quiz_res = request('POST', createNewQuiz, {
-            json: quiz_data
-        })
-        let quiz_id = JSON.parse(quiz_res.body as string).quizId;
-
-        let details = {
-            token: token,
-            questionBody: {
-                question: "hello world",
-                duration: 10,
-                points: 5,
-                answers: [
-                    {
-                        answer: "yes",
-                        correct: true
-                    },
-                    {
-                        answer: "no",
-                        correct: false
-                    }
-                ]
-            }
-        }
-        let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
-            json: details
-        })
-        let questionId = JSON.parse(createQuizRes.body as string).questionId;
-
-
-
         let new_details = {
             token: token,
             questionBody: {
@@ -91,50 +87,6 @@ describe('Quiz question update', () => {
     });
 
     test('should return 400, icorrect questionId input', () => {
-
-        const user = {
-            email: 'test@163.com',
-            password: '123456aaaa',
-            nameFirst: 'Victor',
-            nameLast: 'Xiao'
-        }
-        let response = request('POST', adminUserRegister, {
-            json: user
-        });
-        let token = JSON.parse(response.body as string).token;
-
-        let quiz_data = {
-            "token": token,
-            "name": "My Quiz Name",
-            "description": "A description of my quiz"
-        }
-        let quiz_res = request('POST', createNewQuiz, {
-            json: quiz_data
-        })
-        let quiz_id = JSON.parse(quiz_res.body as string).quizId;
-
-        let details = {
-            token: token,
-            questionBody: {
-                question: "hello world",
-                duration: 10,
-                points: 5,
-                answers: [
-                    {
-                        answer: "yes",
-                        correct: true
-                    },
-                    {
-                        answer: "no",
-                        correct: false
-                    }
-                ]
-            }
-        }
-        let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
-            json: details
-        })
-        let questionId = JSON.parse(createQuizRes.body as string).questionId;
 
 
         let new_details = {
@@ -165,53 +117,6 @@ describe('Quiz question update', () => {
     });
 
     test('should return 400, incorrect question length', () => {
-
-        const user = {
-            email: 'test@163.com',
-            password: '123456aaaa',
-            nameFirst: 'Victor',
-            nameLast: 'Xiao'
-        }
-        let response = request('POST', adminUserRegister, {
-            json: user
-        });
-        let token = JSON.parse(response.body as string).token;
-
-        let quiz_data = {
-            "token": token,
-            "name": "My Quiz Name",
-            "description": "A description of my quiz"
-        }
-        let quiz_res = request('POST', createNewQuiz, {
-            json: quiz_data
-        })
-        let quiz_id = JSON.parse(quiz_res.body as string).quizId;
-
-        let details = {
-            token: token,
-            questionBody: {
-                question: "hello world",
-                duration: 10,
-                points: 5,
-                answers: [
-                    {
-                        answer: "yes",
-                        correct: true
-                    },
-                    {
-                        answer: "no",
-                        correct: false
-                    }
-                ]
-            }
-        }
-        let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
-            json: details
-        })
-        let questionId = JSON.parse(createQuizRes.body as string).questionId;
-
-
-
         let new_details = {
             token: token,
             questionBody: {
@@ -240,51 +145,6 @@ describe('Quiz question update', () => {
     });
 
     test('should return 400, incorrect answer length', () => {
-
-        const user = {
-            email: 'test@163.com',
-            password: '123456aaaa',
-            nameFirst: 'Victor',
-            nameLast: 'Xiao'
-        }
-        let response = request('POST', adminUserRegister, {
-            json: user
-        });
-        let token = JSON.parse(response.body as string).token;
-
-        let quiz_data = {
-            "token": token,
-            "name": "My Quiz Name",
-            "description": "A description of my quiz"
-        }
-        let quiz_res = request('POST', createNewQuiz, {
-            json: quiz_data
-        })
-        let quiz_id = JSON.parse(quiz_res.body as string).quizId;
-
-        let details = {
-            token: token,
-            questionBody: {
-                question: "hello world",
-                duration: 10,
-                points: 5,
-                answers: [
-                    {
-                        answer: "yes",
-                        correct: true
-                    },
-                    {
-                        answer: "no",
-                        correct: false
-                    }
-                ]
-            }
-        }
-        let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
-            json: details
-        })
-        let questionId = JSON.parse(createQuizRes.body as string).questionId;
-
         let new_details = {
             token: token,
             questionBody: {
@@ -309,52 +169,6 @@ describe('Quiz question update', () => {
     });
 
     test('should return 400, question duration is not a positive number', () => {
-
-        const user = {
-            email: 'test@163.com',
-            password: '123456aaaa',
-            nameFirst: 'Victor',
-            nameLast: 'Xiao'
-        }
-        let response = request('POST', adminUserRegister, {
-            json: user
-        });
-        let token = JSON.parse(response.body as string).token;
-
-        let quiz_data = {
-            "token": token,
-            "name": "My Quiz Name",
-            "description": "A description of my quiz"
-        }
-        let quiz_res = request('POST', createNewQuiz, {
-            json: quiz_data
-        })
-        let quiz_id = JSON.parse(quiz_res.body as string).quizId;
-
-        let details = {
-            token: token,
-            questionBody: {
-                question: "hello world",
-                duration: 10,
-                points: 5,
-                answers: [
-                    {
-                        answer: "yes",
-                        correct: true
-                    },
-                    {
-                        answer: "no",
-                        correct: false
-                    }
-                ]
-            }
-        }
-        let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
-            json: details
-        })
-        let questionId = JSON.parse(createQuizRes.body as string).questionId;
-
-
         let new_details = {
             token: token,
             questionBody: {
@@ -383,53 +197,6 @@ describe('Quiz question update', () => {
     });
 
     test('should return 400, question duration is not a positive number', () => {
-
-        const user = {
-            email: 'test@163.com',
-            password: '123456aaaa',
-            nameFirst: 'Victor',
-            nameLast: 'Xiao'
-        }
-        let response = request('POST', adminUserRegister, {
-            json: user
-        });
-        let token = JSON.parse(response.body as string).token;
-
-        let quiz_data = {
-            "token": token,
-            "name": "My Quiz Name",
-            "description": "A description of my quiz"
-        }
-        let quiz_res = request('POST', createNewQuiz, {
-            json: quiz_data
-        })
-        let quiz_id = JSON.parse(quiz_res.body as string).quizId;
-
-        let details = {
-            token: token,
-            questionBody: {
-                question: "hello world",
-                duration: 10,
-                points: 5,
-                answers: [
-                    {
-                        answer: "yes",
-                        correct: true
-                    },
-                    {
-                        answer: "no",
-                        correct: false
-                    }
-                ]
-            }
-        }
-        let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
-            json: details
-        })
-        let questionId = JSON.parse(createQuizRes.body as string).questionId;
-
-
-
         let new_details = {
             token: token,
             questionBody: {
@@ -458,53 +225,6 @@ describe('Quiz question update', () => {
     });
 
     test('should return 400, incorrect points awarded for the question', () => {
-
-        const user = {
-            email: 'test@163.com',
-            password: '123456aaaa',
-            nameFirst: 'Victor',
-            nameLast: 'Xiao'
-        }
-        let response = request('POST', adminUserRegister, {
-            json: user
-        });
-        let token = JSON.parse(response.body as string).token;
-
-        let quiz_data = {
-            "token": token,
-            "name": "My Quiz Name",
-            "description": "A description of my quiz"
-        }
-        let quiz_res = request('POST', createNewQuiz, {
-            json: quiz_data
-        })
-        let quiz_id = JSON.parse(quiz_res.body as string).quizId;
-
-        let details = {
-            token: token,
-            questionBody: {
-                question: "hello world",
-                duration: 10,
-                points: 5,
-                answers: [
-                    {
-                        answer: "yes",
-                        correct: true
-                    },
-                    {
-                        answer: "no",
-                        correct: false
-                    }
-                ]
-            }
-        }
-        let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
-            json: details
-        })
-        let questionId = JSON.parse(createQuizRes.body as string).questionId;
-
-
-
         let new_details = {
             token: token,
             questionBody: {
@@ -533,53 +253,6 @@ describe('Quiz question update', () => {
     });
 
     test('should return 400, incorrect length for the answer', () => {
-
-        const user = {
-            email: 'test@163.com',
-            password: '123456aaaa',
-            nameFirst: 'Victor',
-            nameLast: 'Xiao'
-        }
-        let response = request('POST', adminUserRegister, {
-            json: user
-        });
-        let token = JSON.parse(response.body as string).token;
-
-        let quiz_data = {
-            "token": token,
-            "name": "My Quiz Name",
-            "description": "A description of my quiz"
-        }
-        let quiz_res = request('POST', createNewQuiz, {
-            json: quiz_data
-        })
-        let quiz_id = JSON.parse(quiz_res.body as string).quizId;
-
-        let details = {
-            token: token,
-            questionBody: {
-                question: "hello world",
-                duration: 10,
-                points: 5,
-                answers: [
-                    {
-                        answer: "yes",
-                        correct: true
-                    },
-                    {
-                        answer: "no",
-                        correct: false
-                    }
-                ]
-            }
-        }
-        let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
-            json: details
-        })
-        let questionId = JSON.parse(createQuizRes.body as string).questionId;
-
-
-
         let new_details = {
             token: token,
             questionBody: {
@@ -608,53 +281,6 @@ describe('Quiz question update', () => {
     });
 
     test('should return 400, answer strings are duplicate', () => {
-
-        const user = {
-            email: 'test@163.com',
-            password: '123456aaaa',
-            nameFirst: 'Victor',
-            nameLast: 'Xiao'
-        }
-        let response = request('POST', adminUserRegister, {
-            json: user
-        });
-        let token = JSON.parse(response.body as string).token;
-
-        let quiz_data = {
-            "token": token,
-            "name": "My Quiz Name",
-            "description": "A description of my quiz"
-        }
-        let quiz_res = request('POST', createNewQuiz, {
-            json: quiz_data
-        })
-        let quiz_id = JSON.parse(quiz_res.body as string).quizId;
-
-        let details = {
-            token: token,
-            questionBody: {
-                question: "hello world",
-                duration: 10,
-                points: 5,
-                answers: [
-                    {
-                        answer: "yes",
-                        correct: true
-                    },
-                    {
-                        answer: "no",
-                        correct: false
-                    }
-                ]
-            }
-        }
-        let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
-            json: details
-        })
-        let questionId = JSON.parse(createQuizRes.body as string).questionId;
-
-
-
         let new_details = {
             token: token,
             questionBody: {
@@ -683,53 +309,6 @@ describe('Quiz question update', () => {
     });
 
     test('should return 400, there is no correct answers', () => {
-
-        const user = {
-            email: 'test@163.com',
-            password: '123456aaaa',
-            nameFirst: 'Victor',
-            nameLast: 'Xiao'
-        }
-        let response = request('POST', adminUserRegister, {
-            json: user
-        });
-        let token = JSON.parse(response.body as string).token;
-
-        let quiz_data = {
-            "token": token,
-            "name": "My Quiz Name",
-            "description": "A description of my quiz"
-        }
-        let quiz_res = request('POST', createNewQuiz, {
-            json: quiz_data
-        })
-        let quiz_id = JSON.parse(quiz_res.body as string).quizId;
-
-        let details = {
-            token: token,
-            questionBody: {
-                question: "hello world",
-                duration: 10,
-                points: 5,
-                answers: [
-                    {
-                        answer: "yes",
-                        correct: true
-                    },
-                    {
-                        answer: "no",
-                        correct: false
-                    }
-                ]
-            }
-        }
-        let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
-            json: details
-        })
-        let questionId = JSON.parse(createQuizRes.body as string).questionId;
-
-
-
         let new_details = {
             token: token,
             questionBody: {
@@ -758,53 +337,6 @@ describe('Quiz question update', () => {
     });
 
     test('should return 401, not found token', () => {
-
-        const user = {
-            email: 'test@163.com',
-            password: '123456aaaa',
-            nameFirst: 'Victor',
-            nameLast: 'Xiao'
-        }
-        let response = request('POST', adminUserRegister, {
-            json: user
-        });
-        let token = JSON.parse(response.body as string).token;
-
-        let quiz_data = {
-            "token": token,
-            "name": "My Quiz Name",
-            "description": "A description of my quiz"
-        }
-        let quiz_res = request('POST', createNewQuiz, {
-            json: quiz_data
-        })
-        let quiz_id = JSON.parse(quiz_res.body as string).quizId;
-
-        let details = {
-            token: token,
-            questionBody: {
-                question: "hello world",
-                duration: 10,
-                points: 5,
-                answers: [
-                    {
-                        answer: "yes",
-                        correct: true
-                    },
-                    {
-                        answer: "no",
-                        correct: false
-                    }
-                ]
-            }
-        }
-        let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
-            json: details
-        })
-        let questionId = JSON.parse(createQuizRes.body as string).questionId;
-
-
-
         let new_details = {
         }
         const res = request('PUT', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question/${questionId}`, {
@@ -817,53 +349,6 @@ describe('Quiz question update', () => {
     });
 
     test('should return 403, This user does not own this quiz', () => {
-
-        const user = {
-            email: 'test@163.com',
-            password: '123456aaaa',
-            nameFirst: 'Victor',
-            nameLast: 'Xiao'
-        }
-        let response = request('POST', adminUserRegister, {
-            json: user
-        });
-        let token = JSON.parse(response.body as string).token;
-
-        let quiz_data = {
-            "token": token,
-            "name": "My Quiz Name",
-            "description": "A description of my quiz"
-        }
-        let quiz_res = request('POST', createNewQuiz, {
-            json: quiz_data
-        })
-        let quiz_id = JSON.parse(quiz_res.body as string).quizId;
-
-        let details = {
-            token: token,
-            questionBody: {
-                question: "hello world",
-                duration: 10,
-                points: 5,
-                answers: [
-                    {
-                        answer: "yes",
-                        correct: true
-                    },
-                    {
-                        answer: "no",
-                        correct: false
-                    }
-                ]
-            }
-        }
-        let createQuizRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz_id}/question`, {
-            json: details
-        })
-        let questionId = JSON.parse(createQuizRes.body as string).questionId;
-
-
-
         let new_details = {
             token: token + 1,
             questionBody: {

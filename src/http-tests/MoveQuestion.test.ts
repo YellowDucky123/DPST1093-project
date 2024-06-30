@@ -1,6 +1,5 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
-import { string } from 'yaml/dist/schema/common/string';
 
 const OK = 200;
 const INPUT_ERROR = 400;
@@ -198,12 +197,12 @@ describe('Move Question test :', () => {
                 answers: [
                     {
                         answer: "Joe Biden",
-                        answerId:expect.any(Number),
+                        answerId: expect.any(Number),
                         correct: true
                     },
                     {
                         answer: "Donald Trump",
-                        answerId:expect.any(Number),
+                        answerId: expect.any(Number),
                         correct: false
                     }
                 ]
@@ -216,12 +215,12 @@ describe('Move Question test :', () => {
                 answers: [
                     {
                         answer: "Prince Charles",
-                        answerId:expect.any(Number),
+                        answerId: expect.any(Number),
                         correct: true
                     },
                     {
                         answer: "Queen Bels",
-                        answerId:expect.any(Number),
+                        answerId: expect.any(Number),
                         correct: false
                     }
                 ]
@@ -234,12 +233,12 @@ describe('Move Question test :', () => {
                 answers: [
                     {
                         answer: "A lot",
-                        answerId:expect.any(Number),
+                        answerId: expect.any(Number),
                         correct: true
                     },
                     {
                         answer: "Never played before",
-                        answerId:expect.any(Number),
+                        answerId: expect.any(Number),
                         correct: false
                     }
                 ]
@@ -259,7 +258,7 @@ describe('Move Question test :', () => {
         )
         const result = JSON.parse(res.body as string);
         expect(res.statusCode).toBe(TOKEN_ERROR);
-        expect(result).toStrictEqual({error: 'Token is empty or invalid' })
+        expect(result).toStrictEqual({ error: 'Token is empty or invalid' })
     })
 
     test('Invalid QuestionId:', () => {
@@ -274,9 +273,9 @@ describe('Move Question test :', () => {
         )
         const result = JSON.parse(res.body as string);
         expect(res.statusCode).toBe(INPUT_ERROR);
-        expect(result).toStrictEqual({error: 'Question Id does not refer to a valid question within this quiz' });
+        expect(result).toStrictEqual({ error: 'Question Id does not refer to a valid question within this quiz' });
     })
-    
+
     test('User does not own quiz:', () => {
         const res = request(
             'PUT',
@@ -289,6 +288,6 @@ describe('Move Question test :', () => {
         )
         const result = JSON.parse(res.body as string);
         expect(res.statusCode).toBe(OWNER_ERROR);
-        expect(result).toStrictEqual({error: 'This user does not own this quiz' });
+        expect(result).toStrictEqual({ error: 'This user does not own this quiz' });
     })
 })

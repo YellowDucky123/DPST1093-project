@@ -1,4 +1,3 @@
-import { create } from 'domain'
 import { findUserIdByToken, getData, question, quiz, setData } from './dataStore'
 import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId } from './helpers'
 import { quizIdValidator } from './helpers'
@@ -193,12 +192,12 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
             }
         }
     }
-    let  ans : question  = {
-        questionId : questionId,
-        question : question.question,
-        duration : question.duration,
-        points : question.points,
-        answers : question.answers,
+    let ans: question = {
+        questionId: questionId,
+        question: question.question,
+        duration: question.duration,
+        points: question.points,
+        answers: question.answers,
     }
     data.quizzes[quizId].questions.push(ans);
     data.quizzes[quizId].numQuizQuestion++;
@@ -494,12 +493,6 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
     if (check === 0) {
         return { error: 'There is no correct answer in this question' };
     }
-    //if (data.quizzes[] != token)
-    /*
-    if (!quizOwnership(userId, quizId)) {
-        return { error: 'This user does not own this quiz' };
-    }*/
-
     questions[i].question = questionBody.question;
     questions[i].answers = questionBody.answers;
     questions[i].duration = questionBody.duration;

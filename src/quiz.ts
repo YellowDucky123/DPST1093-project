@@ -10,6 +10,12 @@ import { isUsedQuizName } from './helpers'
 import { customAlphabet } from 'nanoid'
 import { createId } from './helpers'
 
+/*********************************************************************************************|
+|            |
+|*********************************************************************************************|
+|*attention: "name" is the first and last name concatenated with a single space between them**|
+\*********************************************************************************************/
+
 export function adminQuizCreate(authUserId: number, name: string, description: string) {
     if (userIdValidator(authUserId) === false) {
         return { error: 'adminQuizCreate: invalid user id' }
@@ -33,7 +39,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     let d = new Date();
     const time = d.getTime();
     let questions: Array<question> = [];
-    const new_data : quiz = {
+    const new_data: quiz = {
         quizId: quizId,
         name: name,
         timeCreated: time,
@@ -100,7 +106,7 @@ export function adminQuizList(authUserId: number) {
         return { error: "can not find such a member" };
     }
     let dataBase = datas.users[authUserId];
-    
+
     for (const Id of dataBase.quizzesUserHave) {
         quizzes.push({
             quizId: Id,
@@ -123,7 +129,7 @@ export function adminQuizTransfer(quizId: number, fromId: number, sendToEmail: s
         return { error: 'You do not own this quiz' };
     }
     if (!isUsedQuizName(data.quizzes[quizId].name, userId)) {
-        return { error : "Quiz ID refers to a quiz that has a name that is already used by the target user"}
+        return { error: "Quiz ID refers to a quiz that has a name that is already used by the target user" }
     }
     data.users[userId].quizzesUserHave.push(quizId);
     console.log(userId)
@@ -169,7 +175,7 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
     if (!quizOwnership(authUserId, quizId)) {
         return { error: 'This user does not own this quiz' };
     }
-    let error:{ error?: string}
+    let error: { error?: string }
     if ("error" in (error = checkQuestionInfo(quizId, question))) {
         return error;
     }
@@ -285,7 +291,7 @@ export function duplicateQuestion(authUserId: number, quizId: number, questionId
     data.quizzes[quizId].questions = qs;
     setData(data);
 
-    return { questionId: ques_id};
+    return { questionId: ques_id };
 }
 
 export function deleteQuestion(authUserId: number, quizId: number, questionId: number) {
@@ -358,7 +364,7 @@ export function adminViewDeletedQuizzes(authUserId: number) {
         name: string
     };
     let ret: quiz[] = [];
-    for(const id of list) {
+    for (const id of list) {
         ret.push({
             quizId: id,
             name: data.quizzesDeleted[id].name
@@ -386,8 +392,8 @@ export function adminRestoreQuiz(authUserId: number, quizId: number) {
     const description = data.quizzesDeleted[quizId].description;
 
     const ans = adminQuizCreate(authUserId, name, description);
-    if("error" in ans) {
-        return {"error": "creation failed"}
+    if ("error" in ans) {
+        return { "error": "creation failed" }
     }
 
     delete data.quizzesDeleted[quizId];
@@ -403,27 +409,27 @@ export function adminQuizPermDelete(authUserId: number, quizIds: number[]) {
     if (userIdValidator(authUserId) == false) {
         return { error: 'adminQuizPerDelete: invalid user id' }
     }
-    for(const item of quizIds){
+    for (const item of quizIds) {
         if (deletedQuizIdValidator(item) == false) {
             return { error: 'adminQuizPerDelete: invalid quiz id' }
         }
         if (deletedQuizOwnership(authUserId, item) == false) {
             return { error: 'adminQuizPerDelete: you do not own this quiz' }
         }
-        
+
     }
     const data = getData();
-    for(const item of quizIds) {
-        if(data.users[authUserId].quizzesUserDeleted.includes(item) === false) {
-            return { error: 'Target quiz id does not exist'}
+    for (const item of quizIds) {
+        if (data.users[authUserId].quizzesUserDeleted.includes(item) === false) {
+            return { error: 'Target quiz id does not exist' }
         }
     }
 
 
-    for(const item of quizIds){
+    for (const item of quizIds) {
         const index = data.users[authUserId].quizzesUserDeleted.indexOf(item);
         data.users[authUserId].quizzesUserDeleted.splice(index, 1);
-    
+
         delete data.quizzesDeleted[item];
     }
 
@@ -432,9 +438,17 @@ export function adminQuizPermDelete(authUserId: number, quizIds: number[]) {
     return {};
 }
 
-export function adminQuizQuestionUpdate(userId: number, quizId: number, questionId: number, questionBody: any): any {
+export function adminQuizQuestionUpdate(userId: number, quizId: number, questionId: number, questionBody: any, token: string): any {
     if (!questionFinder(quizId, questionId)) {
         return { error: 'Question Id does not refer to a valid question within this quiz' };
+    }
+    let data = getData();
+    let questions = data.quizzes[quizId].questions
+    let i;
+    for (i = 0; i < questions.length; i++) {
+        if (questionId === questions[i].questionId) {
+            break;
+        }
     }
     if (questionBody.question.length < 5 || questionBody.question.length > 50) {
         return { error: 'Question string is less than 5 characters in length or greater than 50 characters in length' };
@@ -451,20 +465,40 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
     if (questionBody.points < 1 || questionBody.points > 10) {
         return { error: 'The points awarded for the question are less than 1 or greater than 10' };
     }
-    if (questionBody.answers.answer.length < 1 || questionBody.answers.answer.length > 30) {
-        return { error: 'The length of any answer is shorter than 1 character long, or longer than 30 characters long' };
-    }
-    const answerText = new Set();
-    for (const answer of questionBody.answers) {
-        if (answerText.has(answer.answer)) {
-            return { error: 'Any answer strings are duplicates of one another (within the same question)' };
+    for (let j = 0; j < questionBody.answers.length; j++) {
+        if (questionBody.answers[j].answer.length < 1 || questionBody.answers[j].answer.length > 50) {
+            return { error: 'An answer string is less than 1 character in length or greater than 50 characters in length' };
         }
-        answerText.add(answer.answer);
     }
-    if (questionBody.answers.correct != true) {
-        return { error: 'There are no correct answers' };
+    if (data.quizzes[quizId].questions[i].question === questionBody.question) {
+        for (let num_1 = 0; num_1 < data.quizzes[quizId].questions[i].answers.length; num_1++) {
+            for (let num_2 = 0; num_2 < questionBody.answers.length; num_2++) {
+                if (data.quizzes[quizId].questions[i].answers[num_1].answer === questionBody.answers[num_2].answer) {
+                    return { error: 'There are duplicate answers in this question' };
+                }
+            }
+        }
     }
+    let check = 0;
+    for (let num_3 = 0; num_3 < questionBody.answers.length; num_3++) {
+        if (questionBody.answers[num_3].correct === true) {
+            check = 1;
+        }
+    }
+    if (check === 0) {
+        return { error: 'There is no correct answer in this question' };
+    }
+    //if (data.quizzes[] != token)
+    /*
     if (!quizOwnership(userId, quizId)) {
         return { error: 'This user does not own this quiz' };
-    }
+    }*/
+
+    questions[i].question = questionBody.question;
+    questions[i].answers = questionBody.answers;
+    questions[i].duration = questionBody.duration;
+    questions[i].points = questionBody.points;
+    questions[i].questionId = questionBody.questionId
+    setData(data);
+    return {};
 }

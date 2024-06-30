@@ -124,6 +124,7 @@ describe('Empty trash test: ', () => {
         )
         const result = JSON.parse(res2.body as string);
         expect(res1.statusCode).toBe(401);
+        expect(result).toEqual(beforeRes);
     });
 
     test('test quizId not exist: ', () => {
@@ -148,6 +149,7 @@ describe('Empty trash test: ', () => {
         )
         const result = JSON.parse(res2.body as string);
         expect(res1.statusCode).toBe(400);
+        expect(result).toEqual(beforeRes);
     });
 
     test('test do not own: ', () => {
@@ -172,6 +174,19 @@ describe('Empty trash test: ', () => {
         )
         const result = JSON.parse(res2.body as string);
         expect(res1.statusCode).toBe(403);
+        expect(result).toEqual({quizzes : []});
+
+        const res3 = request(
+            'GET',
+            SERVER_URL + '/v1/admin/quiz/trash',
+            {
+                qs: {
+                    token: token1
+                }
+            }
+        )
+        const result2 = JSON.parse(res3.body as string);
+        expect(result2).toEqual(beforeRes)
     });
 
     test('test succesfull: ', () => {

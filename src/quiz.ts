@@ -416,10 +416,10 @@ export function adminQuizPermDelete(authUserId: number, quizIds: number[]) {
     }
     for (const item of quizIds) {
         if (deletedQuizIdValidator(item) == false) {
-            return { error: 'adminQuizPerDelete: invalid quiz id' }
+            return { error: 'adminQuizPermDelete: invalid quiz id' }
         }
         if (deletedQuizOwnership(authUserId, item) == false) {
-            return { error: 'adminQuizPerDelete: you do not own this quiz' }
+            return { error: 'adminQuizPermDelete: you do not own this quiz' }
         }
 
     }

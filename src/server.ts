@@ -291,9 +291,10 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
 
 app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const token = req.query.token as string;
-  const quizId = parseInt(req.query.quizId as string);
+  const quizId = parseInt(req.params.quizId as string);
   if (!token) {
     res.status(401).json({ error: "A correct token is required" });
+    return;
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
@@ -305,6 +306,9 @@ app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   if ("error" in ans) {
     if (ans.error === "adminQuizInfo: you do not own this quiz") {
       status = 403;
+    }
+    else {
+      status = 400;
     }
   }
   res.status(status).json(ans);

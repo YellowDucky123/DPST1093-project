@@ -35,8 +35,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
   const data = getData();
   const quizId = createId(data.quizzes);
 
-  const d = new Date();
-  const time = d.getTime();
+  const time = Math.floor(new Date().getTime() / 1000);
   const questions: Array<question> = [];
   const newData: quiz = {
     quizId: quizId,

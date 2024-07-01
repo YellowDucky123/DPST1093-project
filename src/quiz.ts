@@ -89,10 +89,52 @@ export function adminQuizInfo(authUserId: number, quizId: number) {
     }
 
     const data = getData();
-
-    return data.quizzes[quizId];
+    const quiz = data.quizzes[quizId];
+    const ans = {
+        quizId: quizId,
+        name: quiz.name,
+        timeCreated: quiz.timeCreated,
+        timeLastEdited: quiz.timeLastEdited,
+        description: quiz.description,
+        numQuestions: quiz.questions.length,
+        questions: getQuestionsInfo(quizId),
+        duration: countDuration(quizId)
+      }
+    return ans;
 }
-
+function countDuration(quizId: number) {
+    let duration = 0;
+    for (const question of getData().quizzes[quizId].questions) {
+        duration += question.duration;
+    }
+    return duration;
+}
+function getQuestionsInfo(quizId: number) {
+    const Questions = getData().quizzes[quizId].questions;
+    let ans = [];
+    for (const question of Questions) {
+        ans.push({
+            questionId: question.questionId,
+            question: question.question,
+            duration: question.duration,
+            points: question.points,
+            answers: getanswers(question)
+        })
+    }
+    return ans
+}
+function getanswers(question : question) {
+    let ans = [];
+    for (const answer of question.answers) {
+        ans.push({
+            answerId: answer.answerId,
+            answer: answer.answer,
+            colour: answer.colour,
+            correct: answer.correct
+        })
+    }
+    return ans
+}
 /*********************************************************************************************|
 |*Given an admin user's "authUserId", return details about the user.                          |
 |*********************************************************************************************|

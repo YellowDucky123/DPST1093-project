@@ -1,5 +1,6 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
+import { getData } from '../dataStore';
 
 const OK = 200;
 const INPUT_ERROR = 400;
@@ -50,7 +51,7 @@ const u2 = request(
 )
 const t2_id = JSON.parse(u2.body as string);
 
-//create quiz1
+//create quiz1 for user 1
 const q1 = request(
     'POST',
     SERVER_URL + '/v1/admin/quiz',
@@ -64,7 +65,7 @@ const q1 = request(
 )
 const q_id = JSON.parse(q1.body as string);
 
-//create quiz2
+//create quiz2 for user 1
 const q2 = request(
     'POST',
     SERVER_URL + '/v1/admin/quiz',
@@ -78,7 +79,7 @@ const q2 = request(
 )
 const q2_id = JSON.parse(q2.body as string);
 
-
+// create question1 for quiz1
 const ques = request(
     'POST',
     SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/question`,
@@ -105,7 +106,7 @@ const ques = request(
 )
 const ques_id = JSON.parse(ques.body as string);
 
-
+// create question2 for quiz1
 const ques2 = request(
     'POST',
     SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/question`,
@@ -131,7 +132,7 @@ const ques2 = request(
     }
 )
 const ques2_id = JSON.parse(ques2.body as string);
-
+// create question3 for quiz1
 const ques3 = request(
     'POST',
     SERVER_URL + `/v1/admin/quiz/${q_id.quizId}/question`,

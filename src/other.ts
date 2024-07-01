@@ -1,15 +1,15 @@
-import { setData } from './dataStore'
+import { setData } from './dataStore';
 
 function clear() {
-    const newData = {
-        users: {},
-        quizzes: {},
-        quizzesDeleted: {},
-        tokenUserIdList: {}
-    }
+  const newData = {
+    users: {},
+    quizzes: {},
+    quizzesDeleted: {},
+    tokenUserIdList: {}
+  };
 
-    setData(newData);
-    return {};
+  setData(newData);
+  return {};
 }
 
 export { clear };

@@ -1,5 +1,5 @@
-import { getData, question, quiz, setData } from './dataStore';
-import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId } from './helpers';
+import { answer, getData, question, quiz, setData } from './dataStore';
+import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId, getCurrentTime } from './helpers';
 import { quizIdValidator } from './helpers';
 import { quizOwnership } from './helpers';
 import { isNameAlphaNumeric } from './helpers';
@@ -110,7 +110,7 @@ function countDuration(quizId: number) {
 }
 function getQuestionsInfo(quizId: number) {
   const Questions = getData().quizzes[quizId].questions;
-  const ans = [];
+  const ans: question[] = [];
   for (const question of Questions) {
     ans.push({
       questionId: question.questionId,
@@ -123,7 +123,7 @@ function getQuestionsInfo(quizId: number) {
   return ans;
 }
 function getanswers(question : question) {
-  const ans = [];
+  const ans: answer[] = [];
   for (const answer of question.answers) {
     ans.push({
       answerId: answer.answerId,
@@ -140,7 +140,7 @@ function getanswers(question : question) {
 |*attention: "name" is the first and last name concatenated with a single space between them**|
 \*********************************************************************************************/
 export function adminQuizList(authUserId: number) {
-  const quizzes = [];
+  const quizzes: {quizId: number, name: string}[] = [];
   const datas = getData();
   if (datas.users[authUserId] === undefined) {
     return { error: 'can not find such a member' };
@@ -273,6 +273,10 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
   const whData = getData();
   const dataQ = whData.quizzes;
 
+  if(name === dataQ[quizId].name) {
+    return { error: "New name can't be the same" };
+  }
+
   dataQ[quizId].name = `${name}`;
   whData.quizzes = dataQ;
 
@@ -335,9 +339,10 @@ export function duplicateQuestion(authUserId: number, quizId: number, questionId
   }
 
   data.quizzes[quizId].questions = qs;
+  data.quizzes[quizId].timeLastEdited = getCurrentTime();
   setData(data);
 
-  return { questionId: quesId };
+  return { newQuestionId: quesId };
 }
 
 export function deleteQuestion(authUserId: number, quizId: number, questionId: number) {
@@ -363,6 +368,7 @@ export function deleteQuestion(authUserId: number, quizId: number, questionId: n
     }
   }
   data.quizzes[quizId].questions = qs;
+  data.quizzes[quizId].timeLastEdited = getCurrentTime();
   setData(data);
 
   return {};
@@ -384,14 +390,22 @@ export function moveQuestion(authUserId: number, quizId: number, questionId: num
 
   const data = getData();
   const qs = data.quizzes[quizId].questions;
+  if(newPos < 0 || newPos > qs.length - 1) {
+    return { error: 'Invalid new position' };
+  }
+
   for (const d of qs) {
     if (d.questionId === questionId) {
+      if(newPos === qs.indexOf(d)) {
+        return { error: "Can't move to the same position" };
+      }
       qs.splice(qs.indexOf(d), 1);
       qs.splice(newPos, 0, d);
       break;
     }
   }
   data.quizzes[quizId].questions = qs;
+  data.quizzes[quizId].timeLastEdited = getCurrentTime();
   setData(data);
 
   return {};
@@ -435,7 +449,7 @@ export function adminRestoreQuiz(authUserId: number, quizId: number) {
   const data = getData();
 
   const name = data.quizzesDeleted[quizId].name;
-  const description = data.quizzesDeleted[quizId].description;
+  const description: string = data.quizzesDeleted[quizId].description as string;
 
   const ans = adminQuizCreate(authUserId, name, description);
   if ('error' in ans) {

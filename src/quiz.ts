@@ -1,5 +1,5 @@
 import { answer, getData, question, quiz, setData } from './dataStore';
-import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId } from './helpers';
+import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId, getCurrentTime } from './helpers';
 import { quizIdValidator } from './helpers';
 import { quizOwnership } from './helpers';
 import { isNameAlphaNumeric } from './helpers';
@@ -273,6 +273,10 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
   const whData = getData();
   const dataQ = whData.quizzes;
 
+  if(name === dataQ[quizId].name) {
+    return { error: "New name can't be the same" };
+  }
+
   dataQ[quizId].name = `${name}`;
   whData.quizzes = dataQ;
 
@@ -335,9 +339,10 @@ export function duplicateQuestion(authUserId: number, quizId: number, questionId
   }
 
   data.quizzes[quizId].questions = qs;
+  data.quizzes[quizId].timeLastEdited = getCurrentTime();
   setData(data);
 
-  return { questionId: quesId };
+  return { newQuestionId: quesId };
 }
 
 export function deleteQuestion(authUserId: number, quizId: number, questionId: number) {
@@ -363,6 +368,7 @@ export function deleteQuestion(authUserId: number, quizId: number, questionId: n
     }
   }
   data.quizzes[quizId].questions = qs;
+  data.quizzes[quizId].timeLastEdited = getCurrentTime();
   setData(data);
 
   return {};
@@ -384,14 +390,22 @@ export function moveQuestion(authUserId: number, quizId: number, questionId: num
 
   const data = getData();
   const qs = data.quizzes[quizId].questions;
+  if(newPos < 0 || newPos > qs.length - 1) {
+    return { error: 'Invalid new position' };
+  }
+
   for (const d of qs) {
     if (d.questionId === questionId) {
+      if(newPos === qs.indexOf(d)) {
+        return { error: "Can't move to the same position" };
+      }
       qs.splice(qs.indexOf(d), 1);
       qs.splice(newPos, 0, d);
       break;
     }
   }
   data.quizzes[quizId].questions = qs;
+  data.quizzes[quizId].timeLastEdited = getCurrentTime();
   setData(data);
 
   return {};

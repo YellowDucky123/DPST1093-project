@@ -445,7 +445,7 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
     } else if (result.error === 'User Id invalid') {
       res.status(401).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'Quiz Id invalid') {
-      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'This user does not own this quiz') {
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'adminQuizCreate: quiz name already used by another user') {

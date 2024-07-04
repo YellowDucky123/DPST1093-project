@@ -263,7 +263,7 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
     return { error: 'This user does not own this quiz' };
   }
   if (name === getData().quizzes[quizId].name) {
-    return {};
+    return { error: "New name can't be the same" };
   }
   if (isUsedQuizName(name, authUserId) === false) {
     return { error: 'adminQuizCreate: quiz name already used by another user' };
@@ -272,10 +272,6 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
   // If no errors then update name
   const whData = getData();
   const dataQ = whData.quizzes;
-
-  if(name === dataQ[quizId].name) {
-    return { error: "New name can't be the same" };
-  }
 
   dataQ[quizId].name = `${name}`;
   whData.quizzes = dataQ;

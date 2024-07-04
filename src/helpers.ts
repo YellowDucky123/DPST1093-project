@@ -322,3 +322,7 @@ export function createQuestionId(quizId: number) {
 
   return questionId;
 }
+
+export function getCurrentTime() {
+    return Math.floor(new Date().getTime() / 1000);
+}

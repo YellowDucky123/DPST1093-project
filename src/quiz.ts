@@ -1,4 +1,4 @@
-import { getData, question, quiz, setData } from './dataStore';
+import { answer, getData, question, quiz, setData } from './dataStore';
 import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId } from './helpers';
 import { quizIdValidator } from './helpers';
 import { quizOwnership } from './helpers';
@@ -110,7 +110,7 @@ function countDuration(quizId: number) {
 }
 function getQuestionsInfo(quizId: number) {
   const Questions = getData().quizzes[quizId].questions;
-  const ans = [];
+  const ans: question[] = [];
   for (const question of Questions) {
     ans.push({
       questionId: question.questionId,
@@ -123,7 +123,7 @@ function getQuestionsInfo(quizId: number) {
   return ans;
 }
 function getanswers(question : question) {
-  const ans = [];
+  const ans: answer[] = [];
   for (const answer of question.answers) {
     ans.push({
       answerId: answer.answerId,
@@ -140,7 +140,7 @@ function getanswers(question : question) {
 |*attention: "name" is the first and last name concatenated with a single space between them**|
 \*********************************************************************************************/
 export function adminQuizList(authUserId: number) {
-  const quizzes = [];
+  const quizzes: {quizId: number, name: string}[] = [];
   const datas = getData();
   if (datas.users[authUserId] === undefined) {
     return { error: 'can not find such a member' };
@@ -435,7 +435,7 @@ export function adminRestoreQuiz(authUserId: number, quizId: number) {
   const data = getData();
 
   const name = data.quizzesDeleted[quizId].name;
-  const description = data.quizzesDeleted[quizId].description;
+  const description: string = data.quizzesDeleted[quizId].description as string;
 
   const ans = adminQuizCreate(authUserId, name, description);
   if ('error' in ans) {

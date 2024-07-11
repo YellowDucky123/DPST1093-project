@@ -261,9 +261,7 @@ app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const ans = adminQuizRemove(UserId, quizId);
   let status = 200;
   if ('error' in ans) {
-    if (ans.error === 'adminQuizRemove: you do not own this quiz') {
-      status = 403;
-    }
+    status = 403;
   }
   res.status(status).json(ans);
 });

@@ -75,9 +75,9 @@ function adminAuthLogin(email, password) {
 // We won't be marking you down for missing/adding too much sample data in this iteration.
 {
   uId: 1,
-  nameFirst: 'Rani',
-  nameLast: 'Jiang',
-  email: 'ranivorous@gmail.com',
+  nameFirst: 'James',
+  nameLast: 'Brond',
+  email: 'thisisntmyemail@gmail.com',
 }
 ```
 
@@ -150,8 +150,8 @@ In terms of file structure:
       <code>{ user:
   {
     userId: 1,
-    name: 'Hayden Smith',
-    email: 'hayden.smith@unsw.edu.au',
+    name: 'Jar Jar Brinks',
+    email: 'mesasosorry@naboo.com.au',
     numSuccessfulLogins: 3,
     numFailedPasswordsSinceLastLogin: 1,
   }
@@ -457,6 +457,8 @@ A common question asked throughout the project is usually "How can I test this?"
 
 The functions required for iteration 1 are described below.
 
+You may notice that two new functions have been added since iteration 0 - `adminUserPasswordUpdate` and `adminUserDetailsUpdate`. You will need to write new functions as per the interface instead of just replacing the content of your stub functions.
+
 All error cases should return <code>{error: 'specific error message here'}</code>, where the error message in quotation marks can be anything you like (this will not be marked).
 
 The following are strings: `email`, `password`, `nameFirst`, `nameLast`, `name`, `description`.
@@ -519,6 +521,58 @@ For timestamps, these are unix timestamps in seconds. You can find more informat
       </ul>
     </td>
   </tr>
+  <tr>
+    <td>
+      <code>adminUserPasswordUpdate</code>
+      <br /><br />
+      Given details relating to a password change, update the password of a logged in user.
+    </td>
+    <td>
+      <b>Parameters:</b><br />
+      <code>( authUserId, oldPassword, newPassword )</code>
+      <br /><br />
+      <b>Return object if no error:</b><br />
+      <code>{}</code>
+    </td>
+    <td>
+      <b>Return object <code>{error: 'specific error message here'}</code></b> when any of:
+      <ul>
+        <li>AuthUserId is not a valid user</li>
+        <li>Password is less than 8 characters</li>
+        <li>Password does not contain at least one number and at least one letter</li>
+        <li>Old Password is not the correct old password</li>
+        <li>Old Password and New Password match exactly</li>
+        <li>New Password has already been used before by this user</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>adminUserDetailsUpdate</code>
+      <br /><br />
+      Given a set of properties, update those properties of this logged in admin user.
+    </td>
+    <td>
+      <b>Parameters:</b><br />
+      <code>( authUserId, email, nameFirst, nameLast )</code>
+      <br /><br />
+      <b>Return type if no error:</b><br />
+      <code>{}</code>
+    </td>
+    <td>
+      <b>Return object <code>{error: 'specific error message here'}</code></b> when any of:
+      <ul>
+        <li>AuthUserId is not a valid user</li>
+        <li>Email address is used by another user</li>
+        <li>Email does not satisfy this: https://www.npmjs.com/package/validator (validator.isEmail function)</li>
+        <li>NameFirst contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes</li>
+        <li>NameFirst is less than 2 characters or more than 20 characters</li>
+        <li>NameLast contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes</li>
+        <li>NameLast is less than 2 characters or more than 20 characters</li>
+        </ul>
+    </td>
+  </tr>
+  
   <tr>
     <td>
       <code>adminUserDetails</code>
@@ -849,7 +903,7 @@ Please see section 7.5 for information on **peer assessment**.
 
 ### 🐝 4.1. Task
 
-In this iteration, more features were added to the specification, and the focus has been changed to HTTP endpoints. Most of the theory surrounding iteration 2 is covered in week 4-5 lectures. Note that there will still be some features of the frontend that will not work because the routes will not appear until iteration 3. There is no introductory video for iteration 2.
+In this iteration, more features were added to the specification, and the focus has been changed to HTTP endpoints. Most of the theory surrounding iteration 2 is covered in week 4-5 lectures. You will be provided a frontend in Week 07 that will work with the API defined for this iteration (swagger.yaml). Note that there will still be some features of the frontend that will not work because the routes will not appear until iteration 3. There is no introductory video for iteration 2.
 
 Iteration 2 both reuses a lot of work from iteration 1, as well as has new work. Most of the work from iteration 1 can be recycled, but the following consideration(s) need to be made from previous work:
  * `DELETE /v1/admin/quiz/{quizid}` now requires that upon deletion items are moved to trash instead of permanently removed.
@@ -858,7 +912,7 @@ If you'd like more support in this iteration, you can see a [previous term's vid
 
 In this iteration, you are expected to:
 
-1. Make adjustments to your existing code as per any feedback given by your tutor for iteration 1.
+1. Make adjustments to your existing code as per any feedback given by your tutor for iteration 1 (end of week 06).
 2. Migrate to Typescript by changing `.js` file extensions to `.ts`.
 3. Implement and test the HTTP Express server according to the [entire interface provided in the specification](swagger.yaml).
 
@@ -1035,8 +1089,8 @@ Errors are thrown in the following order: 401, then 403, then 400.
 
 ### 🐝 4.11. Working with the frontend
 
-There is a SINGLE repository available for all students at 
-https://nw-syd-gitlab.cseunsw.tech/COMP1531/23T3/project-frontend. 
+There is a SINGLE repository will be made available in Week 07 for all students at 
+https://nw-syd-gitlab.cseunsw.tech/DPST1093/24T2/exampledir/project-frontend. 
 You can clone this frontend locally. 
 
 Please remember to pull regularly as we continue to work on the frontend
@@ -1078,7 +1132,7 @@ Our recommendation with this iteration is that you start out trying to implement
   </tr>
   <tr>
     <td>Automarking (Testing & Implementation)</td>
-    <td>50%</td>
+    <td>40%</td>
     <td>
       Whilst we look at your group's work as a whole, if we feel that materially unequal contributions occurred between group members we will assess your individual contribution to the following criteria:
       <ul>
@@ -1129,6 +1183,17 @@ Our recommendation with this iteration is that you start out trying to implement
         <li>Effective use of course-provided MS Teams for effective communication with your group</li>
         <li>Use of issue board on Gitlab OR another equivalent tool that is used to effectively track your tasks</li>
         <li>Attendance and contributions at your teams standups, including at least one scenario where you were the leader of the meeting and took the minutes/notes for that meeting.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>Tutorial and Lab participation</td>
+    <td>10%</td>
+    <td>
+      As an <b>individual</b>, in terms of tutorial and lab particpation:
+      <ul>
+        <li>For the period of the iteration, attend the tutorials and labs</li>
+        <li>For the period of the iteration (and at least twice) either ask questions, answer questions, provide suggestions or some other meaninful contribution to the tutorials and labs</li>
       </ul>
     </td>
   </tr>
@@ -1587,10 +1652,10 @@ Please see section 7.5 for information on **peer assessment**.
 
 | Iteration | Due date                            | Demonstration to tutor(s)      | Assessment weighting (%) |
 | --------- | ----------------------------------- | ------------------------------ | ------------------------ |
-| 0         | 10pm Thursday  1st Feb (**week  3**)  | No demonstration               | 5% of project mark ( 3% overall)  |
-| 1         | 10pm Friday 16th Feb (**week  5**)  | In YOUR **week  6** laboratory | 30% of project mark (18% overall)  |
-| 2         | 10pm Friday  8th Mar (**week  8**)  | In YOUR **week  9** laboratory | 35% of project mark (21% overall)  |
-| 3         | 10pm Friday 29th Mar (**week 11**)  | In YOUR **week 12** laboratory | 30% of project mark (18% overall)  |
+| 0         | 10pm Friday 17th May (**week  2**)  | No demonstration               | 5% of project mark ( 3% overall)  |
+| 1         | 10pm Friday  7th Jun (**week  5**)  | In YOUR **week  6** laboratory | 30% of project mark (18% overall)  |
+| 2         | 10pm Friday 28th Jun (**week  8**)  | In YOUR **week  9** laboratory | 35% of project mark (21% overall)  |
+| 3         | 10pm Friday 19th Jul (**week 11**)  | In YOUR **week 12** laboratory | 30% of project mark (18% overall)  |
 
 ### 🌸 6.1. Submission & Late Penalties
 
@@ -1618,7 +1683,7 @@ If you want to have your automarking re-run:
 
 ### 🌸 6.2. Demonstration
 
-The demonstrations in weeks 6,9 and 12 will take place during your lab sessions. All team members **must** attend these lab sessions. Team members who do not attend a demonstration may receive a mark of 0 for that iteration. If you are unable to attend a demonstration due to circumstances beyond your control, you must apply for special consideration.
+The demonstrations in weeks 5,8 and 12 will take place during your lab sessions. All team members **must** attend these lab sessions. Team members who do not attend a demonstration may receive a mark of 0 for that iteration. If you are unable to attend a demonstration due to circumstances beyond your control, you must apply for special consideration.
 
 Demonstrations consist of a 15-20 minute Question and Answer session in front of your tutor and potentially some other students in your tutorial.
 
@@ -1645,9 +1710,9 @@ These are easy marks. They are marks assumed that you will receive automatically
 The following serves as a baseline for expected progress during project check-ins, in the specified weeks. For groups which do not meet this baseline, teamwork marks and/or individual scaling may be impacted.
 | Iteration | Week/Check-in | Expected progress                                                                                                                                     |
 | --------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0         | **Week 3**    | Twice-weekly standup meeting times organised, iteration 0 specification has been discussed in a meeting, at least 1 task per person has been assigned |
-| 1         | **Week 4**    | Iteration 1 specification has been discussed in a meeting, at least 1 task per person has been assigned                                               |
-| 1         | **Week 5**    | 1x function per person complete (tests and implementation in master)                                                                                  |
+| 0         | **Week 2**    | Twice-weekly standup meeting times organised, iteration 0 specification has been discussed in a meeting, at least 1 task per person has been assigned |
+| 1         | **Week 3**    | Iteration 1 specification has been discussed in a meeting, at least 1 task per person has been assigned                                               |
+| 1         | **Week 4**    | 1x function per person complete (tests and implementation in master)                                              | 1         | **Week 5**    | All functions complete (tests and implementation in master)                                    |
 | 2         | **Week 6**    | Iteration 2 specification has been discussed in a meeting, at least 1 task per person has been assigned                                               |
 | 2         | **Week 7**    | **(Checked by your tutor in week 8)** Server routes for all iteration 1 functions complete and in master                                              |
 | 2         | **Week 8**    | 1x iteration 2 route per person complete (HTTP tests and implementation in master)                                                                    |
@@ -1667,7 +1732,7 @@ These are easy marks. They are marks assumed that you will receive automatically
 
 ### 👌 7.3. Code contribution
 
-All team members must contribute code to the project to a generally similar degree. Tutors will assess the degree to which you have contributed by looking at your **git history** and analysing lines of code, number of commits, quality of commits, timing of commits, etc. If you contribute significantly less code than your team members, your work will be closely examined to determine what scaling needs to be applied.
+All team members must contribute code to the project to a generally similar degree. Tutors will assess the degree to which you have contributed by looking at your **git history** and analysing lines of code, number of commits, timing of commits, etc. If you contribute significantly less code than your team members, your work will be closely examined to determine what scaling needs to be applied.
 
 Note that **contributing more code is not a substitute for not contributing documentation**.
 
@@ -1719,7 +1784,7 @@ Your other team members will **not** be able to see how you rated them or what c
     <td>2</td>
     <td><a href="https://forms.office.com/r/wKPxSv6cWk">Click here</a></td>
     <td>10pm Friday 28th Jun</td>
-    <td>10pm Tuesday 2nd Jul</td>
+    <td>9am Monday 1st Jul</td>
   </tr>
   <tr>
     <td>3</td>
@@ -1758,7 +1823,7 @@ You must have the code you wish to be tested in your `master` branch by **10pm**
 
 The leaderboard will be updated on Monday, Wednesday, and Friday morning during the week that the iteration is due.
 
-Your position and mark on the leaderboard will be referenced against an alias for your group (for privacy). This alias will be emailed to your group in week 3. You are welcome to share your alias with others if you choose! (Up to you.)
+Your position and mark on the leaderboard will be referenced against an alias for your group (for privacy). This alias will be posted to your group MS Teams in week 4. You are welcome to share your alias with others if you choose! (Up to you.)
 
 The leaderboard gives you a chance to sanity check your automark (without knowing the details of what you did right and wrong), and is just a bit of fun.
 

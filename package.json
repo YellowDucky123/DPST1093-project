@@ -4,15 +4,17 @@
         "tsc": "tsc --project tsconfig.json",
         "lint": "eslint src/**/*.{ts,js}",
         "lint-fix": "eslint --fix src/**/*.{ts,js}",
-        "start": "ts-node -T src/server.ts"
+        "start": "ts-node -T src/server.ts",
+        "ts-node-coverage": "nyc --reporter=text --reporter=lcov ts-node -T src/server.ts",
+        "cleanup-sync-request": "pkill -f node_modules/sync-rpc/lib/worker.js > /dev/null 2>&1",
+        "posttest": "npm run cleanup-sync-request || true"
     },
     "dependencies": {
-        "18": "^0.0.0",
         "cors": "^2.8.5",
         "express": "^4.18.0",
         "http-errors": "^2.0.0",
+        "middleware-http-errors": "^0.1.1",
         "morgan": "^1.10.0",
-        "nanoid": "^3.3.7",
         "rewire": "^6.0.0",
         "ts-node": "^10.7.0",
         "typescript": "^4.6.3",
@@ -27,7 +29,7 @@
         "@types/node": "^20.3.1",
         "@types/prompt-sync": "^4.1.1",
         "@types/swagger-ui-express": "^4.1.3",
-        "@types/validator": "^13.12.0",
+        "@types/validator": "^13.7.2",
         "@typescript-eslint/eslint-plugin": "^5.21.0",
         "@typescript-eslint/parser": "^5.21.0",
         "eslint": "^8.25.0",
@@ -37,6 +39,11 @@
         "swagger-ui-express": "^4.6.2",
         "sync-request-curl": "^2.1.5",
         "ts-jest": "^28.0.2",
-        "yaml": "^2.4.5"
+        "yaml": "^2.2.2"
+    },
+    "nyc": {
+        "exclude": [
+            "echo.*"
+        ]
     }
 }

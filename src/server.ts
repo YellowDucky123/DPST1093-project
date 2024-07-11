@@ -438,15 +438,17 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
       res.status(400).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'Invalid character used in name') {
       res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === "New name can't be the same") {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'User Id invalid') {
       res.status(401).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'Quiz Id invalid') {
-      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'This user does not own this quiz') {
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'adminQuizCreate: quiz name already used by another user') {
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
-    }
+    } 
   }
   res.status(200).json({});
 });
@@ -467,7 +469,7 @@ app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
     } else if (result.error === 'User Id invalid') {
       res.status(401).send(JSON.stringify({ error: 'User Id invalid' }));
     } else if (result.error === 'Quiz Id invalid') {
-      res.status(400).send(JSON.stringify({ error: 'Quiz Id invalid' }));
+      res.status(403).send(JSON.stringify({ error: 'Quiz Id invalid' }));
     } else if (result.error === 'This user does not own this quiz') {
       res.status(403).send(JSON.stringify({ error: 'This user does not own this quiz' }));
     }
@@ -486,6 +488,8 @@ app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request,
   if ('error' in result) {
     if (!findUserIdByToken(token)) {
       res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
+    } else if (result.error === 'Quiz Id invalid') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'Question Id does not refer to a valid question within this quiz') {
       res.status(400).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'This user does not own this quiz') {
@@ -506,6 +510,8 @@ app.delete('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Re
   if ('error' in result) {
     if (!findUserIdByToken(token)) {
       res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
+    } else if (result.error === 'Quiz Id invalid') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'Question Id does not refer to a valid question within this quiz') {
       res.status(400).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'This user does not own this quiz') {
@@ -527,10 +533,16 @@ app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: 
   if ('error' in result) {
     if (!findUserIdByToken(token)) {
       res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
+    } else if (result.error === 'Quiz Id invalid') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'Question Id does not refer to a valid question within this quiz') {
       res.status(400).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'This user does not own this quiz') {
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'Invalid new position') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === "Can't move to the same position") {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
     }
   }
   res.status(200).send(JSON.stringify({}));

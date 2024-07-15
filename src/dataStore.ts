@@ -231,6 +231,14 @@ type sessionStore = {
 // quizSession store
 let quizSession: Sessions = {};
 
+export function getQuizSession() {
+  return quizSession;
+}
+
+export function setQuizSession(newData: Sessions) {
+  quizSession = newData;
+}
+
 /// ///////////////////////////////////////////////////////////////
 /// ///////////////////////////////////////////////////////////////
 /// /DATA DEFINE FINISHED //////////////// DATA DEFINE FINISHED////

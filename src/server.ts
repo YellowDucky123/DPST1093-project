@@ -54,8 +54,8 @@ setDataStorebyJSON();
 // our imports below:
 
 import { clear } from './other';
-import { start } from 'repl';
 import HTTPError from 'http-errors';
+import createHttpError, { CreateHttpError } from 'http-errors';
 
 // Set up web app
 const app = express();

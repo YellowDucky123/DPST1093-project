@@ -573,7 +573,7 @@ export function startSession(userId: number, quizId: number, autoStartNum: numbe
     return {};
 }
 
-export function updateSessionState(userId: number, quizId: number, action: string) {
+export function updateSessionState(userId: number, quizId: number, sessionId: number, action: string) {
     /*
     code
     */

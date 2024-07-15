@@ -641,7 +641,7 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = updateSessionState(UserId, quizId, action);
+  const ans = updateSessionState(UserId, quizId, sessionId, action);
   let status = 200;
   if ('error' in ans) {
     if(ans.error === "You do not own this quiz") {

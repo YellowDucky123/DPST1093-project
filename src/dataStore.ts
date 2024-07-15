@@ -220,6 +220,19 @@ interface QuizSession {
   results: QuizSessionResults;
 };
 
+type Sessions = {
+  [sessionId: number]: QuizSession
+}
+
+type sessionStore = {
+  sessions: Sessions
+}
+
+// quizSession store
+let quizSession: sessionStore = {
+  sessions: {}
+}
+
 /// ///////////////////////////////////////////////////////////////
 /// ///////////////////////////////////////////////////////////////
 /// /DATA DEFINE FINISHED //////////////// DATA DEFINE FINISHED////

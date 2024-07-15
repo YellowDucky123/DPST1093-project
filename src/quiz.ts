@@ -581,3 +581,27 @@ export function updateSessionState(userId: number, quizId: number, sessionId: nu
 
     return {};
 }
+
+export function questionResults(playerId: number, questionPosition: number) {
+  /*
+  code
+  */
+
+  return {}
+}
+
+export function allMessagesInSession(playerId: number) {
+  /*
+  code
+  */
+
+  return {}
+}
+
+export function sendChat(playerId: number) {
+  /*
+  code
+  */
+
+  return {}
+}

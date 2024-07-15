@@ -47,7 +47,7 @@ setDataStorebyJSON();
 // our imports below:
 
 import { clear } from './other';
-
+import createHttpError, { CreateHttpError } from 'http-errors';
 // Set up web app
 const app = express();
 // Use middleware that allows us to access the JSON body of requests
@@ -67,15 +67,25 @@ const HOST: string = process.env.IP || 'localhost';
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   const token = req.body.token as string;
   if (!token) {
-    res.status(401).json({ error: 'A token is required' });
-    return;
+    throw createHttpError(401, { error: 'A token is required' });
   }
   const ans = adminAuthLogout(token);
-  let status = 200;
   if ('error' in ans) {
-    status = 401;
+    throw createHttpError(401, ans);
   }
-  res.status(status).json(ans);
+  res.status(200).json(ans);
+});
+
+app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
+  const token = req.body.token as string;
+  if (!token) {
+    throw createHttpError(401, { error: 'A token is required' });
+  }
+  const ans = adminAuthLogout(token);
+  if ('error' in ans) {
+    throw createHttpError(401, ans);
+  }
+  res.status(200).json(ans);
 });
 
 app.put('/v1/admin/user/password', (req: Request, res: Response) => {
@@ -83,23 +93,41 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   const oldPassword = req.body.oldPassword as string;
   const newPassword = req.body.newPassword as string;
   if (!oldPassword || !newPassword) {
-    res.status(400).json({ error: 'Missing some contents' });
-    return;
+    throw createHttpError(400, { error: 'Missing some contents' });
   }
   if (!token) {
-    res.status(401).json({ error: 'A token is required' });
-    return;
+    throw createHttpError(401, { error: 'A token is required' });
   }
   const userId = findUserIdByToken(token);
   if (!userId) {
-    res.status(401).json({ error: 'the token is incorrect or not found' });
+    throw createHttpError(401, { error: 'the token is incorrect or not found' });
   }
   const ans = adminUserPasswordUpdate(userId, oldPassword, newPassword);
-  let status = 200;
   if ('error' in ans) {
-    status = 400;
+    throw createHttpError(400, ans);
   }
-  res.status(status).json(ans);
+  res.status(200).json(ans);
+});
+
+app.put('/v2/admin/user/password', (req: Request, res: Response) => {
+  const token = req.body.token as string;
+  const oldPassword = req.body.oldPassword as string;
+  const newPassword = req.body.newPassword as string;
+  if (!oldPassword || !newPassword) {
+    throw createHttpError(400, { error: 'Missing some contents' });
+  }
+  if (!token) {
+    throw createHttpError(401, { error: 'A token is required' });
+  }
+  const userId = findUserIdByToken(token);
+  if (!userId) {
+    throw createHttpError(401, { error: 'the token is incorrect or not found' });
+  }
+  const ans = adminUserPasswordUpdate(userId, oldPassword, newPassword);
+  if ('error' in ans) {
+    throw createHttpError(400, ans);
+  }
+  res.status(200).json(ans);
 });
 
 app.delete('/v1/clear', (req: Request, res: Response) => {
@@ -125,6 +153,7 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
     }
   }
 });
+
 app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   const token = req.query.token as string;
   if (!token) {
@@ -143,6 +172,7 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
     }
   }
 });
+
 app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   const token = req.body.token as string;
   const email = req.body.email as string;
@@ -372,7 +402,7 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
   const result = adminAuthRegister(email, password, nameFirst, nameLast);
   if ('error' in result) {
-    res.status(400).json({ error: `${result.error}` });
+    throw createHttpError(400, result);
   } else {
     let token = Math.floor(10000 + Math.random() * 90000).toString();
     while (checkDuplicateToken(token)) {
@@ -390,7 +420,7 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
   const { email, password } = req.body;
   const result = adminAuthLogin(email, password);
   if ('error' in result) {
-    return res.status(400).json({ error: `${result.error}` });
+    throw createHttpError(400, result);
   } else {
     let token = findTokenByUserId(result.authUserId);
     if (!token) {
@@ -410,19 +440,38 @@ app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Respo
   const questionId = parseInt(req.params.questionId);
   const { token, questionBody } = req.body;
   if (!token) {
-    return res.status(401).json({ error: 'Token not found' });
+    throw createHttpError(401, { error: 'Token not found' });
   }
   const userId = findUserIdByToken(token);
   if (!userId) {
-    return res.status(403).json({ error: 'This user does not own this quiz' });
+    throw createHttpError(403, { error: 'This user does not own this quiz' });
   }
   const result = adminQuizQuestionUpdate(userId, quizId, questionId, questionBody, token);
-  let status = 200;
   if ('error' in result) {
-    status = 400;
+    throw createHttpError(400, result);
   }
-  return res.status(status).json(result);
+  return res.status(200).json(result);
 });
+
+// Update quiz question
+app.put('/v2/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const questionId = parseInt(req.params.questionId);
+  const { token, questionBody } = req.body;
+  if (!token) {
+    throw createHttpError(401, { error: 'Token not found' });
+  }
+  const userId = findUserIdByToken(token);
+  if (!userId) {
+    throw createHttpError(403, { error: 'This user does not own this quiz' });
+  }
+  const result = adminQuizQuestionUpdate(userId, quizId, questionId, questionBody, token);
+  if ('error' in result) {
+    throw createHttpError(400, result);
+  }
+  return res.status(200).json(result);
+});
+
 // update quiz name
 app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
@@ -448,7 +497,7 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
     } else if (result.error === 'adminQuizCreate: quiz name already used by another user') {
       res.status(403).send(JSON.stringify({ error: `${result.error}` }));
-    } 
+    }
   }
   res.status(200).json({});
 });

@@ -44,7 +44,10 @@ import {
   updateQuizThumbnail,
   listSessions,
   startSession,
-  updateSessionState
+  updateSessionState,
+  questionResults,
+  allMessagesInSession,
+  sendChat
 } from './quiz';
 // set up data
 setDataStorebyJSON();
@@ -52,6 +55,7 @@ setDataStorebyJSON();
 
 import { clear } from './other';
 import { start } from 'repl';
+import HTTPError from 'http-errors';
 
 // Set up web app
 const app = express();
@@ -704,6 +708,42 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
   res.status(status).json(ans);
 });
 
+// return question results
+app.get('/v1/player/:playerId/question/:questionPosition/results', (req: Request, res: Response) => {
+  const token = req.headers.token as string;
+
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    throw HTTPError(401, 'token incorrect or not found');
+  }
+
+  const { playerId, questionPosition } = req.params;
+  return questionResults(parseInt(playerId), parseInt(questionPosition));
+});
+
+// views all messages in the session
+app.get('/v1/player/:playerId/chat', (req: Request, res: Response) => {
+  const token = req.headers.token as string;
+  const playerId = parseInt(req.params.playerId);
+
+  if (!findUserIdByToken(token)) {
+    throw HTTPError(401, 'token incorrect or not found');
+  }
+
+  return allMessagesInSession(playerId);
+})
+
+// player sends a chat message
+app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
+  const token = req.headers.token as string;
+  const playerId = parseInt(req.params.playerId);
+
+  if (!findUserIdByToken(token)) {
+    throw HTTPError(401, 'token incorrect or not found');
+  }
+
+  return sendChat(playerId);
+})
 
 //--------------------------------------------------------------------------
 // rids the server of everything

@@ -202,7 +202,8 @@ enum QuizSessionAction {
 interface Player {
   id: number;
   name: string;
-  // MISSING : other player attributes???
+  session: number // id of current session they are in
+  // add anything else?
 };
 
 
@@ -224,19 +225,29 @@ type Sessions = {
   [sessionId: number]: QuizSession
 }
 
-type sessionStore = {
-  sessions: Sessions
+type playerData = {
+  [playerId: number] : Player;
 }
 
 // quizSession store
 let quizSession: Sessions = {};
 
-export function getQuizSession() {
+let playerData: playerData = {};
+
+export function getSessionData() {
   return quizSession;
 }
 
-export function setQuizSession(newData: Sessions) {
+export function setSessionData(newData: Sessions) {
   quizSession = newData;
+}
+
+export function getPlayerData() {
+  return playerData;
+}
+
+export function setPlayerData(newData) {
+  playerData = newData;
 }
 
 /// ///////////////////////////////////////////////////////////////

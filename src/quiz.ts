@@ -1,4 +1,4 @@
-import { answer, getData, question, quiz, setData } from './dataStore';
+import { answer, getData, question, quiz, setData, getSessionData, setSessionData } from './dataStore';
 import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId, getCurrentTime } from './helpers';
 import { quizIdValidator } from './helpers';
 import { quizOwnership } from './helpers';
@@ -583,9 +583,8 @@ export function updateSessionState(userId: number, quizId: number, sessionId: nu
 }
 
 export function questionResults(playerId: number, questionPosition: number) {
-  /*
-  code
-  */
+  let QData = getSessionData();
+  
 
   return {}
 }

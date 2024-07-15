@@ -110,7 +110,7 @@ describe('Update Quiz Name http test: ', () => {
       }
     );
     const result = JSON.parse(res.body as string);
-    expect(res.statusCode).toBe(INPUT_ERROR);
+    expect(res.statusCode).toBe(403);
     expect(result).toStrictEqual({ error: 'Quiz Id invalid' });
   });
 

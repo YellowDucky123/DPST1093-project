@@ -8,6 +8,7 @@ import { descriptionLengthValid } from './helpers';
 import { isUsedQuizName } from './helpers';
 import { customAlphabet } from 'nanoid';
 import { createId } from './helpers';
+import HTTPError from 'http-errors';
 
 /** *******************************************************************************************|
 |            |
@@ -248,25 +249,25 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
 export function adminQuizNameUpdate(authUserId: number, quizId: number, name: string) {
   // Error checks
   if (!nameLen(name)) {
-    return { error: 'Invalid name length' };
+    throw HTTPError(400, 'Invalid name length');
   }
   if (!isNameAlphaNumeric(name)) {
-    return { error: 'Invalid character used in name' };
+    throw HTTPError(400,'Invalid character used in name');
   }
   if (!userIdValidator(authUserId)) {
-    return { error: 'User Id invalid' };
+    throw HTTPError(401,'User Id invalid');
   }
   if (!quizIdValidator(quizId)) {
-    return { error: 'Quiz Id invalid' };
+    throw HTTPError(403,'Quiz Id invalid');
   }
   if (!quizOwnership(authUserId, quizId)) {
-    return { error: 'This user does not own this quiz' };
+    throw HTTPError(403,'This user does not own this quiz');
   }
   if (name === getData().quizzes[quizId].name) {
-    return { error: "New name can't be the same" };
+    throw HTTPError(400,"New name can't be the same");
   }
   if (isUsedQuizName(name, authUserId) === false) {
-    return { error: 'adminQuizCreate: quiz name already used by another user' };
+    throw HTTPError(403,'adminQuizCreate: quiz name already used by another user');
   }
 
   // If no errors then update name
@@ -283,16 +284,16 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
 
 export function adminQuizDescriptionUpdate(authUserId: number, quizId: number, description: string) {
   if (!descriptionLengthValid(description)) {
-    return { error: 'Description too long' };
+    throw HTTPError(400,'Description too long');
   }
   if (!userIdValidator(authUserId)) {
-    return { error: 'User Id invalid' };
+    throw HTTPError(401,'User Id invalid');
   }
   if (!quizIdValidator(quizId)) {
-    return { error: 'Quiz Id invalid' };
+    throw HTTPError(403,'Quiz Id invalid');
   }
   if (!quizOwnership(authUserId, quizId)) {
-    return { error: 'This user does not own this quiz' };
+    throw HTTPError(403,'This user does not own this quiz');
   }
 
   const whData = getData();
@@ -308,16 +309,16 @@ export function adminQuizDescriptionUpdate(authUserId: number, quizId: number, d
 
 export function duplicateQuestion(authUserId: number, quizId: number, questionId: number) {
   if (!userIdValidator(authUserId)) {
-    return { error: 'User Id invalid' };
+    throw HTTPError(401,'User Id invalid');
   }
   if (!quizIdValidator(quizId)) {
-    return { error: 'Quiz Id invalid' };
+    throw HTTPError(403,'Quiz Id invalid');
   }
   if (!quizOwnership(authUserId, quizId)) {
-    return { error: 'This user does not own this quiz' };
+    throw HTTPError(403,'This user does not own this quiz');
   }
   if (!questionFinder(quizId, questionId)) {
-    return { error: 'Question Id does not refer to a valid question within this quiz' };
+    throw HTTPError(400,'Question Id does not refer to a valid question within this quiz');
   }
 
   let quesId;
@@ -343,16 +344,16 @@ export function duplicateQuestion(authUserId: number, quizId: number, questionId
 
 export function deleteQuestion(authUserId: number, quizId: number, questionId: number) {
   if (!userIdValidator(authUserId)) {
-    return { error: 'User Id invalid' };
+    throw HTTPError(401,'User Id invalid');
   }
   if (!quizIdValidator(quizId)) {
-    return { error: 'Quiz Id invalid' };
+    throw HTTPError(403,'Quiz Id invalid');
   }
   if (!quizOwnership(authUserId, quizId)) {
-    return { error: 'This user does not own this quiz' };
+    throw HTTPError(403,'This user does not own this quiz');
   }
   if (!questionFinder(quizId, questionId)) {
-    return { error: 'Question Id does not refer to a valid question within this quiz' };
+    throw HTTPError(400,'Question Id does not refer to a valid question within this quiz');
   }
 
   const data = getData();
@@ -372,16 +373,16 @@ export function deleteQuestion(authUserId: number, quizId: number, questionId: n
 
 export function moveQuestion(authUserId: number, quizId: number, questionId: number, newPos: number) {
   if (!userIdValidator(authUserId)) {
-    return { error: 'User Id invalid' };
+    throw HTTPError(401,'User Id invalid');
   }
   if (!quizIdValidator(quizId)) {
-    return { error: 'Quiz Id invalid' };
+    throw HTTPError(403,'Quiz Id invalid');
   }
   if (!quizOwnership(authUserId, quizId)) {
-    return { error: 'This user does not own this quiz' };
+    throw HTTPError(403,'This user does not own this quiz');
   }
   if (!questionFinder(quizId, questionId)) {
-    return { error: 'Question Id does not refer to a valid question within this quiz' };
+    throw HTTPError(400,'Question Id does not refer to a valid question within this quiz');
   }
 
   const data = getData();
@@ -549,4 +550,34 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
   questions[i].questionId = questionBody.questionId;
   setData(data);
   return {};
+}
+
+export function updateQuizThumbnail(userId: number, quizId: number, imgUrl: string) {
+    /*
+    code
+    */
+    return {};
+}
+
+export function listSessions(userId: number, quizId: number) {
+    /*
+    code
+    */
+    return {};
+}
+
+export function startSession(userId: number, quizId: number, autoStartNum: number) {
+    /*
+    code
+    */
+
+    return {};
+}
+
+export function updateSessionState(userId: number, quizId: number, sessionId: number, action: string) {
+    /*
+    code
+    */
+
+    return {};
 }

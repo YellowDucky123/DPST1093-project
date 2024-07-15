@@ -178,6 +178,48 @@ let dataStore: data = {
   quizzesDeleted: {},
   tokenUserIdList: {},
 };
+
+
+//quizSession
+enum QuizSessionState {
+  LOBBY,
+  QUESTION_COUNTDOWN,
+  QUESTION_OPEN,
+  QUESTION_CLOSE,
+  ANSWER_SHOW,
+  FINAL_RESULTS,
+  END
+};
+
+enum QuizSessionAction {
+  NEXT_QUESTION,
+  SKIP_COUNTDOWN,
+  GO_TO_ANSWER,
+  GO_TO_FINAL_RESULTS,
+  END,
+};
+
+interface Player {
+  id: number;
+  name: string;
+  // MISSING : other player attributes???
+};
+
+
+interface QuizSessionResults {
+  // TODO : What is the best way to represent results????
+};
+
+interface QuizSession {
+  id: number;
+  autoStartNum: number;
+  state : QuizSessionState;
+  atQuestion : number;
+  players: Player[];
+  metadata: quiz;
+  results: QuizSessionResults;
+};
+
 /// ///////////////////////////////////////////////////////////////
 /// ///////////////////////////////////////////////////////////////
 /// /DATA DEFINE FINISHED //////////////// DATA DEFINE FINISHED////
@@ -241,3 +283,4 @@ export {
   findTokenByUserId,
   checkDuplicateToken
 };
+

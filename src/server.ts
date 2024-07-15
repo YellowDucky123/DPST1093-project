@@ -785,12 +785,13 @@ app.get('/v1/player/:playerId/chat', (req: Request, res: Response) => {
 app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const playerId = parseInt(req.params.playerId);
+  const messageBody = req.body.body;
 
   if (!findUserIdByToken(token)) {
     throw HTTPError(401, 'token incorrect or not found');
   }
 
-  return sendChat(playerId);
+  return sendChat(playerId, messageBody);
 })
 
 //--------------------------------------------------------------------------

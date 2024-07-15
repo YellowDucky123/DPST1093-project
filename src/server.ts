@@ -428,7 +428,8 @@ app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Respo
   }
   return res.status(status).json(result);
 });
-// update quiz name
+
+// update quiz name version1
 app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const newName = req.body.name;
@@ -458,7 +459,17 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
   res.status(200).json({});
 });
 
-// update quiz description
+// update quiz name version2
+app.put('/v2/admin/quiz/:quizId/name', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const newName = req.body.name;
+  const token = req.headers.token as string;
+  const userId: number = findUserIdByToken(token);
+
+  return res.json(adminQuizNameUpdate(userId, quizId, newName));
+});
+
+// update quiz description version 1
 app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const newDescription = req.body.description;
@@ -482,7 +493,16 @@ app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
   res.status(200).send(JSON.stringify({}));
 });
 
-// duplicate question
+// update quiz description version 2
+app.put('/v2/admin/quiz/:quizId/description', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const newDescription = req.body.description;
+  const token = req.headers.token as string;
+  const userId: number = findUserIdByToken(token);
+  return res.json(adminQuizDescriptionUpdate(userId, quizId, newDescription));
+});
+
+// duplicate question version 1
 app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);
@@ -504,7 +524,17 @@ app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request,
   res.status(200).send(JSON.stringify(result));
 });
 
-// delete question
+// duplicate question version 2
+app.post('/v2/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const questionId = parseInt(req.params.questionId);
+  const token = req.headers.token as string;
+  const userId: number = findUserIdByToken(token);
+
+  return res.json(duplicateQuestion(userId, quizId, questionId));
+});
+
+// delete question version 1
 app.delete('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);
@@ -526,7 +556,17 @@ app.delete('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Re
   res.status(200).send(JSON.stringify({}));
 });
 
-// move quiz question
+// delete question version 2
+app.delete('/v2/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const questionId = parseInt(req.params.questionId);
+  const token = req.headers.token as string;
+  const userId: number = findUserIdByToken(token);
+
+  return res.json(deleteQuestion(userId, quizId, questionId));
+});
+
+// move quiz question version 1
 app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);
@@ -551,6 +591,17 @@ app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: 
     }
   }
   res.status(200).send(JSON.stringify({}));
+});
+
+// move quiz question version 2
+app.put('/v2/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const questionId = parseInt(req.params.questionId);
+  const token = req.headers.token as string;
+  const newPosition = req.body.newPosition;
+  const userId: number = findUserIdByToken(token);
+
+  return res.json(moveQuestion(userId, quizId, questionId, newPosition));
 });
 
 //-------------------------------------- Iteration 3 ------------------------------------
@@ -657,8 +708,7 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
 //--------------------------------------------------------------------------
 // rids the server of everything
 app.delete('/v1/clear', (req: Request, res: Response) => {
-  const result = clear();
-  res.status(200).send(JSON.stringify(result));
+  return res.json(clear());
 });
 
 // ====================================================================

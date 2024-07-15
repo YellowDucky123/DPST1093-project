@@ -2,6 +2,7 @@ import { setData, getData, users, quizzes } from './dataStore';
 import validator from 'validator';
 import { user } from './dataStore';
 import { customAlphabet } from 'nanoid';
+import { createHash } from 'crypto';
 
 export function userIdValidator(UserId: number) {
   const whData = getData();
@@ -325,4 +326,8 @@ export function createQuestionId(quizId: number) {
 
 export function getCurrentTime() {
     return Math.floor(new Date().getTime() / 1000);
+}
+
+export function hash(string: string) {
+  return createHash('sha256').update(string).digest('hex');
 }

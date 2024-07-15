@@ -428,50 +428,176 @@ app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Respo
   }
   return res.status(status).json(result);
 });
-// update quiz name
+
+// update quiz name version1
 app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const newName = req.body.name;
   const token = req.body.token;
   const userId: number = findUserIdByToken(token);
 
+  const result = adminQuizNameUpdate(userId, quizId, newName);
+  if ('error' in result) {
+    if (!findUserIdByToken(token)) {
+      res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
+    } else if (result.error === 'Invalid name length') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'Invalid character used in name') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === "New name can't be the same") {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'User Id invalid') {
+      res.status(401).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'Quiz Id invalid') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'This user does not own this quiz') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'adminQuizCreate: quiz name already used by another user') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    } 
+  }
+  res.status(200).json({});
+});
+
+// update quiz name version2
+app.put('/v2/admin/quiz/:quizId/name', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const newName = req.body.name;
+  const token = req.headers.token as string;
+  const userId: number = findUserIdByToken(token);
+
   return res.json(adminQuizNameUpdate(userId, quizId, newName));
 });
 
-// update quiz description
+// update quiz description version 1
 app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const newDescription = req.body.description;
   const token = req.body.token;
   const userId: number = findUserIdByToken(token);
+  const result = adminQuizDescriptionUpdate(userId, quizId, newDescription);
+
+  if ('error' in result) {
+    if (!findUserIdByToken(token)) {
+      res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
+    } else if (result.error === 'Description too long') {
+      res.status(400).send(JSON.stringify({ error: 'Description too long' }));
+    } else if (result.error === 'User Id invalid') {
+      res.status(401).send(JSON.stringify({ error: 'User Id invalid' }));
+    } else if (result.error === 'Quiz Id invalid') {
+      res.status(403).send(JSON.stringify({ error: 'Quiz Id invalid' }));
+    } else if (result.error === 'This user does not own this quiz') {
+      res.status(403).send(JSON.stringify({ error: 'This user does not own this quiz' }));
+    }
+  }
+  res.status(200).send(JSON.stringify({}));
+});
+
+// update quiz description version 2
+app.put('/v2/admin/quiz/:quizId/description', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const newDescription = req.body.description;
+  const token = req.headers.token as string;
+  const userId: number = findUserIdByToken(token);
   return res.json(adminQuizDescriptionUpdate(userId, quizId, newDescription));
 });
 
-// duplicate question
+// duplicate question version 1
 app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);
   const token = req.body.token;
   const userId: number = findUserIdByToken(token);
 
+  const result = duplicateQuestion(userId, quizId, questionId);
+  if ('error' in result) {
+    if (!findUserIdByToken(token)) {
+      res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
+    } else if (result.error === 'Quiz Id invalid') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'Question Id does not refer to a valid question within this quiz') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'This user does not own this quiz') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    }
+  }
+  res.status(200).send(JSON.stringify(result));
+});
+
+// duplicate question version 2
+app.post('/v2/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const questionId = parseInt(req.params.questionId);
+  const token = req.headers.token as string;
+  const userId: number = findUserIdByToken(token);
+
   return res.json(duplicateQuestion(userId, quizId, questionId));
 });
 
-// delete question
+// delete question version 1
 app.delete('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);
   const token = String(req.query.token);
   const userId: number = findUserIdByToken(token);
 
+  const result = deleteQuestion(userId, quizId, questionId);
+  if ('error' in result) {
+    if (!findUserIdByToken(token)) {
+      res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
+    } else if (result.error === 'Quiz Id invalid') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'Question Id does not refer to a valid question within this quiz') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'This user does not own this quiz') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    }
+  }
+  res.status(200).send(JSON.stringify({}));
+});
+
+// delete question version 2
+app.delete('/v2/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const questionId = parseInt(req.params.questionId);
+  const token = req.headers.token as string;
+  const userId: number = findUserIdByToken(token);
+
   return res.json(deleteQuestion(userId, quizId, questionId));
 });
 
-// move quiz question
+// move quiz question version 1
 app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);
   const token = req.body.token;
+  const newPosition = req.body.newPosition;
+  const userId: number = findUserIdByToken(token);
+
+  const result = moveQuestion(userId, quizId, questionId, newPosition);
+  if ('error' in result) {
+    if (!findUserIdByToken(token)) {
+      res.status(401).send(JSON.stringify({ error: 'Token is empty or invalid' }));
+    } else if (result.error === 'Quiz Id invalid') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'Question Id does not refer to a valid question within this quiz') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'This user does not own this quiz') {
+      res.status(403).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === 'Invalid new position') {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    } else if (result.error === "Can't move to the same position") {
+      res.status(400).send(JSON.stringify({ error: `${result.error}` }));
+    }
+  }
+  res.status(200).send(JSON.stringify({}));
+});
+
+// move quiz question version 2
+app.put('/v2/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const questionId = parseInt(req.params.questionId);
+  const token = req.headers.token as string;
   const newPosition = req.body.newPosition;
   const userId: number = findUserIdByToken(token);
 

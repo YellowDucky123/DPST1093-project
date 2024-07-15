@@ -1,0 +1,11 @@
+enum QuizSessionState {
+    LOBBY,
+    QUESTION_COUNTDOWN,
+    QUESTION_OPEN,
+    QUESTION_CLOSE,
+    ANSWER_SHOW,
+    FINAL_RESULTS,
+    END
+};
+
+QuizSessionState.ANSWER_SHOW

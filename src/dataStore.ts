@@ -181,7 +181,7 @@ let dataStore: data = {
 
 
 //quizSession
-enum QuizSessionState {
+export enum QuizSessionState {
   LOBBY,
   QUESTION_COUNTDOWN,
   QUESTION_OPEN,
@@ -202,10 +202,18 @@ enum QuizSessionAction {
 interface Player {
   id: number;
   name: string;
-  session: number // id of current session they are in
+  session: number; // id of current session they are in
+  questionAnswered: question[];
+  messages: message[];
   // add anything else?
 };
 
+export interface message {
+  messageBody: string;
+  playerId: number;
+  playerName: string;
+  timeSent: number;
+}
 
 interface QuizSessionResults {
   // TODO : What is the best way to represent results????
@@ -234,6 +242,8 @@ let quizSession: Sessions = {};
 
 let playerData: playerData = {};
 
+let chat: message[] = [];
+
 export function getSessionData() {
   return quizSession;
 }
@@ -248,6 +258,14 @@ export function getPlayerData() {
 
 export function setPlayerData(newData) {
   playerData = newData;
+}
+
+export function getChat() {
+  return chat;
+}
+
+export function addChat(message: message) {
+  chat.push(message);
 }
 
 /// ///////////////////////////////////////////////////////////////

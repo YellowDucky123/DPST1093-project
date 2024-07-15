@@ -40,13 +40,18 @@ import {
   adminRestoreQuiz,
   adminQuizPermDelete,
   adminQuizQuestionUpdate,
-  adminQuizCreate
+  adminQuizCreate,
+  updateQuizThumbnail,
+  listSessions,
+  startSession,
+  updateSessionState
 } from './quiz';
 // set up data
 setDataStorebyJSON();
 // our imports below:
 
 import { clear } from './other';
+import { start } from 'repl';
 
 // Set up web app
 const app = express();
@@ -548,6 +553,108 @@ app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: 
   res.status(200).send(JSON.stringify({}));
 });
 
+//-------------------------------------- Iteration 3 ------------------------------------
+
+app.put('/v1/admin/quiz/:quizId/thumbnail', (req: Request, res: Response) => {
+  const token = req.body.token as string;
+  const quizId = parseInt(req.params.quizId);
+  const imgUrl = req.body.imgUrl as string;
+
+  if (!token) {
+    res.status(401).json({ error: 'A correct token is required' });
+  }
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    res.status(401).json({ error: 'token incorrect or not found' });
+    return;
+  }
+  const ans = updateQuizThumbnail(UserId, quizId, imgUrl);
+  let status = 200;
+  if ('error' in ans) {
+    if(ans.error === "You do not own this quiz") {
+      status = 403;
+    } else {
+      status = 400;
+    }
+  }
+  res.status(status).json(ans);
+});
+
+app.get('/v1/admin/quiz/:quizId/sessions', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  const quizId = parseInt(req.params.quizId);
+
+  if (!token) {
+    res.status(401).json({ error: 'A correct token is required' });
+  }
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    res.status(401).json({ error: 'token incorrect or not found' });
+    return;
+  }
+  const ans = listSessions(UserId, quizId);
+  let status = 200;
+  if ('error' in ans) {
+    if(ans.error === "You do not own this quiz") {
+      status = 403;
+    }
+  }
+  res.status(status).json(ans);
+});
+
+app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) => {
+  const token = req.body.token as string;
+  const quizId = parseInt(req.params.quizId);
+  const autoStartNum = parseInt(req.params.autoStartNum);
+
+  if (!token) {
+    res.status(401).json({ error: 'A correct token is required' });
+  }
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    res.status(401).json({ error: 'token incorrect or not found' });
+    return;
+  }
+  const ans = startSession(UserId, quizId, autoStartNum);
+  let status = 200;
+  if ('error' in ans) {
+    if(ans.error === "You do not own this quiz") {
+      status = 403;
+    } else {
+      status = 400;
+    }
+  }
+  res.status(status).json(ans);
+});
+
+app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
+  const token = req.body.token as string;
+  const quizId = parseInt(req.params.quizId);
+  const sessionId = parseInt(req.params.sessionId);
+  const action = req.body.action as string;
+
+  if (!token) {
+    res.status(401).json({ error: 'A correct token is required' });
+  }
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    res.status(401).json({ error: 'token incorrect or not found' });
+    return;
+  }
+  const ans = updateSessionState(UserId, quizId, sessionId, action);
+  let status = 200;
+  if ('error' in ans) {
+    if(ans.error === "You do not own this quiz") {
+      status = 403;
+    } else {
+      status = 400;
+    }
+  }
+  res.status(status).json(ans);
+});
+
+
+//--------------------------------------------------------------------------
 // rids the server of everything
 app.delete('/v1/clear', (req: Request, res: Response) => {
   const result = clear();

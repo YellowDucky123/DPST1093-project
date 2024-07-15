@@ -550,3 +550,33 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
   setData(data);
   return {};
 }
+
+export function updateQuizThumbnail(userId: number, quizId: number, imgUrl: string) {
+    /*
+    code
+    */
+    return {};
+}
+
+export function listSessions(userId: number, quizId: number) {
+    /*
+    code
+    */
+    return {};
+}
+
+export function startSession(userId: number, quizId: number, autoStartNum: number) {
+    /*
+    code
+    */
+
+    return {};
+}
+
+export function updateSessionState(userId: number, quizId: number, sessionId: number, action: string) {
+    /*
+    code
+    */
+
+    return {};
+}

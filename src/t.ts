@@ -1,18 +1,19 @@
-const a = [
-  {
-    k: 1,
-    l: 1
-  },
-  {
-    k: 2,
-    l: 2
-  }
-];
+import request from 'sync-request-curl';
+import config from './config.json';
+const port = config.port;
+const url = config.url;
+const SERVER_URL = `${url}:${port}`;
 
-for (const d of a) {
-  if (d.k === 1) {
-    d.k = 4;
+const res = request(
+  'PUT',
+  SERVER_URL + `/v1/admin/quiz/${qId.quizId}/name`,
+  {
+    json: {
+      token: tId.token,
+      quizId: qId.quizId,
+      name: 'new name'
+    },
+    timeout: 100
   }
-}
-
-console.log(a);
+);
+const result = JSON.parse(res.body as string);

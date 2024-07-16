@@ -797,11 +797,7 @@ app.put('/v1/admin/quiz/:quizId/thumbnail', (req: Request, res: Response) => {
   const ans = updateQuizThumbnail(UserId, quizId, imgUrl);
   let status = 200;
   if ('error' in ans) {
-    if(ans.error === "You do not own this quiz") {
-      status = 403;
-    } else {
-      status = 400;
-    }
+    return res.json(ans);
   }
   res.status(status).json(ans);
 });
@@ -821,9 +817,7 @@ app.get('/v1/admin/quiz/:quizId/sessions', (req: Request, res: Response) => {
   const ans = listSessions(UserId, quizId);
   let status = 200;
   if ('error' in ans) {
-    if(ans.error === "You do not own this quiz") {
-      status = 403;
-    }
+    return res.json(ans);
   }
   res.status(status).json(ans);
 });
@@ -844,11 +838,7 @@ app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) 
   const ans = startSession(UserId, quizId, autoStartNum);
   let status = 200;
   if ('error' in ans) {
-    if(ans.error === "You do not own this quiz") {
-      status = 403;
-    } else {
-      status = 400;
-    }
+    return res.json(ans);
   }
   res.status(status).json(ans);
 });
@@ -870,11 +860,7 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
   const ans = updateSessionState(UserId, quizId, sessionId, action);
   let status = 200;
   if ('error' in ans) {
-    if(ans.error === "You do not own this quiz") {
-      status = 403;
-    } else {
-      status = 400;
-    }
+    return res.json(ans);
   }
   res.status(status).json(ans);
 });

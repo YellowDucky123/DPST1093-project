@@ -204,7 +204,7 @@ export enum QuizSessionAction {
   END,
 };
 
-interface Player {
+export interface Player {
   id: number;
   name: string;
   sessionId: number; // id of current session they are in
@@ -237,7 +237,7 @@ export interface QuizSessionResults {
   questionResults: questionResults[];
 };
 
-interface QuizSession {
+export interface QuizSession {
   id: number;
   autoStartNum: number;
   state : QuizSessionState;

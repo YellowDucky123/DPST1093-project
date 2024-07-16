@@ -1,3 +1,6 @@
+import { getData, message, Player, playerResults, QuizSession, QuizSessionResults, QuizSessionState } from "./dataStore";
+import { createId } from "./helpers";
+
 export function listSessions(userId: number, quizId: number) {
     /*
     code
@@ -6,9 +9,25 @@ export function listSessions(userId: number, quizId: number) {
 }
 
 export function startSession(userId: number, quizId: number, autoStartNum: number) {
-    /*
-    code
-    */
+    let data = getData();
+
+    const results: QuizSessionResults =  {
+        usersRankedbyScore: [],
+        questionResults: []
+    };
+
+    let data_session: QuizSession = {
+        id: createId(data.Sessions),
+        autoStartNum: autoStartNum,
+        state : QuizSessionState.LOBBY,
+        atQuestion : 1,
+        players: [],
+        metadata: data.quizzes[quizId],
+        results: results,
+        messages: [],
+    }
+
+    data.Sessions[data_session.id] = data_session;
 
     return {};
 }

@@ -1,5 +1,7 @@
-import { getData, message, Player, playerResults, QuizSession, QuizSessionResults, QuizSessionState } from "./dataStore";
+import { getData, getSessionData, message, Player, playerResults, QuizSession, QuizSessionResults, QuizSessionState, setSessionData } from "./dataStore";
 import { createId } from "./helpers";
+
+let timer;
 
 export function listSessions(userId: number, quizId: number) {
     /*
@@ -60,6 +62,10 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
     /*
     code Kelvin
     */
+    clearTimeout(timer);
+    let sesData = getSessionData();
+    sesData[quizSessionId].state = QuizSessionState.QUESTION_OPEN;
+    setSessionData(sesData);
   
     return {}
   }
@@ -68,6 +74,9 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
     /*
     code Kelvin
     */
+   let sesData = getSessionData();
+   sesData[quizSessionId].state = QuizSessionState.QUESTION_CLOSE;
+   setSessionData(sesData);
   
     return {}
   }

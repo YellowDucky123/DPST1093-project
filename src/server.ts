@@ -48,14 +48,17 @@ import {
 } from './quiz';
 import {
   listSessions,
-  startSession,
-  updateSessionState} from "./session"
+  startSession
+} from "./session"
+
+import { updateSesionState } from './updateSessionState_fn';
 // set up data
 setDataStorebyJSON();
 // our imports below:
 
 import { clear } from './other';
 import HTTPError from 'http-errors';
+import { quizIdValidator } from './helpers';
 
 // Set up web app
 const app = express();
@@ -803,22 +806,41 @@ app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) 
   return res.json(startSession(UserId, quizId, autoStartNum));
 });
 
+// I think it's supposed to be the other update session function right?
+//
+// app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
+//   const token = req.headers.token as string;
+//   const quizId = parseInt(req.params.quizId);
+//   const sessionId = parseInt(req.params.sessionId);
+//   const action = req.body.action as string;
+
+//   if (!token) {
+//     res.status(401).json({ error: 'A correct token is required' });
+//   }
+//   const UserId = findUserIdByToken(token);
+//   if (!UserId) {
+//     res.status(401).json({ error: 'token incorrect or not found' });
+//     return;
+//   }
+//   return res.json(updateSessionState(UserId, quizId, sessionId, action));
+// });
+
 app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
   const token = req.headers.token as string;
+  if (!findUserIdByToken(token)) {
+    throw HTTPError(401, 'token incorrect or not found');
+  }
+
   const quizId = parseInt(req.params.quizId);
   const sessionId = parseInt(req.params.sessionId);
-  const action = req.body.action as string;
+  const body = req.body.body;
 
-  if (!token) {
-    res.status(401).json({ error: 'A correct token is required' });
+  if(!quizIdValidator(quizId)) {
+    throw HTTPError(403, "quiz does not exist");
   }
-  const UserId = findUserIdByToken(token);
-  if (!UserId) {
-    res.status(401).json({ error: 'token incorrect or not found' });
-    return;
-  }
-  return res.json(updateSessionState(UserId, quizId, sessionId, action));
-});
+  return updateSesionState(sessionId, body.action);
+})
+
 
 // return question results
 app.get('/v1/player/:playerId/question/:questionPosition/results', (req: Request, res: Response) => {
@@ -856,6 +878,22 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
   }
 
   return sendChat(playerId, messageBody);
+})
+
+app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
+  const token = req.headers.token as string;
+  if (!findUserIdByToken(token)) {
+    throw HTTPError(401, 'token incorrect or not found');
+  }
+
+  const quizId = parseInt(req.params.quizId);
+  const sessionId = parseInt(req.params.sessionId);
+  const body = req.body.body;
+
+  if(!quizIdValidator(quizId)) {
+    throw HTTPError(403, "quiz does not exist");
+  }
+  return updateSesionState(sessionId, body.action);
 })
 
 //--------------------------------------------------------------------------

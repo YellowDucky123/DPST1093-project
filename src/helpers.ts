@@ -1,4 +1,4 @@
-import { setData, getData, users, quizzes, getPlayerData } from './dataStore';
+import { setData, getData, users, quizzes, getPlayerData, Sessions } from './dataStore';
 import validator from 'validator';
 import { user } from './dataStore';
 import { customAlphabet } from 'nanoid';
@@ -285,7 +285,7 @@ export function questionFinder(quizId: number, questionId: number): boolean {
   return false;
 }
 
-function checkIdDuplicate(id: number, object: users | quizzes): boolean {
+function checkIdDuplicate(id: number, object: users | quizzes | Sessions): boolean {
   let flag = false;
   for (const item in object) {
     if (id === parseInt(item)) {
@@ -296,11 +296,11 @@ function checkIdDuplicate(id: number, object: users | quizzes): boolean {
 }
 
 // create an Id, and check duplication within given object
-export function createId(obejct: users | quizzes): number {
+export function createId(object: users | quizzes | Sessions): number {
   const Digit = 1000;
   let id: number = Math.floor(Math.random() * Digit);
 
-  while (checkIdDuplicate(id, obejct) !== false) {
+  while (checkIdDuplicate(id, object) !== false) {
     id = Math.floor(Math.random() * Digit);
   }
 

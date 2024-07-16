@@ -235,7 +235,7 @@ interface QuizSession {
   messages: message[];
 };
 
-type Sessions = {
+export type Sessions = {
   [sessionId: number]: QuizSession
 }
 

@@ -50,10 +50,7 @@ test('User no ownership over quiz test: ', () => {
 });
 
 test('Description too long', () => {
-  const input: any = [];
-  for (let i = 0; i < 101; i++) {
-    input[i] += 'a';
-  }
+  const input = 'a'.repeat(104);
   expect(adminQuizDescriptionUpdate(123, 145, input.toString())).toEqual({ error: 'Description too long' });
 });
 
@@ -93,10 +90,6 @@ test('correct implementation: ', () => {
   }
   const qid = adminQuizCreate(uid.authUserId, 'newQuiz', 'this is a description');
 
-  let input: any = [];
-  for (let i = 1; i <= 90; i++) {
-    input = input + 'a';
-  }
-
+  const input = 'a'.repeat(101);
   expect(adminQuizDescriptionUpdate(uid.authUserId, qid.quizId, input.toString())).toEqual({});
 });

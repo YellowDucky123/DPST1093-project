@@ -1,4 +1,4 @@
-import { answer, getData, question, quiz, setData, getSessionData, setSessionData, getPlayerData, QuizSessionState, message } from './dataStore';
+import { answer, getData, question, quiz, setData, getSessionData, getPlayerData, QuizSessionState, message } from './dataStore';
 import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId, getCurrentTime, isPlayerExist } from './helpers';
 import { quizIdValidator } from './helpers';
 import { quizOwnership } from './helpers';
@@ -9,7 +9,6 @@ import { isUsedQuizName } from './helpers';
 import { customAlphabet } from 'nanoid';
 import { createId } from './helpers';
 import HTTPError from 'http-errors';
-import { Http2ServerRequest } from 'http2';
 
 /** *******************************************************************************************|
 |            |
@@ -22,16 +21,16 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     return { error: 'adminQuizCreate: invalid user id' };
   }
   if (nameLen(name) === false) {
-    throw HTTPError(400, "Invalid name length");
+    throw HTTPError(400, 'Invalid name length');
   }
   if (isNameAlphaNumeric(name) === false) {
-    throw HTTPError(400, "Quiz name contains invalid letters");
+    throw HTTPError(400, 'Quiz name contains invalid letters');
   }
   if (descriptionLengthValid(description) === false) {
-    throw HTTPError(400, "Invalid quiz description length");
+    throw HTTPError(400, 'Invalid quiz description length');
   }
   if (isUsedQuizName(name, authUserId) === false) {
-    throw HTTPError(400, "Quiz name is already used");
+    throw HTTPError(400, 'Quiz name is already used');
   }
 
   const data = getData();
@@ -64,7 +63,7 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
     return { error: 'adminQuizRemove: invalid quiz id' };
   }
   if (quizOwnership(authUserId, quizId) === false) {
-    throw HTTPError(403, "You do not own this quiz");
+    throw HTTPError(403, 'You do not own this quiz');
   }
   const data = getData();
   data.quizzesDeleted[quizId] = data.quizzes[quizId];
@@ -87,7 +86,7 @@ export function adminQuizInfo(authUserId: number, quizId: number) {
     return { error: 'adminQuizInfo: invalid quiz id' };
   }
   if (quizOwnership(authUserId, quizId) === false) {
-    throw HTTPError(403, "You do not own this quiz");
+    throw HTTPError(403, 'You do not own this quiz');
   }
 
   const data = getData();
@@ -254,22 +253,22 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
     throw HTTPError(400, 'Invalid name length');
   }
   if (!isNameAlphaNumeric(name)) {
-    throw HTTPError(400,'Invalid character used in name');
+    throw HTTPError(400, 'Invalid character used in name');
   }
   if (!userIdValidator(authUserId)) {
-    throw HTTPError(401,'User Id invalid');
+    throw HTTPError(401, 'User Id invalid');
   }
   if (!quizIdValidator(quizId)) {
-    throw HTTPError(403,'Quiz Id invalid');
+    throw HTTPError(403, 'Quiz Id invalid');
   }
   if (!quizOwnership(authUserId, quizId)) {
-    throw HTTPError(403,'This user does not own this quiz');
+    throw HTTPError(403, 'This user does not own this quiz');
   }
   if (name === getData().quizzes[quizId].name) {
-    throw HTTPError(400,"New name can't be the same");
+    throw HTTPError(400, "New name can't be the same");
   }
   if (isUsedQuizName(name, authUserId) === false) {
-    throw HTTPError(403,'adminQuizCreate: quiz name already used by another user');
+    throw HTTPError(403, 'adminQuizCreate: quiz name already used by another user');
   }
 
   // If no errors then update name
@@ -286,16 +285,16 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
 
 export function adminQuizDescriptionUpdate(authUserId: number, quizId: number, description: string) {
   if (!descriptionLengthValid(description)) {
-    throw HTTPError(400,'Description too long');
+    throw HTTPError(400, 'Description too long');
   }
   if (!userIdValidator(authUserId)) {
-    throw HTTPError(401,'User Id invalid');
+    throw HTTPError(401, 'User Id invalid');
   }
   if (!quizIdValidator(quizId)) {
-    throw HTTPError(403,'Quiz Id invalid');
+    throw HTTPError(403, 'Quiz Id invalid');
   }
   if (!quizOwnership(authUserId, quizId)) {
-    throw HTTPError(403,'This user does not own this quiz');
+    throw HTTPError(403, 'This user does not own this quiz');
   }
 
   const whData = getData();
@@ -311,16 +310,16 @@ export function adminQuizDescriptionUpdate(authUserId: number, quizId: number, d
 
 export function duplicateQuestion(authUserId: number, quizId: number, questionId: number) {
   if (!userIdValidator(authUserId)) {
-    throw HTTPError(401,'User Id invalid');
+    throw HTTPError(401, 'User Id invalid');
   }
   if (!quizIdValidator(quizId)) {
-    throw HTTPError(403,'Quiz Id invalid');
+    throw HTTPError(403, 'Quiz Id invalid');
   }
   if (!quizOwnership(authUserId, quizId)) {
-    throw HTTPError(403,'This user does not own this quiz');
+    throw HTTPError(403, 'This user does not own this quiz');
   }
   if (!questionFinder(quizId, questionId)) {
-    throw HTTPError(400,'Question Id does not refer to a valid question within this quiz');
+    throw HTTPError(400, 'Question Id does not refer to a valid question within this quiz');
   }
 
   let quesId;
@@ -346,16 +345,16 @@ export function duplicateQuestion(authUserId: number, quizId: number, questionId
 
 export function deleteQuestion(authUserId: number, quizId: number, questionId: number) {
   if (!userIdValidator(authUserId)) {
-    throw HTTPError(401,'User Id invalid');
+    throw HTTPError(401, 'User Id invalid');
   }
   if (!quizIdValidator(quizId)) {
-    throw HTTPError(403,'Quiz Id invalid');
+    throw HTTPError(403, 'Quiz Id invalid');
   }
   if (!quizOwnership(authUserId, quizId)) {
-    throw HTTPError(403,'This user does not own this quiz');
+    throw HTTPError(403, 'This user does not own this quiz');
   }
   if (!questionFinder(quizId, questionId)) {
-    throw HTTPError(400,'Question Id does not refer to a valid question within this quiz');
+    throw HTTPError(400, 'Question Id does not refer to a valid question within this quiz');
   }
 
   const data = getData();
@@ -375,27 +374,27 @@ export function deleteQuestion(authUserId: number, quizId: number, questionId: n
 
 export function moveQuestion(authUserId: number, quizId: number, questionId: number, newPos: number) {
   if (!userIdValidator(authUserId)) {
-    throw HTTPError(401,'User Id invalid');
+    throw HTTPError(401, 'User Id invalid');
   }
   if (!quizIdValidator(quizId)) {
-    throw HTTPError(403,'Quiz Id invalid');
+    throw HTTPError(403, 'Quiz Id invalid');
   }
   if (!quizOwnership(authUserId, quizId)) {
-    throw HTTPError(403,'This user does not own this quiz');
+    throw HTTPError(403, 'This user does not own this quiz');
   }
   if (!questionFinder(quizId, questionId)) {
-    throw HTTPError(400,'Question Id does not refer to a valid question within this quiz');
+    throw HTTPError(400, 'Question Id does not refer to a valid question within this quiz');
   }
 
   const data = getData();
   const qs = data.quizzes[quizId].questions;
-  if(newPos < 0 || newPos > qs.length - 1) {
+  if (newPos < 0 || newPos > qs.length - 1) {
     return { error: 'Invalid new position' };
   }
 
   for (const d of qs) {
     if (d.questionId === questionId) {
-      if(newPos === qs.indexOf(d)) {
+      if (newPos === qs.indexOf(d)) {
         return { error: "Can't move to the same position" };
       }
       qs.splice(qs.indexOf(d), 1);
@@ -442,7 +441,7 @@ export function adminRestoreQuiz(authUserId: number, quizId: number) {
     return { error: 'adminRestoreQuiz: invalid quiz id' };
   }
   if (deletedQuizOwnership(authUserId, quizId) === false) {
-    throw HTTPError(403, "You do not own this quiz");
+    throw HTTPError(403, 'You do not own this quiz');
   }
 
   const data = getData();
@@ -470,10 +469,10 @@ export function adminQuizPermDelete(authUserId: number, quizIds: number[]) {
   }
   for (const item of quizIds) {
     if (deletedQuizIdValidator(item) === false) {
-        throw HTTPError(400, "Cannot locate quizId");
+      throw HTTPError(400, 'Cannot locate quizId');
     }
     if (deletedQuizOwnership(authUserId, item) === false) {
-      throw HTTPError(403, "You do not own this quiz");
+      throw HTTPError(403, 'You do not own this quiz');
     }
   }
   const data = getData();
@@ -495,7 +494,7 @@ export function adminQuizPermDelete(authUserId: number, quizIds: number[]) {
   return {};
 }
 
-export function adminQuizQuestionUpdate(userId: number, quizId: number, questionId: number, questionBody: any, token: string): any {
+export function adminQuizQuestionUpdate(userId: number, quizId: number, questionId: number, questionBody: object, token: string) {
   if (!questionFinder(quizId, questionId)) {
     return { error: 'Question Id does not refer to a valid question within this quiz' };
   }
@@ -555,80 +554,79 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
 }
 
 export function updateQuizThumbnail(userId: number, quizId: number, imgUrl: string) {
-    /*
+  /*
     code
     */
-    return {};
+  return {};
 }
-
 
 // returns the result of a question
 export function questionResults(playerId: number, questionPosition: number) {
-  let QData = getSessionData();
-  let PData = getPlayerData();
-  
-  if(!isPlayerExist(playerId)) {
-    throw HTTPError(400, "player does not exist");
+  const QData = getSessionData();
+  const PData = getPlayerData();
+
+  if (!isPlayerExist(playerId)) {
+    throw HTTPError(400, 'player does not exist');
   }
-  let curSessionId = PData[playerId].sessionId;
-  let session = QData[curSessionId];
-  
-  if(questionPosition > session.atQuestion) {
-    throw HTTPError(400, "have not reached there yet");
+  const curSessionId = PData[playerId].sessionId;
+  const session = QData[curSessionId];
+
+  if (questionPosition > session.atQuestion) {
+    throw HTTPError(400, 'have not reached there yet');
   }
-  if(session.metadata.questions.length + 1 < questionPosition) {
-    throw HTTPError(400, "question does not exist");
+  if (session.metadata.questions.length + 1 < questionPosition) {
+    throw HTTPError(400, 'question does not exist');
   }
-  if(session.state !== QuizSessionState.ANSWER_SHOW) {
-    throw HTTPError(400, "invalid State");
+  if (session.state !== QuizSessionState.ANSWER_SHOW) {
+    throw HTTPError(400, 'invalid State');
   }
 
-  let questions = session.metadata.questions;
-  let q = questions[questionPosition - 1];
-  let obj = {
-    "questionId": q.questionId,
-    "playersCorrectList": [
+  const questions = session.metadata.questions;
+  const q = questions[questionPosition - 1];
+  const obj = {
+    questionId: q.questionId,
+    playersCorrectList: [
       // what is this?
     ],
-    "averageAnswerTime": 45,
-    "percentCorrect": 54
-  }
+    averageAnswerTime: 45,
+    percentCorrect: 54
+  };
 
-  return {}
+  return {};
 }
 
 // returns the whole chat of the session the player is in
 export function allMessagesInSession(playerId: number) {
-  if(!isPlayerExist(playerId)) {
-    throw HTTPError(400, "player does not exist");
+  if (!isPlayerExist(playerId)) {
+    throw HTTPError(400, 'player does not exist');
   }
-  let p = getPlayerData();
-  let sesData = getSessionData();
+  const p = getPlayerData();
+  const sesData = getSessionData();
 
-  let curSessionId = p[playerId].sessionId;
-  return sesData[curSessionId].messages
+  const curSessionId = p[playerId].sessionId;
+  return sesData[curSessionId].messages;
 }
 
 // send a chat message
 export function sendChat(playerId: number, body) {
-  if(!isPlayerExist(playerId)) {
-    throw HTTPError(400, "player does not exist");
+  if (!isPlayerExist(playerId)) {
+    throw HTTPError(400, 'player does not exist');
   }
-  if(body.message.messageBody.length === 0 || body.message.messageBody.length > 100) {
+  if (body.message.messageBody.length === 0 || body.message.messageBody.length > 100) {
     throw HTTPError(400, 'message length invalid');
   }
 
-  let players = getPlayerData();
-  let message: message = {
+  const players = getPlayerData();
+  const message: message = {
     messageBody: body.message.messageBody,
     playerId: playerId,
     playerName: players[playerId].name,
     timeSent: Date.now()
-  }
+  };
 
-  let curSessionId = players[playerId].sessionId;
-  let sesData = getSessionData();
+  const curSessionId = players[playerId].sessionId;
+  const sesData = getSessionData();
   sesData[curSessionId].messages.push(message);
 
-  return {}
+  return {};
 }

@@ -132,7 +132,7 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
   return {};
 }
 
-export function adminAuthLogout(token: string): { error?: string } | any {
+export function adminAuthLogout(token: string): { error?: string } {
   const userId = findUserIdByToken(token);
   if (!userId) {
     return { error: 'Token is empty or invalid (does not refer to a valid logged-in user session)' };

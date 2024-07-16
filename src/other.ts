@@ -14,4 +14,3 @@ export function clear() {
   setData(newData);
   return {};
 }
-

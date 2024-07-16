@@ -325,14 +325,14 @@ export function createQuestionId(quizId: number) {
 }
 
 export function getCurrentTime() {
-    return Math.floor(new Date().getTime() / 1000);
+  return Math.floor(new Date().getTime() / 1000);
 }
 
 export function isPlayerExist(playerId: number) {
-  let P = getPlayerData();
+  const P = getPlayerData();
 
-  for(const k in P) {
-    if(parseInt(k) === playerId) return true;
+  for (const k in P) {
+    if (parseInt(k) === playerId) return true;
   }
   return false;
 }

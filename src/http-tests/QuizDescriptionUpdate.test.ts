@@ -133,10 +133,7 @@ describe('Update Quiz Name http test: ', () => {
   });
 
   test('description too long:', () => {
-    const input: any = [];
-    for (let i = 0; i < 101; i++) {
-      input[i] += 'a';
-    }
+    const input = 'a'.repeat(103);
     const res = request(
       'PUT',
       SERVER_URL + `/v1/admin/quiz/${qId.quizId}/description`,

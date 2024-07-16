@@ -860,7 +860,7 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
 
 //--------------------------------------------------------------------------
 // rids the server of everything
-app.delete('/v1/clear', (req: Request, res: Response) => {
+app.delete('/v2/clear', (req: Request, res: Response) => {
   return res.json(clear());
 });
 

@@ -4,62 +4,62 @@ import { createId } from "./helpers";
 let timer;
 
 export function listSessions(userId: number, quizId: number) {
-    /*
+  /*
     code
     */
-    return {};
+  return {};
 }
 
 export function startSession(userId: number, quizId: number, autoStartNum: number) {
-    let data = getData();
+  const data = getData();
 
-    const results: QuizSessionResults =  {
-        usersRankedbyScore: [],
-        questionResults: []
-    };
+  const results: QuizSessionResults = {
+    usersRankedbyScore: [],
+    questionResults: []
+  };
 
-    let data_session: QuizSession = {
-        id: createId(data.Sessions),
-        autoStartNum: autoStartNum,
-        state : QuizSessionState.LOBBY,
-        atQuestion : 1,
-        players: [],
-        metadata: data.quizzes[quizId],
-        results: results,
-        messages: [],
-    }
+  const data_session: QuizSession = {
+    id: createId(data.Sessions),
+    autoStartNum: autoStartNum,
+    state: QuizSessionState.LOBBY,
+    atQuestion: 1,
+    players: [],
+    metadata: data.quizzes[quizId],
+    results: results,
+    messages: [],
+  };
 
-    data.Sessions[data_session.id] = data_session;
+  data.Sessions[data_session.id] = data_session;
 
-    return {};
+  return {};
 }
 
 export function initiateNextQuizSessionQuestion(quizSessionId: number) {
-    /*
+  /*
     code Kei
     */
-  
-    return {}
-  }
-  
-  export function generateCurrentQuizSessionFinalResults(quizSessionId: number) {
-    /*
+
+  return {};
+}
+
+export function generateCurrentQuizSessionFinalResults(quizSessionId: number) {
+  /*
     code Victor
     */
-  
-    return {}
-  }
-  
-  export function endQuizSession(quizSessionId: number) {
-    /*
+
+  return {};
+}
+
+export function endQuizSession(quizSessionId: number) {
+  /*
     code Kei
     */
-  
-    return {}
-  }
-  
-  export function openQuizSessionQuestion(quizSessionId: number) {
-    /*
+
+  return {};
+}
+
+export function openQuizSessionQuestion(quizSessionId: number) {
+  /*
     code Kelvin
     */
     clearTimeout(timer);
@@ -85,22 +85,22 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
     /*
     code Yuxuan
     */
-  
-    return {}  
-  }
-  
-  export function gotoQuizSessionQuestionAnswer(quizSessionId: number) {
-    /*
+
+  return {};
+}
+
+export function gotoQuizSessionQuestionAnswer(quizSessionId: number) {
+  /*
     code Yuxuan
     */
-  
-    return {} 
-  }
-  
-  export function gotoQuizSessionFinalResults(quizSessionId: number) {
-    /*
+
+  return {};
+}
+
+export function gotoQuizSessionFinalResults(quizSessionId: number) {
+  /*
     code Victor
     */
-  
-    return {} 
-  }
+
+  return {};
+}

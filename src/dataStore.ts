@@ -12,7 +12,7 @@ export type answer = {
   colour: string,
   correct: boolean
 }
-function isanswer(answer: any): boolean {
+function isanswer(answer: object): boolean {
   if ('answerId' in answer && typeof answer.answerId === 'number' &&
     'answer' in answer && typeof answer.answer === 'string' && answer.answer.length >= 1 && answer.answer.length <= 30 &&
     'colour' in answer && typeof answer.colour === 'string' &&
@@ -29,7 +29,7 @@ export type question = {
   points: number,
   answers: answer[]
 }
-function isAnswers(answers: any): boolean {
+function isAnswers(answers: object): boolean {
   if (Array.isArray(answers) && answers.every(isanswer) &&
     answers.filter((answer) => (answer.correct === true)).length > 0) {
     return true;
@@ -37,7 +37,7 @@ function isAnswers(answers: any): boolean {
   console.log('answers incorrect');
   return false;
 }
-function isQuestion(question: any): boolean {
+function isQuestion(question: object): boolean {
   if ('questionId' in question && typeof question.questionId === 'number' &&
     'question' in question && typeof question.question === 'string' && question.question.length >= 5 && question.question.length <= 50 &&
     'duration' in question && typeof question.duration === 'number' && question.duration > 0 &&
@@ -64,7 +64,7 @@ export type user = {
   quizzesUserDeleted: Id[],
   pastPassword: string[],
 }
-function isUser(user: any): boolean {
+function isUser(user: object): boolean {
   if ('authUserId' in user && typeof user.authUserId === 'number' &&
     'email' in user && typeof user.email === 'string' &&
     'password' in user && typeof user.password === 'string' &&
@@ -92,12 +92,12 @@ export type quiz = {
   questions: question[],
   imgUrl: string
 };
-function isQuestions(questions: any): boolean {
+function isQuestions(questions: Array<object>): boolean {
   if (questions.every(isQuestion)) return true;
   console.log('questions incorrect');
   return false;
 }
-function isQuiz(quiz: any): boolean {
+function isQuiz(quiz: object): boolean {
   if ('quizId' in quiz && typeof quiz.quizId === 'number' &&
     'name' in quiz && typeof quiz.name === 'string' &&
     'timeCreated' in quiz && typeof quiz.timeCreated === 'number' &&
@@ -117,7 +117,7 @@ function isQuiz(quiz: any): boolean {
 export type users = {
   [authUserId: number]: user;
 }
-function isUsers(users: any): boolean {
+function isUsers(users: Array<object>): boolean {
   for (const userId in users) {
     if (!isUser(users[userId])) {
       console.log('error in users');
@@ -131,7 +131,7 @@ function isUsers(users: any): boolean {
 export type quizzes = {
   [quizId: number]: quiz
 };
-function isQuizzes(quizzes: any): boolean {
+function isQuizzes(quizzes: Array<object>): boolean {
   for (const quizId in quizzes) {
     if (!isQuiz(quizzes[quizId])) {
       console.log('error in quizzes');
@@ -147,7 +147,7 @@ function isQuizzes(quizzes: any): boolean {
 export type tokenUserIdList = {
   [token: string]: number
 }
-function isTokenUserIdList(tokenUserIdList: any): boolean {
+function isTokenUserIdList(tokenUserIdList: object): boolean {
   for (const token in tokenUserIdList) {
     if (!tokenUserIdList[token] || typeof tokenUserIdList[token] !== 'number') {
       console.log('error in tokenUserIdList');
@@ -165,7 +165,7 @@ export type data = {
   Sessions: Sessions,
   playerData: playerData
 };
-function isdata(data: any): boolean {
+function isdata(data: object): boolean {
   if ('users' in data && 'quizzes' in data && 'quizzesDeleted' in data && 'tokenUserIdList' in data) {
     if (isUsers(data.users) && isQuizzes(data.quizzes) && isQuizzes(data.quizzesDeleted) && isTokenUserIdList(data.tokenUserIdList)) {
       console.log('data check pass');
@@ -184,8 +184,7 @@ let dataStore: data = {
   playerData: {}
 };
 
-
-//quizSession
+// quizSession
 export enum QuizSessionState {
   LOBBY,
   QUESTION_COUNTDOWN,
@@ -194,7 +193,7 @@ export enum QuizSessionState {
   ANSWER_SHOW,
   FINAL_RESULTS,
   END
-};
+}
 
 export enum QuizSessionAction {
   NEXT_QUESTION,
@@ -202,7 +201,7 @@ export enum QuizSessionAction {
   GO_TO_ANSWER,
   GO_TO_FINAL_RESULTS,
   END,
-};
+}
 
 export interface Player {
   id: number;
@@ -211,7 +210,7 @@ export interface Player {
   questionAnswered: question[];
   score: number;
   // add anything else?
-};
+}
 
 export interface message {
   messageBody: string;
@@ -221,10 +220,10 @@ export interface message {
 }
 
 export interface questionResults {
-  "questionId": number,
-  "playersCorrectList": string[],
-  "averageAnswerTime": number,
-  "percentCorrect": number
+  'questionId': number,
+  'playersCorrectList': string[],
+  'averageAnswerTime': number,
+  'percentCorrect': number
 }
 
 export interface playerResults {
@@ -235,7 +234,7 @@ export interface playerResults {
 export interface QuizSessionResults {
   usersRankedbyScore: playerResults[];
   questionResults: questionResults[];
-};
+}
 
 export interface QuizSession {
   id: number;
@@ -246,7 +245,7 @@ export interface QuizSession {
   metadata: quiz;
   results: QuizSessionResults;
   messages: message[];
-};
+}
 
 export type Sessions = {
   [sessionId: number]: QuizSession
@@ -266,7 +265,7 @@ export function setSessionData(newData: Sessions) {
   dataStore.Sessions = newData;
 }
 
-export function getState(quizSessionId) {
+export function getState(quizSessionId : number) {
   return dataStore.Sessions[quizSessionId].state;
 }
 
@@ -274,17 +273,9 @@ export function getPlayerData() {
   return dataStore.playerData;
 }
 
-export function setPlayerData(newData) {
+export function setPlayerData(newData : playerData) {
   dataStore.playerData = newData;
 }
-
-
-
-
-/// ///////////////////////////////////////////////////////////////
-/// ///////////////////////////////////////////////////////////////
-/// /DATA DEFINE FINISHED //////////////// DATA DEFINE FINISHED////
-/// ///////////////////////////////////////////////////////////////
 
 function setJSONbyDataStore() {
   console.log(`saving data into ${dataStoreFile}, please wait.`);
@@ -344,4 +335,3 @@ export {
   findTokenByUserId,
   checkDuplicateToken
 };
-

@@ -289,7 +289,7 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   res.status(status).json(ans);
 });
 
-//Version 2: adminQuizCreate
+// Version 2: adminQuizCreate
 app.post('/v2/admin/quiz', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const name = req.body.name as string;
@@ -304,7 +304,7 @@ app.post('/v2/admin/quiz', (req: Request, res: Response) => {
     return;
   }
   const ans = adminQuizCreate(UserId, name, description);
-  let status = 200;
+  const status = 200;
   if ('error' in ans) {
     return res.json(ans);
   }
@@ -330,7 +330,7 @@ app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   res.status(status).json(ans);
 });
 
-//Version 2: adminQuizRemove
+// Version 2: adminQuizRemove
 app.delete('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const quizId = parseInt(req.query.quizId as string);
@@ -363,7 +363,7 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   res.status(status).json(ans);
 });
 
-//Version 2: View deleted quizzes
+// Version 2: View deleted quizzes
 app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   if (!token) {
@@ -376,7 +376,6 @@ app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
   }
   return res.json(adminViewDeletedQuizzes(UserId));
 });
-
 
 app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const token = req.query.token as string;
@@ -402,7 +401,7 @@ app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   res.status(status).json(ans);
 });
 
-//Version 2: adminQuizInfo
+// Version 2: adminQuizInfo
 app.get('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId as string);
@@ -441,7 +440,7 @@ app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
   res.status(status).json(ans);
 });
 
-//Version 2: adminQuizRestore
+// Version 2: adminQuizRestore
 app.post('/v2/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId as string);
@@ -453,7 +452,7 @@ app.post('/v2/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  return res.json(adminRestoreQuiz(UserId, quizId))
+  return res.json(adminRestoreQuiz(UserId, quizId));
 });
 
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
@@ -479,7 +478,7 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   res.status(status).json(ans);
 });
 
-//Version 2: adminQuizPermDelete
+// Version 2: adminQuizPermDelete
 app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const quizIds = (req.query.quizIds as string[]).map(Number);
@@ -795,7 +794,7 @@ app.put('/v2/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: 
   return res.json(moveQuestion(userId, quizId, questionId, newPosition));
 });
 
-//-------------------------------------- Iteration 3 ------------------------------------
+// -------------------------------------- Iteration 3 ------------------------------------
 
 app.put('/v1/admin/quiz/:quizId/thumbnail', (req: Request, res: Response) => {
   const token = req.headers.token as string;
@@ -903,7 +902,7 @@ app.get('/v1/player/:playerId/chat', (req: Request, res: Response) => {
   }
 
   return allMessagesInSession(playerId);
-})
+});
 
 // player sends a chat message
 app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
@@ -916,7 +915,7 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
   }
 
   return sendChat(playerId, messageBody);
-})
+});
 
 app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
   const token = req.headers.token as string;

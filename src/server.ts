@@ -286,6 +286,28 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   res.status(status).json(ans);
 });
 
+//Version 2: adminQuizCreate
+app.post('/v2/admin/quiz', (req: Request, res: Response) => {
+  const token = req.headers.token as string;
+  const name = req.body.name as string;
+  const description = req.body.description as string;
+  if (!token) {
+    res.status(401).json({ error: 'A correct token is required' });
+    return;
+  }
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    res.status(401).json({ error: 'token incorrect or not found' });
+    return;
+  }
+  const ans = adminQuizCreate(UserId, name, description);
+  let status = 200;
+  if ('error' in ans) {
+    return res.json(ans);
+  }
+  res.status(status).json(ans);
+});
+
 app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const token = req.query.token as string;
   const quizId = parseInt(req.query.quizId as string);
@@ -305,6 +327,21 @@ app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   res.status(status).json(ans);
 });
 
+//Version 2: adminQuizRemove
+app.delete('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
+  const token = req.headers.token as string;
+  const quizId = parseInt(req.query.quizId as string);
+  if (!token) {
+    res.status(401).json({ error: 'A correct token is required' });
+  }
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    res.status(401).json({ error: 'token incorrect or not found' });
+    return;
+  }
+  return res.json(adminQuizRemove(UserId, quizId));
+});
+
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   const token = req.query.token as string;
   if (!token) {
@@ -322,6 +359,21 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   }
   res.status(status).json(ans);
 });
+
+//Version 2: View deleted quizzes
+app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
+  const token = req.headers.token as string;
+  if (!token) {
+    res.status(401).json({ error: 'A correct token is required' });
+  }
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    res.status(401).json({ error: 'token incorrect or not found' });
+    return;
+  }
+  return res.json(adminViewDeletedQuizzes(UserId));
+});
+
 
 app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const token = req.query.token as string;
@@ -347,6 +399,22 @@ app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   res.status(status).json(ans);
 });
 
+//Version 2: adminQuizInfo
+app.get('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
+  const token = req.headers.token as string;
+  const quizId = parseInt(req.params.quizId as string);
+  if (!token) {
+    res.status(401).json({ error: 'A correct token is required' });
+    return;
+  }
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    res.status(401).json({ error: 'token incorrect or not found' });
+    return;
+  }
+  return res.json(adminQuizInfo(UserId, quizId));
+});
+
 app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
   const token = req.body.token as string;
   const quizId = parseInt(req.params.quizId as string);
@@ -370,6 +438,21 @@ app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
   res.status(status).json(ans);
 });
 
+//Version 2: adminQuizRestore
+app.post('/v2/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
+  const token = req.headers.token as string;
+  const quizId = parseInt(req.params.quizId as string);
+  if (!token) {
+    res.status(401).json({ error: 'A correct token is required' });
+  }
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    res.status(401).json({ error: 'token incorrect or not found' });
+    return;
+  }
+  return res.json(adminRestoreQuiz(UserId, quizId))
+});
+
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const token = req.query.token as string;
   const quizIds = (req.query.quizIds as string[]).map(Number);
@@ -391,6 +474,21 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
     }
   }
   res.status(status).json(ans);
+});
+
+//Version 2: adminQuizPermDelete
+app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
+  const token = req.headers.token as string;
+  const quizIds = (req.query.quizIds as string[]).map(Number);
+  if (!token) {
+    res.status(401).json({ error: 'A correct token is required' });
+  }
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    res.status(401).json({ error: 'token incorrect or not found' });
+    return;
+  }
+  return res.json(adminQuizPermDelete(UserId, quizIds));
 });
 // ====================================================================
 //  ================= WORK IS DONE BELOW THIS LINE ===================
@@ -659,7 +757,7 @@ app.put('/v2/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: 
 //-------------------------------------- Iteration 3 ------------------------------------
 
 app.put('/v1/admin/quiz/:quizId/thumbnail', (req: Request, res: Response) => {
-  const token = req.body.token as string;
+  const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId);
   const imgUrl = req.body.imgUrl as string;
 
@@ -671,20 +769,11 @@ app.put('/v1/admin/quiz/:quizId/thumbnail', (req: Request, res: Response) => {
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = updateQuizThumbnail(UserId, quizId, imgUrl);
-  let status = 200;
-  if ('error' in ans) {
-    if(ans.error === "You do not own this quiz") {
-      status = 403;
-    } else {
-      status = 400;
-    }
-  }
-  res.status(status).json(ans);
+  return res.json(updateQuizThumbnail(UserId, quizId, imgUrl));
 });
 
 app.get('/v1/admin/quiz/:quizId/sessions', (req: Request, res: Response) => {
-  const token = req.query.token as string;
+  const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId);
 
   if (!token) {
@@ -695,18 +784,11 @@ app.get('/v1/admin/quiz/:quizId/sessions', (req: Request, res: Response) => {
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = listSessions(UserId, quizId);
-  let status = 200;
-  if ('error' in ans) {
-    if(ans.error === "You do not own this quiz") {
-      status = 403;
-    }
-  }
-  res.status(status).json(ans);
+  return res.json(listSessions(UserId, quizId));
 });
 
 app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) => {
-  const token = req.body.token as string;
+  const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId);
   const autoStartNum = parseInt(req.params.autoStartNum);
 
@@ -718,20 +800,11 @@ app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) 
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = startSession(UserId, quizId, autoStartNum);
-  let status = 200;
-  if ('error' in ans) {
-    if(ans.error === "You do not own this quiz") {
-      status = 403;
-    } else {
-      status = 400;
-    }
-  }
-  res.status(status).json(ans);
+  return res.json(startSession(UserId, quizId, autoStartNum));
 });
 
 app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
-  const token = req.body.token as string;
+  const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId);
   const sessionId = parseInt(req.params.sessionId);
   const action = req.body.action as string;
@@ -744,16 +817,7 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = updateSessionState(UserId, quizId, sessionId, action);
-  let status = 200;
-  if ('error' in ans) {
-    if(ans.error === "You do not own this quiz") {
-      status = 403;
-    } else {
-      status = 400;
-    }
-  }
-  res.status(status).json(ans);
+  return res.json(updateSessionState(UserId, quizId, sessionId, action));
 });
 
 // return question results

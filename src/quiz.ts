@@ -22,16 +22,16 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     return { error: 'adminQuizCreate: invalid user id' };
   }
   if (nameLen(name) === false) {
-    return { error: 'adminQuizCreate: invalid quiz name length' };
+    throw HTTPError(400, "Invalid name length");
   }
   if (isNameAlphaNumeric(name) === false) {
-    return { error: 'adminQuizCreate: quiz name contains invalid letters' };
+    throw HTTPError(400, "Quiz name contains invalid letters");
   }
   if (descriptionLengthValid(description) === false) {
-    return { error: 'adminQuizCreate: quiz description is too long' };
+    throw HTTPError(400, "Invalid quiz description length");
   }
   if (isUsedQuizName(name, authUserId) === false) {
-    return { error: 'adminQuizCreate: quiz name already used by another user' };
+    throw HTTPError(400, "Quiz name is already used");
   }
 
   const data = getData();
@@ -63,7 +63,7 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
     return { error: 'adminQuizRemove: invalid quiz id' };
   }
   if (quizOwnership(authUserId, quizId) === false) {
-    return { error: 'adminQuizRemove: you do not own this quiz' };
+    throw HTTPError(403, "You do not own this quiz");
   }
   const data = getData();
   data.quizzesDeleted[quizId] = data.quizzes[quizId];
@@ -86,7 +86,7 @@ export function adminQuizInfo(authUserId: number, quizId: number) {
     return { error: 'adminQuizInfo: invalid quiz id' };
   }
   if (quizOwnership(authUserId, quizId) === false) {
-    return { error: 'adminQuizInfo: you do not own this quiz' };
+    throw HTTPError(403, "You do not own this quiz");
   }
 
   const data = getData();
@@ -441,7 +441,7 @@ export function adminRestoreQuiz(authUserId: number, quizId: number) {
     return { error: 'adminRestoreQuiz: invalid quiz id' };
   }
   if (deletedQuizOwnership(authUserId, quizId) === false) {
-    return { error: 'adminRestoreQuiz: you do not own this quiz' };
+    throw HTTPError(403, "You do not own this quiz");
   }
 
   const data = getData();
@@ -469,10 +469,10 @@ export function adminQuizPermDelete(authUserId: number, quizIds: number[]) {
   }
   for (const item of quizIds) {
     if (deletedQuizIdValidator(item) === false) {
-      return { error: 'adminQuizPermDelete: invalid quiz id' };
+        throw HTTPError(400, "Cannot locate quizId");
     }
     if (deletedQuizOwnership(authUserId, item) === false) {
-      return { error: 'adminQuizPermDelete: you do not own this quiz' };
+      throw HTTPError(403, "You do not own this quiz");
     }
   }
   const data = getData();

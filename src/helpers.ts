@@ -3,6 +3,7 @@ import validator from 'validator';
 import { user } from './dataStore';
 import { customAlphabet } from 'nanoid';
 import { createHash } from 'crypto';
+import { QuizSessionState } from './dataStore';
 
 export function userIdValidator(UserId: number) {
   const whData = getData();
@@ -340,4 +341,33 @@ export function isPlayerExist(playerId: number) {
 // SHA-256 hash
 export function hash(string: string) {
   return createHash('sha256').update(string).digest('hex');
+}
+
+//check file extension, and begin with "http"
+export function urlCheck(url: string) {
+    const allowExtensions = /.(jpeg|jpg|png)$/i;
+    if(allowExtensions.test(url)) {
+        const allowStart = /^(http:\/\/|https:\/\/)/;
+        if(allowStart.test(url)) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
+
+export function countSessionNotEnd(quizId: number) {
+    let cnt: number = 0;
+    const data = getData();
+    for(const item in data.Sessions) {
+        if(data.Sessions[item].metadata.quizId === quizId) {
+            if(data.Sessions[item].state != QuizSessionState.END) {
+                cnt++;
+            }
+        }
+    }
+
+    return cnt;
 }

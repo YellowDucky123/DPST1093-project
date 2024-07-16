@@ -47,6 +47,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     description: description,
     numQuizQuestion: 0,
     questions: questions,
+    imgUrl: ''
   };
 
   data.quizzes[quizId] = newData;

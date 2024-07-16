@@ -237,7 +237,7 @@ export interface QuizSessionResults {
   questionResults: questionResults[];
 };
 
-interface QuizSession {
+export interface QuizSession {
   id: number;
   autoStartNum: number;
   state : QuizSessionState;

@@ -15,7 +15,7 @@ export function clear() {
   return {};
 }
 
-export function initiateNextQuizSessionQuestion(quizSessionId) {
+export function initiateNextQuizSessionQuestion(quizSessionId: number) {
   /*
   code
   */
@@ -23,7 +23,7 @@ export function initiateNextQuizSessionQuestion(quizSessionId) {
   return {}
 }
 
-export function generateCurrentQuizSessionFinalResults(quizSessionId) {
+export function generateCurrentQuizSessionFinalResults(quizSessionId: number) {
   /*
   code
   */
@@ -31,7 +31,7 @@ export function generateCurrentQuizSessionFinalResults(quizSessionId) {
   return {}
 }
 
-export function endQuizSession(quizSessionId) {
+export function endQuizSession(quizSessionId: number) {
   /*
   code
   */
@@ -39,7 +39,7 @@ export function endQuizSession(quizSessionId) {
   return {}
 }
 
-export function openQuizSessionQuestion(quizSessionId) {
+export function openQuizSessionQuestion(quizSessionId: number) {
   /*
   code
   */
@@ -47,7 +47,7 @@ export function openQuizSessionQuestion(quizSessionId) {
   return {}
 }
 
-export function closeCurrentQuizSessionQuestion(quizSessionId) {
+export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
   /*
   code
   */
@@ -55,7 +55,7 @@ export function closeCurrentQuizSessionQuestion(quizSessionId) {
   return {}
 }
 
-export function generateCurrentQuizSessionQuestionResults(quizSessionId) {
+export function generateCurrentQuizSessionQuestionResults(quizSessionId: number) {
   /*
   code
   */
@@ -63,7 +63,7 @@ export function generateCurrentQuizSessionQuestionResults(quizSessionId) {
   return {}  
 }
 
-export function gotoQuizSessionQuestionAnswer(quizSessionId) {
+export function gotoQuizSessionQuestionAnswer(quizSessionId: number) {
   /*
   code
   */
@@ -71,7 +71,7 @@ export function gotoQuizSessionQuestionAnswer(quizSessionId) {
   return {} 
 }
 
-export function gotoQuizSessionFinalResults(quizSessionId) {
+export function gotoQuizSessionFinalResults(quizSessionId: number) {
   /*
   code
   */

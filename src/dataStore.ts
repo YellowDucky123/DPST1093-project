@@ -42,7 +42,7 @@ function isQuestion(question: object): boolean {
     'question' in question && typeof question.question === 'string' && question.question.length >= 5 && question.question.length <= 50 &&
     'duration' in question && typeof question.duration === 'number' && question.duration > 0 &&
     'points' in question && typeof question.points === 'number' && question.points > 0 && question.points <= 10 &&
-    'answers' in question.answers && Array.isArray(question.answers) && isAnswers(question.answers)) {
+    'answers' in question && Array.isArray(question.answers) && isAnswers(question.answers)) {
     return true;
   }
   console.log('This question is invalid', question);
@@ -117,7 +117,7 @@ function isQuiz(quiz: object): boolean {
 export type users = {
   [authUserId: number]: user;
 }
-function isUsers(users: Array<object>): boolean {
+function isUsers(users: users): boolean {
   for (const userId in users) {
     if (!isUser(users[userId])) {
       console.log('error in users');
@@ -131,7 +131,7 @@ function isUsers(users: Array<object>): boolean {
 export type quizzes = {
   [quizId: number]: quiz
 };
-function isQuizzes(quizzes: Array<object>): boolean {
+function isQuizzes(quizzes:quizzes): boolean {
   for (const quizId in quizzes) {
     if (!isQuiz(quizzes[quizId])) {
       console.log('error in quizzes');
@@ -147,7 +147,7 @@ function isQuizzes(quizzes: Array<object>): boolean {
 export type tokenUserIdList = {
   [token: string]: number
 }
-function isTokenUserIdList(tokenUserIdList: object): boolean {
+function isTokenUserIdList(tokenUserIdList: tokenUserIdList): boolean {
   for (const token in tokenUserIdList) {
     if (!tokenUserIdList[token] || typeof tokenUserIdList[token] !== 'number') {
       console.log('error in tokenUserIdList');
@@ -165,7 +165,7 @@ export type data = {
   Sessions: Sessions,
   playerData: playerData
 };
-function isdata(data: object): boolean {
+function isdata(data: data): boolean {
   if ('users' in data && 'quizzes' in data && 'quizzesDeleted' in data && 'tokenUserIdList' in data) {
     if (isUsers(data.users) && isQuizzes(data.quizzes) && isQuizzes(data.quizzesDeleted) && isTokenUserIdList(data.tokenUserIdList)) {
       console.log('data check pass');

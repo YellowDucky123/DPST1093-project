@@ -119,7 +119,8 @@ function getQuestionsInfo(quizId: number) {
       question: question.question,
       duration: question.duration,
       points: question.points,
-      answers: getanswers(question)
+      answers: getanswers(question),
+      playerTime: question.playerTime,
     });
   }
   return ans;
@@ -241,6 +242,7 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
     duration: question.duration,
     points: question.points,
     answers: getanswers(question),
+    playerTime: []
   };
   data.quizzes[quizId].questions.push(ans);
   data.quizzes[quizId].numQuizQuestion++;

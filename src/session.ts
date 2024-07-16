@@ -1,4 +1,4 @@
-import { getData, getSessionData, message, Player, playerResults, QuizSession, QuizSessionResults, QuizSessionState, setSessionData } from "./dataStore";
+import { getData, getSessionData, message, Player, playerResults, QuizSession, QuizSessionResults, QuizSessionState, setData, setSessionData } from "./dataStore";
 import { createId, quizIdValidator, quizOwnership } from "./helpers";
 import HTTPError from 'http-errors';
 
@@ -81,6 +81,8 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
     data.Sessions[quizSessionId].atQuestion++;
     data.Sessions[quizSessionId].state = QuizSessionState.QUESTION_COUNTDOWN;
 
+    setData(data);
+
     return {};
 }
 
@@ -96,6 +98,10 @@ export function endQuizSession(quizSessionId: number) {
   /*
     code Kei
     */
+   let data = getData();
+   data.Sessions[quizSessionId].state = QuizSessionState.END;
+
+   setData(data);
 
   return {};
 }

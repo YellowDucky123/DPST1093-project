@@ -843,25 +843,7 @@ app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) 
   return res.json(startSession(UserId, quizId, autoStartNum));
 });
 
-// I think it's supposed to be the other update session function right?
-//
-// app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
-//   const token = req.headers.token as string;
-//   const quizId = parseInt(req.params.quizId);
-//   const sessionId = parseInt(req.params.sessionId);
-//   const action = req.body.action as string;
-
-//   if (!token) {
-//     res.status(401).json({ error: 'A correct token is required' });
-//   }
-//   const UserId = findUserIdByToken(token);
-//   if (!UserId) {
-//     res.status(401).json({ error: 'token incorrect or not found' });
-//     return;
-//   }
-//   return res.json(updateSessionState(UserId, quizId, sessionId, action));
-// });
-
+// update the session's state
 app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   if (!findUserIdByToken(token)) {

@@ -561,29 +561,6 @@ export function updateQuizThumbnail(userId: number, quizId: number, imgUrl: stri
     return {};
 }
 
-export function listSessions(userId: number, quizId: number) {
-    /*
-    code
-    */
-    return {};
-}
-
-export function startSession(userId: number, quizId: number, autoStartNum: number) {
-    /*
-    code
-    */
-
-    return {};
-}
-
-export function updateSessionState(userId: number, quizId: number, sessionId: number, action: string) {
-    /*
-    code
-    */
-
-    return {};
-}
-
 
 // returns the result of a question
 export function questionResults(playerId: number, questionPosition: number) {

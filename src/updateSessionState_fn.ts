@@ -2,7 +2,7 @@ import HTTPError from 'http-errors';
 import { QuizSessionAction, QuizSessionState, getState } from './dataStore';
 import {initiateNextQuizSessionQuestion, generateCurrentQuizSessionFinalResults, endQuizSession, openQuizSessionQuestion, closeCurrentQuizSessionQuestion
     , generateCurrentQuizSessionQuestionResults, gotoQuizSessionQuestionAnswer, gotoQuizSessionFinalResults
-} from './other'
+} from './session'
 
 // lets assume all the error checks for quiz and quizSessionId have been done and this is the helper function
 export function updateSesionState(quizSessionId: number, newAction: QuizSessionAction) {

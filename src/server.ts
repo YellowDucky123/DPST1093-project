@@ -42,13 +42,14 @@ import {
   adminQuizQuestionUpdate,
   adminQuizCreate,
   updateQuizThumbnail,
-  listSessions,
-  startSession,
-  updateSessionState,
   questionResults,
   allMessagesInSession,
   sendChat
 } from './quiz';
+import {
+  listSessions,
+  startSession,
+  updateSessionState} from "./session"
 // set up data
 setDataStorebyJSON();
 // our imports below:

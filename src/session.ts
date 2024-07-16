@@ -1,3 +1,6 @@
+import { getData } from "./dataStore";
+import { createId } from "./helpers";
+
 export function listSessions(userId: number, quizId: number) {
     /*
     code
@@ -6,9 +9,17 @@ export function listSessions(userId: number, quizId: number) {
 }
 
 export function startSession(userId: number, quizId: number, autoStartNum: number) {
-    /*
-    code
-    */
+    let data = getData();
+    let data_session = {
+        id: createId(data.Sessions),
+        autoStartNum: number,
+        state : QuizSessionState,
+        atQuestion : number,
+        players: Player[],
+        metadata: quiz,
+        results: QuizSessionResults,
+        messages: message[],
+    }
 
     return {};
 }

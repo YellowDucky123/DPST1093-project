@@ -204,7 +204,7 @@ export enum QuizSessionAction {
   END,
 };
 
-interface Player {
+export interface Player {
   id: number;
   name: string;
   sessionId: number; // id of current session they are in

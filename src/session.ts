@@ -5,17 +5,34 @@ import HTTPError from 'http-errors';
 let timer;
 
 export function listSessions(userId: number, quizId: number) {
-  /*
-    code
-    */
-  return {};
+    if(quizOwnership(userId, quizId) === false) {
+        throw HTTPError(403, "You do not own this quiz");
+    }
+
+    const data = getData();
+    let active: number[] = [];
+    let inactive: number[] = [];
+
+    for(const item in data.Sessions) {
+        if(data.Sessions[item].metadata.quizId === quizId) {
+            if(data.Sessions[item].state === QuizSessionState.END) {
+                inactive.push(data.Sessions[item].id);
+            } else {
+                active.push(data.Sessions[item].id);
+            }
+        }
+    }
+    return {
+        "activeSessions": active,
+        "inactiveSessions": inactive
+    };
 }
 
 function countSessionNotEnd(quizId: number) {
     let cnt: number = 0;
     const data = getData();
     for(const item in data.Sessions) {
-        if(data.Sessions[item].id === quizId) {
+        if(data.Sessions[item].metadata.quizId === quizId) {
             if(data.Sessions[item].state != QuizSessionState.END) {
                 cnt++;
             }
@@ -116,9 +133,9 @@ export function openQuizSessionQuestion(quizSessionId: number) {
     setSessionData(sesData);
   
     return {}
-  }
+}
   
-  export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
+export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
     /*
     code Kelvin
     */
@@ -127,9 +144,9 @@ export function openQuizSessionQuestion(quizSessionId: number) {
    setSessionData(sesData);
   
     return {}
-  }
+}
   
-  export function generateCurrentQuizSessionQuestionResults(quizSessionId: number) {
+export function generateCurrentQuizSessionQuestionResults(quizSessionId: number) {
     /*
     code Yuxuan
     */

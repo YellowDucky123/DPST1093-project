@@ -1,4 +1,4 @@
-import { setData, getData, users, quizzes } from './dataStore';
+import { setData, getData, users, quizzes, getPlayerData } from './dataStore';
 import validator from 'validator';
 import { user } from './dataStore';
 import { customAlphabet } from 'nanoid';
@@ -328,6 +328,16 @@ export function getCurrentTime() {
     return Math.floor(new Date().getTime() / 1000);
 }
 
+export function isPlayerExist(playerId: number) {
+  let P = getPlayerData();
+
+  for(const k in P) {
+    if(parseInt(k) === playerId) return true;
+  }
+  return false;
+}
+
+// SHA-256 hash
 export function hash(string: string) {
   return createHash('sha256').update(string).digest('hex');
 }

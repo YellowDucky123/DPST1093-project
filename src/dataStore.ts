@@ -160,7 +160,9 @@ export type data = {
   users: users,
   quizzes: quizzes,
   quizzesDeleted: quizzes,
-  tokenUserIdList: tokenUserIdList
+  tokenUserIdList: tokenUserIdList,
+  Sessions: Sessions,
+  playerData: playerData
 };
 function isdata(data: any): boolean {
   if ('users' in data && 'quizzes' in data && 'quizzesDeleted' in data && 'tokenUserIdList' in data) {
@@ -177,11 +179,13 @@ let dataStore: data = {
   quizzes: {},
   quizzesDeleted: {},
   tokenUserIdList: {},
+  Sessions: {},
+  playerData: {}
 };
 
 
 //quizSession
-enum QuizSessionState {
+export enum QuizSessionState {
   LOBBY,
   QUESTION_COUNTDOWN,
   QUESTION_OPEN,
@@ -191,7 +195,7 @@ enum QuizSessionState {
   END
 };
 
-enum QuizSessionAction {
+export enum QuizSessionAction {
   NEXT_QUESTION,
   SKIP_COUNTDOWN,
   GO_TO_ANSWER,
@@ -202,10 +206,18 @@ enum QuizSessionAction {
 interface Player {
   id: number;
   name: string;
-  session: number // id of current session they are in
+  sessionId: number; // id of current session they are in
+  questionAnswered: question[];
+  messages: message[];
   // add anything else?
 };
 
+export interface message {
+  messageBody: string;
+  playerId: number;
+  playerName: string;
+  timeSent: number;
+}
 
 interface QuizSessionResults {
   // TODO : What is the best way to represent results????
@@ -219,6 +231,7 @@ interface QuizSession {
   players: Player[];
   metadata: quiz;
   results: QuizSessionResults;
+  messages: message[];
 };
 
 type Sessions = {
@@ -230,25 +243,29 @@ type playerData = {
 }
 
 // quizSession store
-let quizSession: Sessions = {};
-
-let playerData: playerData = {};
 
 export function getSessionData() {
-  return quizSession;
+  return dataStore.Sessions;
 }
 
 export function setSessionData(newData: Sessions) {
-  quizSession = newData;
+  dataStore.Sessions = newData;
+}
+
+export function getState(quizSessionId) {
+  return dataStore.Sessions[quizSessionId].state;
 }
 
 export function getPlayerData() {
-  return playerData;
+  return dataStore.playerData;
 }
 
 export function setPlayerData(newData) {
-  playerData = newData;
+  dataStore.playerData = newData;
 }
+
+
+
 
 /// ///////////////////////////////////////////////////////////////
 /// ///////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
-import { answer, getData, question, quiz, setData, getSessionData, setSessionData } from './dataStore';
-import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId, getCurrentTime } from './helpers';
+import { answer, getData, question, quiz, setData, getSessionData, setSessionData, getPlayerData, QuizSessionState, message } from './dataStore';
+import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId, getCurrentTime, isPlayerExist } from './helpers';
 import { quizIdValidator } from './helpers';
 import { quizOwnership } from './helpers';
 import { isNameAlphaNumeric } from './helpers';
@@ -9,6 +9,7 @@ import { isUsedQuizName } from './helpers';
 import { customAlphabet } from 'nanoid';
 import { createId } from './helpers';
 import HTTPError from 'http-errors';
+import { Http2ServerRequest } from 'http2';
 
 /** *******************************************************************************************|
 |            |
@@ -582,25 +583,71 @@ export function updateSessionState(userId: number, quizId: number, sessionId: nu
     return {};
 }
 
+
+// returns the result of a question
 export function questionResults(playerId: number, questionPosition: number) {
   let QData = getSessionData();
+  let PData = getPlayerData();
   
+  if(!isPlayerExist(playerId)) {
+    throw HTTPError(400, "player does not exist");
+  }
+  let curSessionId = PData[playerId].sessionId;
+  let session = QData[curSessionId];
+  
+  if(questionPosition > session.atQuestion) {
+    throw HTTPError(400, "have not reached there yet");
+  }
+  if(session.metadata.questions.length + 1 < questionPosition) {
+    throw HTTPError(400, "question does not exist");
+  }
+  if(session.state !== QuizSessionState.ANSWER_SHOW) {
+    throw HTTPError(400, "invalid State");
+  }
+
+  let questions = session.metadata.questions;
+  let q = questions[questionPosition - 1];
+  let obj = {
+    "questionId": q.questionId,
+    "playersCorrectList": [
+      // what is this?
+    ],
+    "averageAnswerTime": 45,
+    "percentCorrect": 54
+  }
 
   return {}
 }
 
+// returns the whole chat of the session the player is in
 export function allMessagesInSession(playerId: number) {
-  /*
-  code
-  */
+  let p = getPlayerData();
+  let sesData = getSessionData();
 
-  return {}
+  let curSessionId = p[playerId].sessionId;
+  return sesData[curSessionId].messages
 }
 
-export function sendChat(playerId: number) {
-  /*
-  code
-  */
+// send a chat message
+export function sendChat(playerId: number, body) {
+  if(!isPlayerExist(playerId)) {
+    throw HTTPError(400, "player does not exist");
+  }
+  if(body.message.messageBody.length === 0 || body.message.messageBody.length > 100) {
+    throw HTTPError(400, 'message length invalid');
+  }
+
+  let players = getPlayerData();
+  let message: message = {
+    messageBody: body.message.messageBody,
+    playerId: playerId,
+    playerName: players[playerId].name,
+    timeSent: Date.now()
+  }
+
+  let curSessionId = players[playerId].sessionId;
+  let sesData = getSessionData();
+  sesData[curSessionId].messages.push(message);
 
   return {}
 }

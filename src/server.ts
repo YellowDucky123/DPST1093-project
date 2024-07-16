@@ -95,7 +95,7 @@ app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
   }
   const ans = adminAuthLogout(token);
   if ('error' in ans) {
-    throw HTTPError(401, ans);
+    throw HTTPError(401, ans.error);
   }
   res.status(200).json(ans);
 });
@@ -169,15 +169,15 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
 app.get('/v2/admin/user/details', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   if (!token) {
-    throw HTTPError(401, { error : "A token is required" })
+    throw HTTPError(401, "A token is required")
   }
   let UserId;
   if (!(UserId = findUserIdByToken(token))) {
-    throw HTTPError(401, { error: 'token incorrect or not found' });
+    throw HTTPError(401, 'token incorrect or not found');
   } else {
     const ans = adminUserDetails(UserId);
     if ('error' in ans) {
-      throw HTTPError(401, { error: 'token incorrect or not found' });
+      throw HTTPError(401, 'token incorrect or not found');
     } else {
       res.status(200).json(ans);
     }
@@ -206,15 +206,15 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
 app.get('/v2/admin/quiz/list', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   if (!token) {
-    throw HTTPError(401, { error: 'A token is required' });
+    throw HTTPError(401, 'A token is required');
   }
   let UserId;
   if (!(UserId = findUserIdByToken(token))) {
-    throw HTTPError(401, { error: 'token incorrect or not found' });
+    throw HTTPError(401, 'token incorrect or not found' );
   } else {
     const ans = adminQuizList(UserId);
     if ('error' in ans) {
-      throw HTTPError(401, ans);
+      throw HTTPError(401, ans.error);
     } else {
       res.status(200).json(ans);
     }
@@ -253,18 +253,18 @@ app.put('/v2/admin/user/details', (req: Request, res: Response) => {
   const nameFirst = req.body.nameFirst as string;
   const nameLast = req.body.nameLast as string;
   if (!token) {
-    throw HTTPError(401, { error: 'A token is required' });
+    throw HTTPError(401, 'A token is required');
   }
   if (!email || !nameFirst || !nameLast) {
-    throw HTTPError(400, { error: 'Missing some contents' });
+    throw HTTPError(400, 'Missing some contents');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, { error: 'token incorrect or not found' });
+    throw HTTPError(401, 'token incorrect or not found' );
   }
   const ans = adminUserDetailsUpdate(UserId, email, nameFirst, nameLast);
   if ('error' in ans) {
-    throw HTTPError(400, ans);
+    throw HTTPError(400, ans.error);
   } else {
     res.status(200).json(ans);
   }
@@ -307,25 +307,25 @@ app.post('/v2/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   const userEmail = req.body.userEmail as string;
   const quizId = parseInt(req.params.quizid);
   if (!token) {
-    throw HTTPError(401, { error: 'A token is required' });
+    throw HTTPError(401, 'A token is required');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, { error: 'token incorrect or not found' });
+    throw HTTPError(401, 'token incorrect or not found');
   }
   if (!quizId) {
-    throw HTTPError(403, { error: 'You must provide a quizId' });
+    throw HTTPError(403, 'You must provide a quizId');
   }
   if (!userEmail) {
-    throw HTTPError(400, { error: 'You must provide a valid email' });
+    throw HTTPError(400, 'You must provide a valid email' );
   }
   const ans = adminQuizTransfer(quizId, UserId, userEmail);
 
   if ('error' in ans) {
     if (ans.error === 'You do not own this quiz') {
-      throw HTTPError(403, ans)
+      throw HTTPError(403, ans.error)
     } else {
-      throw HTTPError(400, ans)
+      throw HTTPError(400, ans.error)
     }
   }
   res.status(200).json(ans);
@@ -362,21 +362,21 @@ app.post('/v2/admin/quiz/:quizId/question', (req: Request, res: Response) => {
   const questionBody: question = req.body.questionBody;
   const quizId = parseInt(req.params.quizId as string);
   if (!token) {
-    throw HTTPError(401, { error: 'A correct token is required' });
+    throw HTTPError(401, 'A correct token is required');
   }
   if (!quizId || !questionBody) {
-    throw HTTPError(400, { error: 'Missing some contents' });
+    throw HTTPError(400, 'Missing some contents');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, { error: 'token incorrect or not found' });
+    throw HTTPError(401, 'token incorrect or not found');
   }
   const ans = adminQuestionCreate(UserId, quizId, questionBody);
   if ('error' in ans) {
     if (ans.error === 'This user does not own this quiz') {
-      throw HTTPError(403, ans)
+      throw HTTPError(403, ans.error)
     } else {
-      throw HTTPError(400, ans)
+      throw HTTPError(400, ans.error)
     }
   }
   res.status(200).json(ans);

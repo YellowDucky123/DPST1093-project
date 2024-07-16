@@ -1,5 +1,6 @@
 import { getData, getSessionData, message, Player, playerResults, QuizSession, QuizSessionResults, QuizSessionState, setSessionData } from "./dataStore";
-import { createId } from "./helpers";
+import { createId, quizIdValidator, quizOwnership } from "./helpers";
+import HTTPError from 'http-errors';
 
 let timer;
 
@@ -10,8 +11,46 @@ export function listSessions(userId: number, quizId: number) {
   return {};
 }
 
+function countSessionNotEnd(quizId: number) {
+    let cnt: number = 0;
+    const data = getData();
+    for(const item in data.Sessions) {
+        if(data.Sessions[item].id === quizId) {
+            if(data.Sessions[item].state != QuizSessionState.END) {
+                cnt++;
+            }
+        }
+    }
+
+    return cnt;
+}
+
+function checkQuizQuestionEmpty(quizId: number) {
+    const data = getData();
+    if(data.quizzes[quizId].questions.length === 0) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 export function startSession(userId: number, quizId: number, autoStartNum: number) {
-  const data = getData();
+  if(autoStartNum > 50) {
+    throw HTTPError(400, "autoStartNum is greater than 50");
+  }
+  if(countSessionNotEnd(quizId) >= 10) {
+    throw HTTPError(400, "A maximum of 10 session can be exist");
+  }
+  if(checkQuizQuestionEmpty(quizId) === false) {
+    throw HTTPError(400, "The quiz does not have any questions");
+  }
+  if(quizIdValidator(quizId) === false) {
+    throw HTTPError(403, "Invalid quizId");
+  }
+  if(quizOwnership(userId, quizId) === false) {
+    throw HTTPError(403, "You do not own this quiz");
+  }
+    const data = getData();
 
   const results: QuizSessionResults = {
     usersRankedbyScore: [],
@@ -22,7 +61,7 @@ export function startSession(userId: number, quizId: number, autoStartNum: numbe
     id: createId(data.Sessions),
     autoStartNum: autoStartNum,
     state: QuizSessionState.LOBBY,
-    atQuestion: 1,
+    atQuestion: 0,
     players: [],
     metadata: data.quizzes[quizId],
     results: results,
@@ -38,8 +77,11 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
   /*
     code Kei
     */
+    let data = getData();
+    data.Sessions[quizSessionId].atQuestion++;
+    data.Sessions[quizSessionId].state = QuizSessionState.QUESTION_COUNTDOWN;
 
-  return {};
+    return {};
 }
 
 export function generateCurrentQuizSessionFinalResults(quizSessionId: number) {

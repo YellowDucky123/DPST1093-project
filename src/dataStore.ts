@@ -209,7 +209,7 @@ export interface Player {
   name: string;
   sessionId: number; // id of current session they are in
   questionAnswered: question[];
-  messages: message[];
+  score: number;
   // add anything else?
 };
 
@@ -220,8 +220,21 @@ export interface message {
   timeSent: number;
 }
 
-interface QuizSessionResults {
-  // TODO : What is the best way to represent results????
+export interface questionResults {
+  "questionId": number,
+  "playersCorrectList": string[],
+  "averageAnswerTime": number,
+  "percentCorrect": number
+}
+
+export interface playerResults {
+  name: string,
+  score: number
+}
+
+export interface QuizSessionResults {
+  usersRankedbyScore: playerResults[];
+  questionResults: questionResults[];
 };
 
 interface QuizSession {

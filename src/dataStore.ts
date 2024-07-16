@@ -89,7 +89,8 @@ export type quiz = {
   timeCreated: number,
   timeLastEdited: number
   numQuizQuestion: number // this is used to count the num of questions.
-  questions: question[]
+  questions: question[],
+  imgUrl: string
 };
 function isQuestions(questions: any): boolean {
   if (questions.every(isQuestion)) return true;

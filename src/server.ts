@@ -339,12 +339,7 @@ app.delete('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = adminQuizRemove(UserId, quizId);
-  let status = 200;
-  if ('error' in ans) {
-    return res.json(ans);
-  }
-  res.status(status).json(ans);
+  return res.json(adminQuizRemove(UserId, quizId));
 });
 
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
@@ -376,12 +371,7 @@ app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = adminViewDeletedQuizzes(UserId);
-  let status = 200;
-  if ('error' in ans) {
-    return res.json(ans);
-  }
-  res.status(status).json(ans);
+  return res.json(adminViewDeletedQuizzes(UserId));
 });
 
 
@@ -422,12 +412,7 @@ app.get('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = adminQuizInfo(UserId, quizId);
-  let status = 200;
-  if ('error' in ans) {
-    return res.json(ans);
-  }
-  res.status(status).json(ans);
+  return res.json(adminQuizInfo(UserId, quizId));
 });
 
 app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
@@ -465,12 +450,7 @@ app.post('/v2/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = adminRestoreQuiz(UserId, quizId);
-  let status = 200;
-  if ('error' in ans) {
-    return res.json(ans);
-  }
-  res.status(status).json(ans);
+  return res.json(adminRestoreQuiz(UserId, quizId))
 });
 
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
@@ -508,12 +488,7 @@ app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = adminQuizPermDelete(UserId, quizIds);
-  let status = 200;
-  if ('error' in ans) {
-    return res.json(ans);
-  }
-  res.status(status).json(ans);
+  return res.json(adminQuizPermDelete(UserId, quizIds));
 });
 // ====================================================================
 //  ================= WORK IS DONE BELOW THIS LINE ===================
@@ -794,12 +769,7 @@ app.put('/v1/admin/quiz/:quizId/thumbnail', (req: Request, res: Response) => {
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = updateQuizThumbnail(UserId, quizId, imgUrl);
-  let status = 200;
-  if ('error' in ans) {
-    return res.json(ans);
-  }
-  res.status(status).json(ans);
+  return res.json(updateQuizThumbnail(UserId, quizId, imgUrl));
 });
 
 app.get('/v1/admin/quiz/:quizId/sessions', (req: Request, res: Response) => {
@@ -814,12 +784,7 @@ app.get('/v1/admin/quiz/:quizId/sessions', (req: Request, res: Response) => {
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = listSessions(UserId, quizId);
-  let status = 200;
-  if ('error' in ans) {
-    return res.json(ans);
-  }
-  res.status(status).json(ans);
+  return res.json(listSessions(UserId, quizId));
 });
 
 app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) => {
@@ -835,12 +800,7 @@ app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) 
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = startSession(UserId, quizId, autoStartNum);
-  let status = 200;
-  if ('error' in ans) {
-    return res.json(ans);
-  }
-  res.status(status).json(ans);
+  return res.json(startSession(UserId, quizId, autoStartNum));
 });
 
 app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
@@ -857,12 +817,7 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
     res.status(401).json({ error: 'token incorrect or not found' });
     return;
   }
-  const ans = updateSessionState(UserId, quizId, sessionId, action);
-  let status = 200;
-  if ('error' in ans) {
-    return res.json(ans);
-  }
-  res.status(status).json(ans);
+  return res.json(updateSessionState(UserId, quizId, sessionId, action));
 });
 
 // return question results

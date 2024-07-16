@@ -32,17 +32,9 @@ export function startSession(userId: number, quizId: number, autoStartNum: numbe
     return {};
 }
 
-export function updateSessionState(userId: number, quizId: number, sessionId: number, action: string) {
-    /*
-    code
-    */
-
-    return {};
-}
-
 export function initiateNextQuizSessionQuestion(quizSessionId: number) {
     /*
-    code
+    code Kei
     */
   
     return {}
@@ -50,7 +42,7 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
   
   export function generateCurrentQuizSessionFinalResults(quizSessionId: number) {
     /*
-    code
+    code Victor
     */
   
     return {}
@@ -58,7 +50,7 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
   
   export function endQuizSession(quizSessionId: number) {
     /*
-    code
+    code Kei
     */
   
     return {}
@@ -66,7 +58,7 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
   
   export function openQuizSessionQuestion(quizSessionId: number) {
     /*
-    code
+    code Kelvin
     */
   
     return {}
@@ -74,7 +66,7 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
   
   export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
     /*
-    code
+    code Kelvin
     */
   
     return {}
@@ -82,7 +74,7 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
   
   export function generateCurrentQuizSessionQuestionResults(quizSessionId: number) {
     /*
-    code
+    code Yuxuan
     */
   
     return {}  
@@ -90,7 +82,7 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
   
   export function gotoQuizSessionQuestionAnswer(quizSessionId: number) {
     /*
-    code
+    code Yuxuan
     */
   
     return {} 
@@ -98,7 +90,7 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
   
   export function gotoQuizSessionFinalResults(quizSessionId: number) {
     /*
-    code
+    code Victor
     */
   
     return {} 

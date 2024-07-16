@@ -47,6 +47,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     description: description,
     numQuizQuestion: 0,
     questions: questions,
+    imgUrl: ''
   };
 
   data.quizzes[quizId] = newData;
@@ -621,6 +622,9 @@ export function questionResults(playerId: number, questionPosition: number) {
 
 // returns the whole chat of the session the player is in
 export function allMessagesInSession(playerId: number) {
+  if(!isPlayerExist(playerId)) {
+    throw HTTPError(400, "player does not exist");
+  }
   let p = getPlayerData();
   let sesData = getSessionData();
 

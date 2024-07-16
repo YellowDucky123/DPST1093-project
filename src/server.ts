@@ -44,7 +44,9 @@ import {
   updateQuizThumbnail,
   questionResults,
   allMessagesInSession,
-  sendChat
+  sendChat,
+  statusPlayer,
+  currentQuestionPosition
 } from './quiz';
 import {
   listSessions,
@@ -872,7 +874,7 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
   const sessionId = parseInt(req.params.sessionId);
   const body = req.body.body;
 
-  if(!quizIdValidator(quizId)) {
+  if (!quizIdValidator(quizId)) {
     throw HTTPError(403, "quiz does not exist");
   }
   return updateSesionState(sessionId, body.action);
@@ -927,10 +929,40 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
   const sessionId = parseInt(req.params.sessionId);
   const body = req.body.body;
 
-  if(!quizIdValidator(quizId)) {
+  if (!quizIdValidator(quizId)) {
     throw HTTPError(403, "quiz does not exist");
   }
   return updateSesionState(sessionId, body.action);
+})
+
+//Victor's part
+
+// Status of guest player in session
+app.get('/v1/player/:playerId', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerId);
+  const token = req.headers.token as string;
+  if (!findUserIdByToken(token)) {
+    throw HTTPError(401, 'token incorrect or not found');
+  }
+  const result = statusPlayer(playerId);
+  if ('error' in result) {
+    throw HTTPError(400, result.error);
+  }
+  return res.status(200).json(result);
+})
+
+app.get('/v1/player/:playerId/question:questionposition', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerId);
+  const questionPosition = parseInt(req.params.questionposition);
+  const token = req.headers.token as string;
+  if (!findUserIdByToken(token)) {
+    throw HTTPError(401, 'token incorrect or not found');
+  }
+  const result = currentQuestionPosition(playerId, questionPosition);
+  if ('error' in result) {
+    throw HTTPError(400, result.error);
+  }
+  return res.status(200).json(result);
 })
 
 //--------------------------------------------------------------------------

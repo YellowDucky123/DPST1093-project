@@ -124,11 +124,11 @@ function getQuestionsInfo(quizId: number) {
   }
   return ans;
 }
-function getanswers(question : question) {
+function getanswers(question: question) {
   const ans: answer[] = [];
   for (const answer of question.answers) {
     ans.push({
-      answerId: answer.answerId? answer.answerId : question.answers.indexOf(answer),
+      answerId: answer.answerId ? answer.answerId : question.answers.indexOf(answer),
       answer: answer.answer,
       colour: answer.colour ? answer.colour : "black",
       correct: answer.correct
@@ -142,7 +142,7 @@ function getanswers(question : question) {
 |*attention: "name" is the first and last name concatenated with a single space between them**|
 \*********************************************************************************************/
 export function adminQuizList(authUserId: number) {
-  const quizzes: {quizId: number, name: string}[] = [];
+  const quizzes: { quizId: number, name: string }[] = [];
   const datas = getData();
   if (datas.users[authUserId] === undefined) {
     return { error: 'can not find such a member' };
@@ -417,20 +417,20 @@ export function adminViewDeletedQuizzes(authUserId: number) {
   const data = getData();
   const list = data.users[authUserId].quizzesUserDeleted;
 
-    interface quiz {
-        quizId: number,
-        name: string
-    }
-    const ret: quiz[] = [];
-    for (const id of list) {
-      ret.push({
-        quizId: id,
-        name: data.quizzesDeleted[id].name
-      });
-    }
-    return {
-      quizzes: ret
-    };
+  interface quiz {
+    quizId: number,
+    name: string
+  }
+  const ret: quiz[] = [];
+  for (const id of list) {
+    ret.push({
+      quizId: id,
+      name: data.quizzesDeleted[id].name
+    });
+  }
+  return {
+    quizzes: ret
+  };
 }
 
 export function adminRestoreQuiz(authUserId: number, quizId: number) {
@@ -507,19 +507,19 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
     }
   }
   if (!("question" in questionBody && typeof questionBody.question === "string")) {
-    return { error : "a question is required"};
+    return { error: "a question is required" };
   }
   if ((questionBody.question.length < 5 || questionBody.question.length > 50)) {
     return { error: 'Question string is less than 5 characters in length or greater than 50 characters in length' };
   }
   if (!("answers" in questionBody && Array.isArray(questionBody.answers))) {
-    return { error : "answers are required"};
+    return { error: "answers are required" };
   }
   if (questionBody.answers.length < 2 || questionBody.answers.length > 6) {
     return { error: 'The question has more than 6 answers or less than 2 answers' };
   }
   if (!("duration" in questionBody && typeof questionBody.duration === "number")) {
-    return { error : "a duration is required"};
+    return { error: "a duration is required" };
   }
   if (questionBody.duration <= 0) {
     return { error: 'The question duration is not a positive number' };
@@ -528,7 +528,7 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
     return { error: 'If this question were to be updated, the sum of the question durations in the quiz exceeds 3 minutes' };
   }
   if (!("points" in questionBody && typeof questionBody.points === "number")) {
-    return { error : "points is required"};
+    return { error: "points is required" };
   }
   if (questionBody.points < 1 || questionBody.points > 10) {
     return { error: 'The points awarded for the question are less than 1 or greater than 10' };
@@ -641,4 +641,54 @@ export function sendChat(playerId: number, body) {
   sesData[curSessionId].messages.push(message);
 
   return {};
+}
+
+
+// Victor's parts
+
+export function statusPlayer(playerId: number) {
+  if (!isPlayerExist(playerId)) {
+    return { error: "playerId does not exist" }
+  }
+  let playerData = getPlayerData();
+  let sessionId = playerData[playerId].sessionId;
+  let session = getSessionData();
+  let newSession = session[sessionId];
+  const data = {
+    "state": newSession.state,
+    "numQuestions": newSession.metadata.numQuizQuestion,
+    "atQuestion": newSession.atQuestion
+  }
+  return data;
+}
+
+export function isQuestionValid(questionPosition: number, questionNumber: number) {
+  if (questionPosition < 1) {
+    return false;
+  }
+  if (questionPosition > questionNumber) {
+    return false;
+  }
+  return true;
+}
+
+export function currentQuestionPosition(playerId: number, questionPosition: number) {
+  if (!isPlayerExist(playerId)) {
+    return { error: "playerId does not exist" }
+  }
+  let playerData = getPlayerData();
+  let sessionId = playerData[playerId].sessionId;
+  let session = getSessionData();
+  let newSession = session[sessionId];
+  if (!isQuestionValid(questionPosition, newSession.metadata.numQuizQuestion)) {
+    return { error: "questionBody is not valid" }
+  }
+  if (newSession.state === QuizSessionState.LOBBY || newSession.state === QuizSessionState.END) {
+    return { error: "QuizSessionState is in LOBBY or END" };
+  }
+  if (newSession.atQuestion !== questionPosition) {
+    return { error: "questionPosition is not the same as atQuestion" }
+  }
+  let data = playerData[playerId].questionAnswered;
+  return data;
 }

@@ -583,6 +583,8 @@ export function updateSessionState(userId: number, quizId: number, sessionId: nu
     return {};
 }
 
+
+// returns the result of a question
 export function questionResults(playerId: number, questionPosition: number) {
   let QData = getSessionData();
   let PData = getPlayerData();
@@ -617,10 +619,13 @@ export function questionResults(playerId: number, questionPosition: number) {
   return {}
 }
 
+// returns the whole chat of the session the player is in
 export function allMessagesInSession(playerId: number) {
-  
+  let p = getPlayerData();
+  let sesData = getSessionData();
 
-  return {}
+  let curSessionId = p[playerId].sessionId;
+  return sesData[curSessionId].messages
 }
 
 // send a chat message

@@ -1,6 +1,7 @@
 import { setData } from './dataStore';
 
-function clear() {
+// clear the whole thing
+export function clear() {
   const newData = {
     users: {},
     quizzes: {},
@@ -14,4 +15,66 @@ function clear() {
   return {};
 }
 
-export { clear };
+export function initiateNextQuizSessionQuestion(quizSessionId) {
+  /*
+  code
+  */
+
+  return {}
+}
+
+export function generateCurrentQuizSessionFinalResults(quizSessionId) {
+  /*
+  code
+  */
+
+  return {}
+}
+
+export function endQuizSession(quizSessionId) {
+  /*
+  code
+  */
+
+  return {}
+}
+
+export function openQuizSessionQuestion(quizSessionId) {
+  /*
+  code
+  */
+
+  return {}
+}
+
+export function closeCurrentQuizSessionQuestion(quizSessionId) {
+  /*
+  code
+  */
+
+  return {}
+}
+
+export function generateCurrentQuizSessionQuestionResults(quizSessionId) {
+  /*
+  code
+  */
+
+  return {}  
+}
+
+export function gotoQuizSessionQuestionAnswer(quizSessionId) {
+  /*
+  code
+  */
+
+  return {} 
+}
+
+export function gotoQuizSessionFinalResults(quizSessionId) {
+  /*
+  code
+  */
+
+  return {} 
+}

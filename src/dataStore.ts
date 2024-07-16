@@ -195,7 +195,7 @@ export enum QuizSessionState {
   END
 };
 
-enum QuizSessionAction {
+export enum QuizSessionAction {
   NEXT_QUESTION,
   SKIP_COUNTDOWN,
   GO_TO_ANSWER,
@@ -252,6 +252,10 @@ export function setSessionData(newData: Sessions) {
   dataStore.Sessions = newData;
 }
 
+export function getState(quizSessionId) {
+  return dataStore.Sessions[quizSessionId].state;
+}
+
 export function getPlayerData() {
   return dataStore.playerData;
 }
@@ -259,6 +263,8 @@ export function getPlayerData() {
 export function setPlayerData(newData) {
   dataStore.playerData = newData;
 }
+
+
 
 
 /// ///////////////////////////////////////////////////////////////

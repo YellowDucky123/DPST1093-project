@@ -128,9 +128,9 @@ function getanswers(question : question) {
   const ans: answer[] = [];
   for (const answer of question.answers) {
     ans.push({
-      answerId: answer.answerId,
+      answerId: answer.answerId? answer.answerId : question.answers.indexOf(answer),
       answer: answer.answer,
-      colour: answer.colour,
+      colour: answer.colour ? answer.colour : "black",
       correct: answer.correct
     });
   }
@@ -240,7 +240,7 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
     question: question.question,
     duration: question.duration,
     points: question.points,
-    answers: question.answers,
+    answers: getanswers(question),
   };
   data.quizzes[quizId].questions.push(ans);
   data.quizzes[quizId].numQuizQuestion++;

@@ -160,7 +160,9 @@ export type data = {
   users: users,
   quizzes: quizzes,
   quizzesDeleted: quizzes,
-  tokenUserIdList: tokenUserIdList
+  tokenUserIdList: tokenUserIdList,
+  Sessions: Sessions,
+  playerData: playerData
 };
 function isdata(data: any): boolean {
   if ('users' in data && 'quizzes' in data && 'quizzesDeleted' in data && 'tokenUserIdList' in data) {
@@ -177,6 +179,8 @@ let dataStore: data = {
   quizzes: {},
   quizzesDeleted: {},
   tokenUserIdList: {},
+  Sessions: {},
+  playerData: {}
 };
 
 
@@ -202,7 +206,7 @@ enum QuizSessionAction {
 interface Player {
   id: number;
   name: string;
-  session: number; // id of current session they are in
+  sessionId: number; // id of current session they are in
   questionAnswered: question[];
   messages: message[];
   // add anything else?
@@ -227,6 +231,7 @@ interface QuizSession {
   players: Player[];
   metadata: quiz;
   results: QuizSessionResults;
+  messages: message[];
 };
 
 type Sessions = {
@@ -238,35 +243,23 @@ type playerData = {
 }
 
 // quizSession store
-let quizSession: Sessions = {};
-
-let playerData: playerData = {};
-
-let chat: message[] = [];
 
 export function getSessionData() {
-  return quizSession;
+  return dataStore.Sessions;
 }
 
 export function setSessionData(newData: Sessions) {
-  quizSession = newData;
+  dataStore.Sessions = newData;
 }
 
 export function getPlayerData() {
-  return playerData;
+  return dataStore.playerData;
 }
 
 export function setPlayerData(newData) {
-  playerData = newData;
+  dataStore.playerData = newData;
 }
 
-export function getChat() {
-  return chat;
-}
-
-export function addChat(message: message) {
-  chat.push(message);
-}
 
 /// ///////////////////////////////////////////////////////////////
 /// ///////////////////////////////////////////////////////////////

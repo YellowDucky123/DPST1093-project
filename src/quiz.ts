@@ -1,4 +1,4 @@
-import { answer, getData, question, quiz, setData, getSessionData, setSessionData, getPlayerData, QuizSessionState, addChat, message } from './dataStore';
+import { answer, getData, question, quiz, setData, getSessionData, setSessionData, getPlayerData, QuizSessionState, message } from './dataStore';
 import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId, getCurrentTime, isPlayerExist } from './helpers';
 import { quizIdValidator } from './helpers';
 import { quizOwnership } from './helpers';
@@ -590,7 +590,7 @@ export function questionResults(playerId: number, questionPosition: number) {
   if(!isPlayerExist(playerId)) {
     throw HTTPError(400, "player does not exist");
   }
-  let curSessionId = PData[playerId].session;
+  let curSessionId = PData[playerId].sessionId;
   let session = QData[curSessionId];
   
   if(questionPosition > session.atQuestion) {
@@ -623,6 +623,7 @@ export function allMessagesInSession(playerId: number) {
   return {}
 }
 
+// send a chat message
 export function sendChat(playerId: number, body) {
   if(!isPlayerExist(playerId)) {
     throw HTTPError(400, "player does not exist");
@@ -639,7 +640,9 @@ export function sendChat(playerId: number, body) {
     timeSent: Date.now()
   }
 
-  addChat(message)
+  let curSessionId = players[playerId].sessionId;
+  let sesData = getSessionData();
+  sesData[curSessionId].messages.push(message);
 
   return {}
 }

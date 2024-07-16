@@ -5,7 +5,9 @@ function clear() {
     users: {},
     quizzes: {},
     quizzesDeleted: {},
-    tokenUserIdList: {}
+    tokenUserIdList: {},
+    Sessions: {},
+    playerData: {}
   };
 
   setData(newData);

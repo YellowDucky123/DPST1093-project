@@ -79,19 +79,19 @@ const HOST: string = process.env.IP || 'localhost';
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   const token = req.body.token as string;
   if (!token) {
-    throw HTTPError(401, { error: 'A token is required' });
+    return res.status(401).json({ error: 'A token is required' });
   }
   const ans = adminAuthLogout(token);
   if ('error' in ans) {
-    throw HTTPError(401, ans);
+    return res.status(401).json(ans);
   }
-  res.status(200).json(ans);
+  return res.status(200).json(ans);
 });
 
 app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
   const token = req.body.token as string;
   if (!token) {
-    throw HTTPError(401, { error: 'A token is required' });
+    throw HTTPError(401, 'A token is required');
   }
   const ans = adminAuthLogout(token);
   if ('error' in ans) {
@@ -105,20 +105,20 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   const oldPassword = req.body.oldPassword as string;
   const newPassword = req.body.newPassword as string;
   if (!oldPassword || !newPassword) {
-    throw HTTPError(400, { error: 'Missing some contents' });
+    return res.status(400).json({ error: 'Missing some contents' });
   }
   if (!token) {
-    throw HTTPError(401, { error: 'A token is required' });
+    return res.status(401).json({ error: 'A token is required' });
   }
   const userId = findUserIdByToken(token);
   if (!userId) {
-    throw HTTPError(401, { error: 'the token is incorrect or not found' });
+    return res.status(401).json({ error: 'the token is incorrect or not found' });
   }
   const ans = adminUserPasswordUpdate(userId, oldPassword, newPassword);
   if ('error' in ans) {
-    throw HTTPError(400, ans);
+    return res.status(400).json(ans);
   }
-  res.status(200).json(ans);
+  return res.status(200).json(ans);
 });
 
 app.put('/v2/admin/user/password', (req: Request, res: Response) => {
@@ -126,18 +126,18 @@ app.put('/v2/admin/user/password', (req: Request, res: Response) => {
   const oldPassword = req.body.oldPassword as string;
   const newPassword = req.body.newPassword as string;
   if (!oldPassword || !newPassword) {
-    throw HTTPError(400, { error: 'Missing some contents' });
+    throw HTTPError(400, 'Missing some contents');
   }
   if (!token) {
-    throw HTTPError(401, { error: 'A token is required' });
+    throw HTTPError(401, 'A token is required');
   }
   const userId = findUserIdByToken(token);
   if (!userId) {
-    throw HTTPError(401, { error: 'the token is incorrect or not found' });
+    throw HTTPError(401, 'the token is incorrect or not found');
   }
   const ans = adminUserPasswordUpdate(userId, oldPassword, newPassword);
   if ('error' in ans) {
-    throw HTTPError(400, ans);
+    throw HTTPError(400, ans.error);
   }
   res.status(200).json(ans);
 });
@@ -484,7 +484,7 @@ app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const quizIds = (req.query.quizIds as string[]).map(Number);
   if (!token) {
-    res.status(401).json({ error: 'A correct token is required' });
+    return res.status(401).json({ error: 'A correct token is required' });
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
@@ -512,7 +512,7 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
   const result = adminAuthRegister(email, password, nameFirst, nameLast);
   if ('error' in result) {
-    throw HTTPError(400, result);
+    res.status(400).json(result);
   } else {
     let token = Math.floor(10000 + Math.random() * 90000).toString();
     while (checkDuplicateToken(token)) {
@@ -525,12 +525,50 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   }
 });
 
+app.post('/v2/admin/auth/register', (req: Request, res: Response) => {
+  const { email, password, nameFirst, nameLast } = req.body;
+  const result = adminAuthRegister(email, password, nameFirst, nameLast);
+  if ('error' in result) {
+    throw HTTPError(400, result.error);
+  } else {
+    let token = Math.floor(10000 + Math.random() * 90000).toString();
+    while (checkDuplicateToken(token)) {
+      token = Math.floor(10000 + Math.random() * 90000).toString();
+    }
+    if ('authUserId' in result) {
+      getData().tokenUserIdList[token] = result.authUserId;
+    }
+    return res.status(200).json({ token: token });
+  }
+});
+
+
+
 // Log an admin user
+
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
   const { email, password } = req.body;
   const result = adminAuthLogin(email, password);
   if ('error' in result) {
-    throw HTTPError(400, result);
+    return res.status(400).json(result);
+  } else {
+    let token = findTokenByUserId(result.authUserId);
+    if (!token) {
+      token = Math.floor(10000 + Math.random() * 90000).toString();
+      while (checkDuplicateToken(token)) {
+        token = Math.floor(10000 + Math.random() * 90000).toString();
+      }
+    }
+    getData().tokenUserIdList[token] = result.authUserId;
+    return res.status(200).json({ token: token });
+  }
+});
+
+app.post('/v2/admin/auth/login', (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  const result = adminAuthLogin(email, password);
+  if ('error' in result) {
+    throw HTTPError(400, result.error);
   } else {
     let token = findTokenByUserId(result.authUserId);
     if (!token) {
@@ -550,15 +588,15 @@ app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Respo
   const questionId = parseInt(req.params.questionId);
   const { token, questionBody } = req.body;
   if (!token) {
-    throw HTTPError(401, { error: 'Token not found' });
+    return res.status(401).json({ error: 'Token not found' });
   }
   const userId = findUserIdByToken(token);
   if (!userId) {
-    throw HTTPError(403, { error: 'This user does not own this quiz' });
+    return res.status(403).json({ error: 'This user does not own this quiz' });
   }
   const result = adminQuizQuestionUpdate(userId, quizId, questionId, questionBody, token);
   if ('error' in result) {
-    throw HTTPError(400, result);
+    return res.status(400).json(result);
   }
   return res.status(200).json(result);
 });
@@ -569,15 +607,15 @@ app.put('/v2/admin/quiz/:quizId/question/:questionId', (req: Request, res: Respo
   const questionId = parseInt(req.params.questionId);
   const { token, questionBody } = req.body;
   if (!token) {
-    throw HTTPError(401, { error: 'Token not found' });
+    throw HTTPError(401, 'Token not found');
   }
   const userId = findUserIdByToken(token);
   if (!userId) {
-    throw HTTPError(403, { error: 'This user does not own this quiz' });
+    throw HTTPError(403, 'This user does not own this quiz');
   }
   const result = adminQuizQuestionUpdate(userId, quizId, questionId, questionBody, token);
   if ('error' in result) {
-    throw HTTPError(400, result);
+    throw HTTPError(400, result.error);
   }
   return res.status(200).json(result);
 });

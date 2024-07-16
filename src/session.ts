@@ -1,5 +1,7 @@
-import { getData, message, Player, playerResults, QuizSession, QuizSessionResults, QuizSessionState } from './dataStore';
-import { createId } from './helpers';
+import { getData, getSessionData, message, Player, playerResults, QuizSession, QuizSessionResults, QuizSessionState, setSessionData } from "./dataStore";
+import { createId } from "./helpers";
+
+let timer;
 
 export function listSessions(userId: number, quizId: number) {
   /*
@@ -60,20 +62,27 @@ export function openQuizSessionQuestion(quizSessionId: number) {
   /*
     code Kelvin
     */
-
-  return {};
-}
-
-export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
-  /*
+    clearTimeout(timer);
+    let sesData = getSessionData();
+    sesData[quizSessionId].state = QuizSessionState.QUESTION_OPEN;
+    setSessionData(sesData);
+  
+    return {}
+  }
+  
+  export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
+    /*
     code Kelvin
     */
-
-  return {};
-}
-
-export function generateCurrentQuizSessionQuestionResults(quizSessionId: number) {
-  /*
+   let sesData = getSessionData();
+   sesData[quizSessionId].state = QuizSessionState.QUESTION_CLOSE;
+   setSessionData(sesData);
+  
+    return {}
+  }
+  
+  export function generateCurrentQuizSessionQuestionResults(quizSessionId: number) {
+    /*
     code Yuxuan
     */
 

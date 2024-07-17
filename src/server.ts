@@ -49,6 +49,7 @@ import {
   currentQuestionPosition
 } from './quiz';
 import {
+  getSessionStatus,
   listSessions,
   startSession
 } from "./session"
@@ -383,6 +384,19 @@ app.post('/v2/admin/quiz/:quizId/question', (req: Request, res: Response) => {
   }
   res.status(200).json(ans);
 });
+
+app.get('/v1/admin/quiz/:quizid/session/:sessionid', (req : Request, res: Response) => {
+  let token = req.headers.token as string;
+  let quizId = parseInt(req.params.quizid)
+  let sessionid = parseInt(req.params.sessionid)
+  if (!token) throw HTTPError(401, "a token is required");
+  let userid = findUserIdByToken(token);
+  if (!userid) throw HTTPError(401, "token not correct");
+  if (quizId === undefined) throw HTTPError(403, "a quizid is required");
+  if (sessionid === undefined) throw HTTPError(400, "a sessionid is required");
+  let ans = getSessionStatus(userid, quizId, sessionid);
+  res.status(200).json(ans);
+})
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   const token = req.body.token as string;

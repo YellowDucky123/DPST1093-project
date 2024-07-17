@@ -358,6 +358,7 @@ export function deleteQuestion(authUserId: number, quizId: number, questionId: n
   if (!questionFinder(quizId, questionId)) {
     throw HTTPError(400, 'Question Id does not refer to a valid question within this quiz');
   }
+  if()
 
   const data = getData();
   const qs = data.quizzes[quizId].questions;

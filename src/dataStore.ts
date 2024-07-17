@@ -24,7 +24,10 @@ function isanswer(answer: object): boolean {
 }
 
 export type playerTimes = {
-  [playerId: number] : number;
+  [playerId: number] : {
+    correct: boolean, 
+    duration: number
+  }
 }
 
 export type question = {

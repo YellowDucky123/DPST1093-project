@@ -24,7 +24,10 @@ function isanswer(answer: object): boolean {
 }
 
 export type playerTimes = {
-  [playerId: number] : number;
+  [playerId: number] : {
+    correct: boolean, 
+    duration: number
+  }
 }
 
 export type question = {
@@ -215,7 +218,6 @@ export interface Player {
   sessionId: number; // id of current session they are in
   questionAnswered: question[];
   score: number;
-  answerTime: []
   // add anything else?
 }
 

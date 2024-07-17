@@ -1,5 +1,5 @@
 import { answer, getData, question, quiz, setData, getSessionData, getPlayerData, QuizSessionState, message } from './dataStore';
-import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId, getCurrentTime, isPlayerExist } from './helpers';
+import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId, getCurrentTime, isPlayerExist, urlCheck } from './helpers';
 import { quizIdValidator } from './helpers';
 import { quizOwnership } from './helpers';
 import { isNameAlphaNumeric } from './helpers';
@@ -9,6 +9,7 @@ import { isUsedQuizName } from './helpers';
 import { customAlphabet } from 'nanoid';
 import { createId } from './helpers';
 import HTTPError from 'http-errors';
+import { countSessionNotEnd } from './helpers';
 
 /** *******************************************************************************************|
 |            |
@@ -18,7 +19,7 @@ import HTTPError from 'http-errors';
 
 export function adminQuizCreate(authUserId: number, name: string, description: string) {
   if (userIdValidator(authUserId) === false) {
-    return { error: 'adminQuizCreate: invalid user id' };
+    throw HTTPError(401, "Invalid user id");
   }
   if (nameLen(name) === false) {
     throw HTTPError(400, 'Invalid name length');
@@ -57,14 +58,18 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
 
 export function adminQuizRemove(authUserId: number, quizId: number) {
   if (userIdValidator(authUserId) === false) {
-    return { error: 'adminQuizRemove: invalid user id' };
+    throw HTTPError(401, "Invalid user id");
   }
   if (quizIdValidator(quizId) === false) {
-    return { error: 'adminQuizRemove: invalid quiz id' };
+    throw HTTPError(403, "Invalid quiz id");
   }
   if (quizOwnership(authUserId, quizId) === false) {
     throw HTTPError(403, 'You do not own this quiz');
   }
+  if (countSessionNotEnd(quizId) != 0) {
+    throw HTTPError(400, "All sessions for this quiz must be in END state");
+  }
+
   const data = getData();
   data.quizzesDeleted[quizId] = data.quizzes[quizId];
   data.users[authUserId].quizzesUserDeleted.push(quizId);
@@ -80,10 +85,10 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
 
 export function adminQuizInfo(authUserId: number, quizId: number) {
   if (userIdValidator(authUserId) === false) {
-    return { error: 'adminQuizInfo: invalid user id' };
+    throw HTTPError(401, "Invalid user id");
   }
   if (quizIdValidator(quizId) === false) {
-    return { error: 'adminQuizInfo: invalid quiz id' };
+    throw HTTPError(403, "Invalid quiz id");
   }
   if (quizOwnership(authUserId, quizId) === false) {
     throw HTTPError(403, 'You do not own this quiz');
@@ -103,6 +108,7 @@ export function adminQuizInfo(authUserId: number, quizId: number) {
   };
   return ans;
 }
+
 function countDuration(quizId: number) {
   let duration = 0;
   for (const question of getData().quizzes[quizId].questions) {
@@ -110,6 +116,7 @@ function countDuration(quizId: number) {
   }
   return duration;
 }
+
 function getQuestionsInfo(quizId: number) {
   const Questions = getData().quizzes[quizId].questions;
   const ans: question[] = [];
@@ -119,7 +126,8 @@ function getQuestionsInfo(quizId: number) {
       question: question.question,
       duration: question.duration,
       points: question.points,
-      answers: getanswers(question)
+      answers: getanswers(question),
+      playerTime: question.playerTime,
     });
   }
   return ans;
@@ -136,6 +144,7 @@ function getanswers(question: question) {
   }
   return ans;
 }
+
 /** *******************************************************************************************|
 |*Given an admin user's "authUserId", return details about the user.                          |
 |*********************************************************************************************|
@@ -241,6 +250,7 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
     duration: question.duration,
     points: question.points,
     answers: getanswers(question),
+    playerTime: []
   };
   data.quizzes[quizId].questions.push(ans);
   data.quizzes[quizId].numQuizQuestion++;
@@ -356,6 +366,9 @@ export function deleteQuestion(authUserId: number, quizId: number, questionId: n
   if (!questionFinder(quizId, questionId)) {
     throw HTTPError(400, 'Question Id does not refer to a valid question within this quiz');
   }
+  if (countSessionNotEnd(quizId) != 0) {
+    throw HTTPError(400, 'some sessions related to this quiz has not ended yet');
+  }
 
   const data = getData();
   const qs = data.quizzes[quizId].questions;
@@ -411,7 +424,7 @@ export function moveQuestion(authUserId: number, quizId: number, questionId: num
 
 export function adminViewDeletedQuizzes(authUserId: number) {
   if (!userIdValidator(authUserId)) {
-    return { error: 'User Id invalid' };
+    throw HTTPError(401, "Invalid user id");
   }
 
   const data = getData();
@@ -435,10 +448,10 @@ export function adminViewDeletedQuizzes(authUserId: number) {
 
 export function adminRestoreQuiz(authUserId: number, quizId: number) {
   if (userIdValidator(authUserId) === false) {
-    return { error: 'adminRestoreQuiz: invalid user id' };
+    throw HTTPError(401, "Invalid user id");
   }
   if (deletedQuizIdValidator(quizId) === false) {
-    return { error: 'adminRestoreQuiz: invalid quiz id' };
+    throw HTTPError(400, "Invalid quiz id");
   }
   if (deletedQuizOwnership(authUserId, quizId) === false) {
     throw HTTPError(403, 'You do not own this quiz');
@@ -465,7 +478,7 @@ export function adminRestoreQuiz(authUserId: number, quizId: number) {
 
 export function adminQuizPermDelete(authUserId: number, quizIds: number[]) {
   if (userIdValidator(authUserId) === false) {
-    return { error: 'adminQuizPerDelete: invalid user id' };
+    throw HTTPError(401, "Invalid user id");
   }
   for (const item of quizIds) {
     if (deletedQuizIdValidator(item) === false) {
@@ -566,10 +579,19 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
 }
 
 export function updateQuizThumbnail(userId: number, quizId: number, imgUrl: string) {
-  /*
-    code
-    */
-  return {};
+    if(urlCheck(imgUrl) === false) {
+        throw HTTPError(400, "invalid image url");
+    }
+    if(quizOwnership(userId, quizId) === false) {
+        throw HTTPError(403, "You do not own this quiz");
+    }
+
+    let data = getData();
+    data.quizzes[quizId].imgUrl = imgUrl;
+
+    setData(data);
+
+    return {};
 }
 
 // returns the result of a question

@@ -215,7 +215,6 @@ export interface Player {
   sessionId: number; // id of current session they are in
   questionAnswered: question[];
   score: number;
-  answerTime: []
   // add anything else?
 }
 

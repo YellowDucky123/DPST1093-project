@@ -22,12 +22,21 @@ function isanswer(answer: object): boolean {
   console.log('this answer is incorrect : ', answer);
   return false;
 }
+
+export type playerTimes = {
+  [playerId: number] : {
+    correct: boolean, 
+    duration: number
+  }
+}
+
 export type question = {
   questionId: number,
   question: string,
   duration: number,
   points: number,
-  answers: answer[]
+  answers: answer[],
+  playerTime: playerTimes 
 }
 function isAnswers(answers: object): boolean {
   if (Array.isArray(answers) && answers.every(isanswer) &&

@@ -5,24 +5,27 @@ import HTTPError from 'http-errors';
 let timer;
 
 export function listSessions(userId: number, quizId: number) {
-  /*
-    code
-    */
-  return {};
-}
+    if(quizOwnership(userId, quizId) === false) {
+        throw HTTPError(403, "You do not own this quiz");
+    }
 
-function countSessionNotEnd(quizId: number) {
-    let cnt: number = 0;
     const data = getData();
+    let active: number[] = [];
+    let inactive: number[] = [];
+
     for(const item in data.Sessions) {
-        if(data.Sessions[item].id === quizId) {
-            if(data.Sessions[item].state != QuizSessionState.END) {
-                cnt++;
+        if(data.Sessions[item].metadata.quizId === quizId) {
+            if(data.Sessions[item].state === QuizSessionState.END) {
+                inactive.push(data.Sessions[item].id);
+            } else {
+                active.push(data.Sessions[item].id);
             }
         }
     }
-
-    return cnt;
+    return {
+        "activeSessions": active,
+        "inactiveSessions": inactive
+    };
 }
 
 function checkQuizQuestionEmpty(quizId: number) {
@@ -142,6 +145,8 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
     data.Sessions[quizSessionId].atQuestion++;
     data.Sessions[quizSessionId].state = QuizSessionState.QUESTION_COUNTDOWN;
 
+    setData(data);
+
     return {};
 }
 
@@ -157,6 +162,10 @@ export function endQuizSession(quizSessionId: number) {
   /*
     code Kei
     */
+   let data = getData();
+   data.Sessions[quizSessionId].state = QuizSessionState.END;
+
+   setData(data);
 
   return {};
 }
@@ -171,9 +180,9 @@ export function openQuizSessionQuestion(quizSessionId: number) {
     setSessionData(sesData);
   
     return {}
-  }
+}
   
-  export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
+export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
     /*
     code Kelvin
     */
@@ -182,9 +191,9 @@ export function openQuizSessionQuestion(quizSessionId: number) {
    setSessionData(sesData);
   
     return {}
-  }
+}
   
-  export function generateCurrentQuizSessionQuestionResults(quizSessionId: number) {
+export function generateCurrentQuizSessionQuestionResults(quizSessionId: number) {
     /*
     code Yuxuan
     */

@@ -9,7 +9,7 @@ import { isUsedQuizName } from './helpers';
 import { customAlphabet } from 'nanoid';
 import { createId } from './helpers';
 import HTTPError from 'http-errors';
-import { countSessionNotEnd } from './session';
+import { countSessionNotEnd } from './helpers';
 
 /** *******************************************************************************************|
 |            |
@@ -366,7 +366,9 @@ export function deleteQuestion(authUserId: number, quizId: number, questionId: n
   if (!questionFinder(quizId, questionId)) {
     throw HTTPError(400, 'Question Id does not refer to a valid question within this quiz');
   }
-  if()
+  if (countSessionNotEnd(quizId) != 0) {
+    throw HTTPError(400, 'some sessions related to this quiz has not ended yet');
+  }
 
   const data = getData();
   const qs = data.quizzes[quizId].questions;

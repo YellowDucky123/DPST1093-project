@@ -46,7 +46,9 @@ import {
   allMessagesInSession,
   sendChat,
   statusPlayer,
-  currentQuestionPosition
+  currentQuestionPosition,
+  answerSubmission,
+  playerResults
 } from './quiz';
 import {
   getSessionStatus,
@@ -92,7 +94,7 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
 });
 
 app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
-  const token = req.body.token as string;
+  const token = req.header('token');
   if (!token) {
     throw HTTPError(401, 'A token is required');
   }
@@ -125,7 +127,7 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
 });
 
 app.put('/v2/admin/user/password', (req: Request, res: Response) => {
-  const token = req.body.token as string;
+  const token = req.header('token');
   const oldPassword = req.body.oldPassword as string;
   const newPassword = req.body.newPassword as string;
   if (!oldPassword || !newPassword) {
@@ -664,8 +666,6 @@ app.post('/v2/admin/auth/register', (req: Request, res: Response) => {
   }
 });
 
-
-
 // Log an admin user
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
@@ -727,7 +727,8 @@ app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Respo
 app.put('/v2/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const questionId = parseInt(req.params.questionId);
-  const { token, questionBody } = req.body;
+  const questionBody = req.body;
+  const token = req.header('token');
   if (!token) {
     throw HTTPError(401, 'Token not found');
   }
@@ -1044,7 +1045,7 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
 // Status of guest player in session
 app.get('/v1/player/:playerId', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerId);
-  const token = req.headers.token as string;
+  const token = req.header('token');
   if (!findUserIdByToken(token)) {
     throw HTTPError(401, 'token incorrect or not found');
   }
@@ -1058,7 +1059,7 @@ app.get('/v1/player/:playerId', (req: Request, res: Response) => {
 app.get('/v1/player/:playerId/question:questionposition', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerId);
   const questionPosition = parseInt(req.params.questionposition);
-  const token = req.headers.token as string;
+  const token = req.header('token');
   if (!findUserIdByToken(token)) {
     throw HTTPError(401, 'token incorrect or not found');
   }
@@ -1069,6 +1070,30 @@ app.get('/v1/player/:playerId/question:questionposition', (req: Request, res: Re
   return res.status(200).json(result);
 })
 
+app.put('/v1/player/{playerid}/question/{questionposition}/answer', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerId);
+  const questionPosition = parseInt(req.params.questionposition);
+  const token = req.header('token');
+  const answerIds = req.body
+  if (!findUserIdByToken(token)) {
+    throw HTTPError(401, 'token incorrect or not found');
+  }
+  const result = answerSubmission(playerId, questionPosition, answerIds);
+  if ('error' in result) {
+    throw HTTPError(400, result.error);
+  }
+  return res.status(200).json(result);
+})
+
+app.get('/v1/player/:playerId/results', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerId);
+  const token = req.header('token');
+  if (!findUserIdByToken(token)) {
+    throw HTTPError(401, 'token incorrect or not found');
+  }
+  let result = playerResults(playerId);
+
+})
 //--------------------------------------------------------------------------
 // rids the server of everything
 app.delete('/v2/clear', (req: Request, res: Response) => {

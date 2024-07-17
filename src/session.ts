@@ -1,5 +1,5 @@
 import { getData, getSessionData, message, Player, playerResults, QuizSession, QuizSessionResults, QuizSessionState, setData, setSessionData } from "./dataStore";
-import { createId, quizIdValidator, quizOwnership } from "./helpers";
+import { createId, quizIdValidator, quizOwnership, countSessionNotEnd } from "./helpers";
 import HTTPError from 'http-errors';
 
 let timer;
@@ -26,20 +26,6 @@ export function listSessions(userId: number, quizId: number) {
         "activeSessions": active,
         "inactiveSessions": inactive
     };
-}
-
-function countSessionNotEnd(quizId: number) {
-    let cnt: number = 0;
-    const data = getData();
-    for(const item in data.Sessions) {
-        if(data.Sessions[item].metadata.quizId === quizId) {
-            if(data.Sessions[item].state != QuizSessionState.END) {
-                cnt++;
-            }
-        }
-    }
-
-    return cnt;
 }
 
 function checkQuizQuestionEmpty(quizId: number) {

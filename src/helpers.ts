@@ -4,6 +4,8 @@ import { user } from './dataStore';
 import { customAlphabet } from 'nanoid';
 import { createHash } from 'crypto';
 import { QuizSessionState } from './dataStore';
+import request from 'sync-request-curl';
+import config from './config.json';
 
 export function userIdValidator(UserId: number) {
   const whData = getData();

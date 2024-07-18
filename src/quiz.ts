@@ -617,16 +617,27 @@ export function questionResults(playerId: number, questionPosition: number) {
 
   const questions = session.metadata.questions;
   const q = questions[questionPosition - 1];
-  const obj = {
-    questionId: q.questionId,
-    playersCorrectList: [
-      // what is this?
-    ],
-    averageAnswerTime: 45,
-    percentCorrect: 54
-  };
+  let playersCorrect: string[] = [];
+  let Time = 0;
+  let amountPlayers = 0;
+  let correctPlayers = 0;
+  for(const p in q.playerTime) {
+    if(q.playerTime[p].correct) {
+      playersCorrect.push(q.playerTime[p].name);
+      correctPlayers++;
+    }
+    Time += q.playerTime[p].duration;
+    amountPlayers++;
+  }
+  let avgTime = Time/amountPlayers;
+  let percentCorrect = (correctPlayers * 100) / amountPlayers;
 
-  return {};
+  return {
+    questionId: q.questionId,
+    playersCorrectList: playersCorrect,
+    averageAnswerTime: avgTime,
+    percentCorrect: percentCorrect
+  };
 }
 
 // returns the whole chat of the session the player is in

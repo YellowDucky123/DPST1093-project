@@ -2,8 +2,6 @@ import { getData, getSessionData, message, Player, playerResults, QuizSession, Q
 import { createId, quizIdValidator, quizOwnership, countSessionNotEnd } from "./helpers";
 import HTTPError from 'http-errors';
 
-let timer;
-
 export function listSessions(userId: number, quizId: number) {
     if(quizOwnership(userId, quizId) === false) {
         throw HTTPError(403, "You do not own this quiz");
@@ -69,6 +67,7 @@ export function startSession(userId: number, quizId: number, autoStartNum: numbe
     metadata: data.quizzes[quizId],
     results: results,
     messages: [],
+    currentTimerId: 0
   };
 
   data.Sessions[data_session.id] = data_session;
@@ -83,7 +82,8 @@ export function initiateNextQuizSessionQuestion(quizSessionId: number) {
     let data = getData();
     data.Sessions[quizSessionId].atQuestion++;
     data.Sessions[quizSessionId].state = QuizSessionState.QUESTION_COUNTDOWN;
-
+    const timerId = setTimeout(() => {openQuizSessionQuestion(quizSessionId)}, 3 * 1000);
+    data.Sessions[quizSessionId].currentTimerId = timerId[Symbol.toPrimitive]();
     setData(data);
 
     return {};
@@ -102,6 +102,7 @@ export function endQuizSession(quizSessionId: number) {
     code Kei
     */
    let data = getData();
+   clearTimeout(data.Sessions[quizSessionId].currentTimerId);
    data.Sessions[quizSessionId].state = QuizSessionState.END;
 
    setData(data);
@@ -113,9 +114,10 @@ export function openQuizSessionQuestion(quizSessionId: number) {
   /*
     code Kelvin
     */
-    clearTimeout(timer);
     let sesData = getSessionData();
+    clearTimeout(sesData[quizSessionId].currentTimerId);
     sesData[quizSessionId].state = QuizSessionState.QUESTION_OPEN;
+    sesData[quizSessionId].currentTimerId = setTimeout(() => closeCurrentQuizSessionQuestion(quizSessionId), sesData[quizSessionId].metadata.questions[sesData[quizSessionId].atQuestion - 1].duration * 1000)[Symbol.toPrimitive]()
     setSessionData(sesData);
   
     return {}
@@ -126,6 +128,7 @@ export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
     code Kelvin
     */
    let sesData = getSessionData();
+   clearTimeout(sesData[quizSessionId].currentTimerId);
    sesData[quizSessionId].state = QuizSessionState.QUESTION_CLOSE;
    setSessionData(sesData);
   

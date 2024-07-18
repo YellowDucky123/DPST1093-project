@@ -54,6 +54,7 @@ import {
   getSessionResult,
   getSessionStatus,
   listSessions,
+  newPlayerJoinSession,
   startSession
 } from "./session"
 
@@ -415,6 +416,15 @@ app.get('/v1/admin/quiz/:quizid/session/:sessionid/results', (req : Request, res
 
   const ans = getSessionResult(userid, quizid, sessionid);
   res.status(200).json(ans);
+})
+
+app.post('/v1/player/join', (res : Response, req : Request) => {
+  let sessionid = parseInt(req.body.sessionid);
+  let userName = req.body.name as string;
+  if (sessionid === undefined) throw HTTPError(400, "a sessionid is required");
+  if (userName === undefined) throw HTTPError(400, "a username is required");
+  let ans = newPlayerJoinSession(sessionid, userName);
+  res.status(200).json(ans)
 })
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {

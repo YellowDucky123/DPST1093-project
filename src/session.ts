@@ -1,8 +1,8 @@
-import { answer, getData, getSessionData, message, Player, playerResults, question, questionResults, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData } from "./dataStore";
+import { customAlphabet } from "nanoid";
+import { answer, getData,setData, getSessionData, message, Player, playerResults, question, questionResults, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData, QuizSessionAction } from "./dataStore";
 import { setData } from "./dataStore";
-import { createId, quizIdValidator, quizOwnership } from "./helpers";
+import { createId, quizIdValidator, quizOwnership, countSessionNotEnd} from "./helpers";
 import HTTPError from 'http-errors';
-import { countSessionNotEnd } from './helpers';
 
 export function listSessions(userId: number, quizId: number) {
   if (quizOwnership(userId, quizId) === false) {
@@ -97,6 +97,40 @@ function getAnswers(answers : answer[]) {
   }
   return ans;
 }
+
+export function newPlayerJoinSession(sessionid : number, userName : string) {
+  let data = getData();
+  if (data.Sessions[sessionid] === undefined || data.Sessions[sessionid].state !== QuizSessionState.LOBBY) {
+    throw HTTPError(400, "Session does not exist or is not in lobby");
+  }
+  if (data.Sessions[sessionid].players.filter((player) => {player.name === userName}).length !== 0) {
+    throw HTTPError(400, 'userName has used')
+  }
+  let player : Player = {
+    id: getNewPlayerId(),
+    name: userName,
+    sessionId: sessionid,
+    questionAnswered: [],
+    score: 0,
+  }
+  data.Sessions[sessionid].players.push(player);
+  data.playerData[player.id] = player;
+  setData(data);
+  return {playerId : player.id};
+}
+
+function getNewPlayerId() {
+  let data = getData();
+  const nanoid = customAlphabet("0123456789", 5);
+  let id = parseInt(nanoid());
+  while (1) {
+    if (data.playerData[id] === undefined) {
+      return id;
+    }
+    id = parseInt(nanoid());
+  }
+}
+
 export function getSessionResult(userId : number, quizId : number, sessionid : number) {
   let data = getData();
   // error check
@@ -243,8 +277,49 @@ export function generateCurrentQuizSessionQuestionResults(quizSessionId: number)
   /*
   code Yuxuan
   */
+  let data = getData();
+  let session = data.Sessions[quizSessionId]
+  let correctAnswer = session.metadata.questions[session.atQuestion - 1].answers.filter((answer) => (answer.correct === true));
+  let questionid = session.metadata.questions[session.atQuestion - 1].questionId
+  let players = session.players;
 
-  return {}
+  let playersCorrectList = []
+  for (const player of players) {
+    let answersid;
+    for (const question of player.questionAnswered) {
+      if (question.questionId === questionid) {
+        answersid = question.answers.map((answer) => answer.answerId);
+      }
+    }
+    let check = true;
+    if (answersid === undefined) {
+      check = false;
+    }
+    else if (answersid.length !== correctAnswer.length) {
+      check = false;
+    }
+    else for (const answer of correctAnswer) {
+      if (answersid.filter((ans) => (ans !== answer.answerId)).length === 0) {
+        check = false;
+      }
+    }
+    if (check) {
+      playersCorrectList.push(player.name);
+    } 
+  }
+  let totaltime : number;
+  Object.values(session.metadata.questions[questionid].playerTime).every((function (time) {totaltime+=time.duration}))
+  let averageAnswerTime = totaltime / Object.values(session.metadata.questions[questionid].playerTime).length
+  let percentCorrect = Math.round(playersCorrectList.length / players.length * 1000) / 10
+  session.results.questionResults.push ({
+    questionId: questionid,
+    playersCorrectList: playersCorrectList,
+    averageAnswerTime : averageAnswerTime,
+    percentCorrect : percentCorrect
+  })
+  data.Sessions[questionid] = session;
+  setData(data);
+  return {};
 }
 
 export function gotoQuizSessionQuestionAnswer(quizSessionId: number) {

@@ -1,6 +1,8 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
-import { testCreateQuestion, testCreateQuiz, testRegisterUser, testStartSession, testUpdateThumbnail } from './testHelper';
+import { testCreateQuestion, testCreateQuiz, testRegisterUser, testSessionState, testStartSession, testUpdateThumbnail } from './testFunc';
+import { getSessionStatus } from '../session';
+import { quizIdValidator } from '../helpers';
 
 const OK = 200;
 const port = config.port;
@@ -35,45 +37,23 @@ testCreateQuestion(token1, quizId1,
                 correct: false
             }
         ],
-        //"thumbnailUrl": "http://google.com/some/image/path.jpg"
+        "thumbnailUrl": "http://google.com/some/image/path.jpg"
     }
 );
 
-describe('Start session test: ', () => {
-  test('test succesfull: ', () => {
-    const res1 = testStartSession(token1, quizId1, 30);
+const sessionId1 = (JSON.parse(testStartSession(token1, quizId1, 30).body as string)).sessionId;
+
+describe('Update session state test: ', () => {
+  test('[SUCCESS] LOBBY => NEXT_QUESTION: ', () => {
+    const res1 = testSessionState(token1, quizId1, sessionId1, "NEXT_QUESTION");
     const result = JSON.parse(res1.body as string);
+    console.log(quizIdValidator(quizId1));
     expect(res1.statusCode).toBe(OK);
-    expect(result).toStrictEqual({
-        sessionId: result.sessionId
-    });
+    // expect(result).toStrictEqual({});
+    //expect(getSessionStatus(token1, quizId1, sessionId1).state).toStrictEqual("LOBBY");
   });
-  
-  test('Invalid autoStartNum: ', () => {
-    const res1 = testStartSession(token1, quizId1, 100);
-    expect(res1.statusCode).toBe(400);
-  });
-
-  test('Quesion empty: ', () => {
-    const res1 = testStartSession(token1, quizId2, 30);
-    expect(res1.statusCode).toBe(400);
-  });
-
-  test('Invalid token: ', () => {
-    const res1 = testStartSession(token1+1, quizId1, 30);
-    expect(res1.statusCode).toBe(401);
-  });
-
-  test('Not owning the quiz: ', () => {
-    const res1 = testStartSession(token2, quizId1, 30);
-    expect(res1.statusCode).toBe(403);
-  });
-
-  test('Over maximum of 10 session: ', () => {
-    for(let i = 0; i < 9; ++i) {
-        testStartSession(token1, quizId1, 30);
-    }
-    const res1 = testStartSession(token1, quizId1, 30);
-    expect(res1.statusCode).toBe(400);
-  });
+//   test('[SUCCESS] NEXT_QUESTION: ', () => {
+//     const res1 = testSessionState(token1, quizId1, sessionId1, "NEXT_QUESTION");
+//     expect(res1.statusCode).toBe(OK);
+//   });
 });

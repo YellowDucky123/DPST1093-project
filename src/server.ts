@@ -65,7 +65,7 @@ setDataStorebyJSON();
 
 import { clear } from './other';
 import HTTPError from 'http-errors';
-import { quizIdValidator } from './helpers';
+import { quizIdValidator, quizOwnership, sessionIdValidator } from './helpers';
 
 // Set up web app
 const app = express();
@@ -997,16 +997,23 @@ app.post('/v1/admin/quiz/:quizId/session/start', (req: Request, res: Response) =
 // update the session's state
 app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
   const token = req.headers.token as string;
-  if (!findUserIdByToken(token)) {
-    throw HTTPError(401, 'Token incorrect or not found');
-  }
-
   const quizId = parseInt(req.params.quizId);
   const sessionId = parseInt(req.params.sessionId);
   const action = req.body.action;
 
-  if (!quizIdValidator(quizId)) {
+  if (!token) {
+    throw HTTPError(401, "A correct token is required");
+  }
+  const userId = findUserIdByToken(token);
+
+  if (quizIdValidator(quizId) === false) {
     throw HTTPError(403, "Quiz does not exist");
+  }
+  if(quizOwnership(userId, quizId) === false) {
+    throw HTTPError(403, "You do not own this quiz");
+  }
+  if (sessionIdValidator(sessionId) === false) {
+    throw HTTPError(400, "Invalid sessionid");
   }
 
   return res.json(updateSesionState(sessionId, action));

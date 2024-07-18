@@ -373,3 +373,12 @@ export function countSessionNotEnd(quizId: number) {
 
     return cnt;
 }
+
+export function sessionIdValidator(sessionId: number) {
+  const data = getData();
+  if(data.Sessions[sessionId] === undefined) {
+    return false;
+  } else {
+    return true;
+  }
+}

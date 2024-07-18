@@ -1,6 +1,6 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
-import { testCreateQuiz, testRegisterUser} from './testHelper';
+import { testCreateQuiz, testRegisterUser} from './testFunc';
 
 const OK = 200;
 const port = config.port;

@@ -1,6 +1,6 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
-import { testCreateQuestion, testCreateQuiz, testRegisterUser, testStartSession, testUpdateThumbnail } from './testHelper';
+import { testCreateQuestion, testCreateQuiz, testRegisterUser, testStartSession, testUpdateThumbnail } from './testFunc';
 
 const OK = 200;
 const port = config.port;
@@ -35,7 +35,7 @@ testCreateQuestion(token1, quizId1,
                 correct: false
             }
         ],
-        //"thumbnailUrl": "http://google.com/some/image/path.jpg"
+        "thumbnailUrl": "http://google.com/some/image/path.jpg"
     }
 );
 

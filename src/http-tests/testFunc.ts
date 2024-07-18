@@ -99,3 +99,22 @@ export function testStartSession(token: string, quizId: number, autoStartNum: nu
 
     return result;
 }
+
+export function testSessionState(token: string, quizId: number, sessionId: number, action: string) {
+    const result = request(
+        'PUT',
+        SERVER_URL + '/v1/admin/quiz/'+quizId+'/session/'+sessionId,
+        {
+            headers: {
+                token: token
+            },
+            json: {
+                quizId: quizId,
+                sessionId: sessionId,
+                action: action
+            }
+        }
+    );
+
+    return result;
+}

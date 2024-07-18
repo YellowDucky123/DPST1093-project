@@ -2,6 +2,7 @@ import request from 'sync-request-curl';
 import config from '../config.json';
 import { questionResults } from '../quiz';
 import { error } from 'console';
+import { requestHelper} from './requestHelper_fn'
 
 const port = config.port;
 const url = config.url;

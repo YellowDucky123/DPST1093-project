@@ -10,7 +10,7 @@ interface Payload {
 const SERVER_URL = `${url}:${port}`;
 const TIMEOUT_MS = 10000;
 
-const requestHelper = (
+export const requestHelper = (
     method: HttpVerb,
     path: string,
     payload: Payload,

@@ -1,6 +1,7 @@
 import { customAlphabet } from "nanoid";
-import { answer, getData, setData, getSessionData, message, Player, playerResults, question, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData, QuizSessionAction } from "./dataStore";
-import { createId, quizIdValidator, quizOwnership, countSessionNotEnd } from "./helpers";
+import { answer, getData,setData, getSessionData, message, Player, playerResults, question, questionResults, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData, QuizSessionAction } from "./dataStore";
+import { setData } from "./dataStore";
+import { createId, quizIdValidator, quizOwnership, countSessionNotEnd} from "./helpers";
 import HTTPError from 'http-errors';
 
 export function listSessions(userId: number, quizId: number) {
@@ -71,7 +72,7 @@ function getQuizDuration(questions : question[]) {
   return ans;
 }
 function getMetaQuestions (quizid : number, metadata : question[]) {
-  let ans = [];
+  let ans: question[] = [];
   for (const question of metadata) {
     ans.push({
       questionId : question.questionId,
@@ -85,7 +86,7 @@ function getMetaQuestions (quizid : number, metadata : question[]) {
   return ans;
 }
 function getAnswers(answers : answer[]) {
-  let ans = [];
+  let ans: answer[] = [];
   for (const answer of answers) {
     ans.push({
       answerId : answer.answerId ? answer.answerId : answers.indexOf(answer),
@@ -130,6 +131,41 @@ function getNewPlayerId() {
   }
 }
 
+export function getSessionResult(userId : number, quizId : number, sessionid : number) {
+  let data = getData();
+  // error check
+  if (data.quizzes[quizId] === undefined) throw HTTPError(403, "Invalid quizId");
+  if (quizOwnership(userId, quizId)) throw HTTPError(403, "You do not own this quiz");
+  if (data.Sessions[sessionid] === undefined) throw HTTPError(400, "Invalid sessionid");
+  if (data.Sessions[sessionid].metadata.quizId !== quizId) throw HTTPError(400, "Invalid sessionid");
+  if (data.Sessions[sessionid].state !== QuizSessionState.FINAL_RESULTS) throw HTTPError (400, "Game status error");
+  return {
+    usersRankedByScore : getUsersRankedByScore(data.Sessions[sessionid].results.usersRankedbyScore),
+    questionResults : getQuestionResults(data.Sessions[sessionid].results.questionResults)
+  }
+}
+function getUsersRankedByScore(users : playerResults[]) {
+  let ans: playerResults[] = []
+  for (const user of users) {
+    ans.push({
+      name : user.name,
+      score : user.score ? user.score : 0,
+    })
+  }
+  ans.sort((a,b) => b.score - a.score);
+  return ans;
+}
+function getQuestionResults(questionResults : questionResults[]) {
+  let ans: questionResults[] = [];
+  for (const questionResult of questionResults) {
+    ans.push({
+      questionId : questionResult.questionId,
+      playersCorrectList : questionResult.playersCorrectList,
+      averageAnswerTime : questionResult.averageAnswerTime,
+      percentCorrect : questionResult.percentCorrect
+    })
+  }
+}
 export function startSession(userId: number, quizId: number, autoStartNum: number) {
   if (autoStartNum > 50) {
     throw HTTPError(400, "autoStartNum is greater than 50");
@@ -243,7 +279,6 @@ export function generateCurrentQuizSessionQuestionResults(quizSessionId: number)
   */
   let data = getData();
   let session = data.Sessions[quizSessionId]
-
   let correctAnswer = session.metadata.questions[session.atQuestion - 1].answers.filter((answer) => (answer.correct === true));
   let questionid = session.metadata.questions[session.atQuestion - 1].questionId
   let players = session.players;

@@ -1,6 +1,7 @@
-import { answer, getData, getSessionData, message, Player, playerResults, question, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData } from "./dataStore";
+import { answer, getData, getSessionData, message, Player, playerResults, question, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData, setData } from "./dataStore";
 import { createId, quizIdValidator, quizOwnership } from "./helpers";
 import HTTPError from 'http-errors';
+import { countSessionNotEnd } from './helpers';
 
 export function listSessions(userId: number, quizId: number) {
   if (quizOwnership(userId, quizId) === false) {
@@ -70,7 +71,7 @@ function getQuizDuration(questions : question[]) {
   return ans;
 }
 function getMetaQuestions (quizid : number, metadata : question[]) {
-  let ans = [];
+  let ans: question[] = [];
   for (const question of metadata) {
     ans.push({
       questionId : question.questionId,
@@ -84,7 +85,7 @@ function getMetaQuestions (quizid : number, metadata : question[]) {
   return ans;
 }
 function getAnswers(answers : answer[]) {
-  let ans = [];
+  let ans: answer[] = [];
   for (const answer of answers) {
     ans.push({
       answerId : answer.answerId ? answer.answerId : answers.indexOf(answer),

@@ -608,6 +608,9 @@ export function questionResults(playerId: number, questionPosition: number) {
   if (questionPosition > session.atQuestion) {
     throw HTTPError(400, 'have not reached there yet');
   }
+  if(questionPosition < 1) {
+    throw HTTPError(400, 'question invalid');
+  }
   if (session.metadata.questions.length + 1 < questionPosition) {
     throw HTTPError(400, 'question does not exist');
   }

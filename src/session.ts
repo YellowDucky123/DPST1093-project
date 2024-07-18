@@ -1,4 +1,5 @@
 import { answer, getData, getSessionData, message, Player, playerResults, question, questionResults, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData } from "./dataStore";
+import { setData } from "./dataStore";
 import { createId, quizIdValidator, quizOwnership } from "./helpers";
 import HTTPError from 'http-errors';
 import { countSessionNotEnd } from './helpers';
@@ -110,7 +111,7 @@ export function getSessionResult(userId : number, quizId : number, sessionid : n
   }
 }
 function getUsersRankedByScore(users : playerResults[]) {
-  let ans = []
+  let ans: playerResults[] = []
   for (const user of users) {
     ans.push({
       name : user.name,
@@ -121,7 +122,7 @@ function getUsersRankedByScore(users : playerResults[]) {
   return ans;
 }
 function getQuestionResults(questionResults : questionResults[]) {
-  let ans = [];
+  let ans: questionResults[] = [];
   for (const questionResult of questionResults) {
     ans.push({
       questionId : questionResult.questionId,
@@ -244,13 +245,6 @@ export function generateCurrentQuizSessionQuestionResults(quizSessionId: number)
   */
 
   return {}
-}
-  
-export function generateCurrentQuizSessionQuestionResults(quizSessionId: number) {
-  /*
-  code Yuxuan
-  */
-  return {};
 }
 
 export function gotoQuizSessionQuestionAnswer(quizSessionId: number) {

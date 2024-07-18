@@ -22,12 +22,22 @@ function isanswer(answer: object): boolean {
   console.log('this answer is incorrect : ', answer);
   return false;
 }
+
+export type playerTimes = {
+  [playerId: number] : {
+    name: string,
+    correct: boolean, 
+    duration: number
+  }
+}
+
 export type question = {
   questionId: number,
   question: string,
   duration: number,
   points: number,
-  answers: answer[]
+  answers: answer[],
+  playerTime: playerTimes 
 }
 function isAnswers(answers: object): boolean {
   if (Array.isArray(answers) && answers.every(isanswer) &&
@@ -131,7 +141,7 @@ function isUsers(users: users): boolean {
 export type quizzes = {
   [quizId: number]: quiz
 };
-function isQuizzes(quizzes:quizzes): boolean {
+function isQuizzes(quizzes: quizzes): boolean {
   for (const quizId in quizzes) {
     if (!isQuiz(quizzes[quizId])) {
       console.log('error in quizzes');
@@ -239,12 +249,13 @@ export interface QuizSessionResults {
 export interface QuizSession {
   id: number;
   autoStartNum: number;
-  state : QuizSessionState;
-  atQuestion : number;
+  state: QuizSessionState;
+  atQuestion: number;
   players: Player[];
   metadata: quiz;
   results: QuizSessionResults;
   messages: message[];
+  currentTimerId: number;
 }
 
 export type Sessions = {
@@ -252,7 +263,7 @@ export type Sessions = {
 }
 
 type playerData = {
-  [playerId: number] : Player;
+  [playerId: number]: Player;
 }
 
 // quizSession store
@@ -265,7 +276,7 @@ export function setSessionData(newData: Sessions) {
   dataStore.Sessions = newData;
 }
 
-export function getState(quizSessionId : number) {
+export function getState(quizSessionId: number) {
   return dataStore.Sessions[quizSessionId].state;
 }
 
@@ -273,7 +284,7 @@ export function getPlayerData() {
   return dataStore.playerData;
 }
 
-export function setPlayerData(newData : playerData) {
+export function setPlayerData(newData: playerData) {
   dataStore.playerData = newData;
 }
 

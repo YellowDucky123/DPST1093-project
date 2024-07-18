@@ -1,5 +1,5 @@
 import { answer, getData, question, quiz, setData, getSessionData, getPlayerData, QuizSessionState, message } from './dataStore';
-import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId, getCurrentTime, isPlayerExist } from './helpers';
+import { questionFinder, findAuthUserIdByEmail, userIdValidator, deletedQuizIdValidator, deletedQuizOwnership, createQuestionId, getCurrentTime, isPlayerExist, urlCheck } from './helpers';
 import { quizIdValidator } from './helpers';
 import { quizOwnership } from './helpers';
 import { isNameAlphaNumeric } from './helpers';
@@ -9,6 +9,7 @@ import { isUsedQuizName } from './helpers';
 import { customAlphabet } from 'nanoid';
 import { createId } from './helpers';
 import HTTPError from 'http-errors';
+import { countSessionNotEnd } from './helpers';
 
 /** *******************************************************************************************|
 |            |
@@ -18,7 +19,7 @@ import HTTPError from 'http-errors';
 
 export function adminQuizCreate(authUserId: number, name: string, description: string) {
   if (userIdValidator(authUserId) === false) {
-    return { error: 'adminQuizCreate: invalid user id' };
+    throw HTTPError(401, "Invalid user id");
   }
   if (nameLen(name) === false) {
     throw HTTPError(400, 'Invalid name length');
@@ -57,14 +58,18 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
 
 export function adminQuizRemove(authUserId: number, quizId: number) {
   if (userIdValidator(authUserId) === false) {
-    return { error: 'adminQuizRemove: invalid user id' };
+    throw HTTPError(401, "Invalid user id");
   }
   if (quizIdValidator(quizId) === false) {
-    return { error: 'adminQuizRemove: invalid quiz id' };
+    throw HTTPError(403, "Invalid quiz id");
   }
   if (quizOwnership(authUserId, quizId) === false) {
     throw HTTPError(403, 'You do not own this quiz');
   }
+  if (countSessionNotEnd(quizId) != 0) {
+    throw HTTPError(400, "All sessions for this quiz must be in END state");
+  }
+
   const data = getData();
   data.quizzesDeleted[quizId] = data.quizzes[quizId];
   data.users[authUserId].quizzesUserDeleted.push(quizId);
@@ -80,10 +85,10 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
 
 export function adminQuizInfo(authUserId: number, quizId: number) {
   if (userIdValidator(authUserId) === false) {
-    return { error: 'adminQuizInfo: invalid user id' };
+    throw HTTPError(401, "Invalid user id");
   }
   if (quizIdValidator(quizId) === false) {
-    return { error: 'adminQuizInfo: invalid quiz id' };
+    throw HTTPError(403, "Invalid quiz id");
   }
   if (quizOwnership(authUserId, quizId) === false) {
     throw HTTPError(403, 'You do not own this quiz');
@@ -103,6 +108,7 @@ export function adminQuizInfo(authUserId: number, quizId: number) {
   };
   return ans;
 }
+
 function countDuration(quizId: number) {
   let duration = 0;
   for (const question of getData().quizzes[quizId].questions) {
@@ -110,6 +116,7 @@ function countDuration(quizId: number) {
   }
   return duration;
 }
+
 function getQuestionsInfo(quizId: number) {
   const Questions = getData().quizzes[quizId].questions;
   const ans: question[] = [];
@@ -119,16 +126,17 @@ function getQuestionsInfo(quizId: number) {
       question: question.question,
       duration: question.duration,
       points: question.points,
-      answers: getanswers(question)
+      answers: getanswers(question),
+      playerTime: question.playerTime,
     });
   }
   return ans;
 }
-function getanswers(question : question) {
+function getanswers(question: question) {
   const ans: answer[] = [];
   for (const answer of question.answers) {
     ans.push({
-      answerId: answer.answerId? answer.answerId : question.answers.indexOf(answer),
+      answerId: answer.answerId ? answer.answerId : question.answers.indexOf(answer),
       answer: answer.answer,
       colour: answer.colour ? answer.colour : "black",
       correct: answer.correct
@@ -136,13 +144,14 @@ function getanswers(question : question) {
   }
   return ans;
 }
+
 /** *******************************************************************************************|
 |*Given an admin user's "authUserId", return details about the user.                          |
 |*********************************************************************************************|
 |*attention: "name" is the first and last name concatenated with a single space between them**|
 \*********************************************************************************************/
 export function adminQuizList(authUserId: number) {
-  const quizzes: {quizId: number, name: string}[] = [];
+  const quizzes: { quizId: number, name: string }[] = [];
   const datas = getData();
   if (datas.users[authUserId] === undefined) {
     return { error: 'can not find such a member' };
@@ -241,6 +250,7 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
     duration: question.duration,
     points: question.points,
     answers: getanswers(question),
+    playerTime: []
   };
   data.quizzes[quizId].questions.push(ans);
   data.quizzes[quizId].numQuizQuestion++;
@@ -356,6 +366,9 @@ export function deleteQuestion(authUserId: number, quizId: number, questionId: n
   if (!questionFinder(quizId, questionId)) {
     throw HTTPError(400, 'Question Id does not refer to a valid question within this quiz');
   }
+  if (countSessionNotEnd(quizId) != 0) {
+    throw HTTPError(400, 'some sessions related to this quiz has not ended yet');
+  }
 
   const data = getData();
   const qs = data.quizzes[quizId].questions;
@@ -411,34 +424,34 @@ export function moveQuestion(authUserId: number, quizId: number, questionId: num
 
 export function adminViewDeletedQuizzes(authUserId: number) {
   if (!userIdValidator(authUserId)) {
-    return { error: 'User Id invalid' };
+    throw HTTPError(401, "Invalid user id");
   }
 
   const data = getData();
   const list = data.users[authUserId].quizzesUserDeleted;
 
-    interface quiz {
-        quizId: number,
-        name: string
-    }
-    const ret: quiz[] = [];
-    for (const id of list) {
-      ret.push({
-        quizId: id,
-        name: data.quizzesDeleted[id].name
-      });
-    }
-    return {
-      quizzes: ret
-    };
+  interface quiz {
+    quizId: number,
+    name: string
+  }
+  const ret: quiz[] = [];
+  for (const id of list) {
+    ret.push({
+      quizId: id,
+      name: data.quizzesDeleted[id].name
+    });
+  }
+  return {
+    quizzes: ret
+  };
 }
 
 export function adminRestoreQuiz(authUserId: number, quizId: number) {
   if (userIdValidator(authUserId) === false) {
-    return { error: 'adminRestoreQuiz: invalid user id' };
+    throw HTTPError(401, "Invalid user id");
   }
   if (deletedQuizIdValidator(quizId) === false) {
-    return { error: 'adminRestoreQuiz: invalid quiz id' };
+    throw HTTPError(400, "Invalid quiz id");
   }
   if (deletedQuizOwnership(authUserId, quizId) === false) {
     throw HTTPError(403, 'You do not own this quiz');
@@ -465,7 +478,7 @@ export function adminRestoreQuiz(authUserId: number, quizId: number) {
 
 export function adminQuizPermDelete(authUserId: number, quizIds: number[]) {
   if (userIdValidator(authUserId) === false) {
-    return { error: 'adminQuizPerDelete: invalid user id' };
+    throw HTTPError(401, "Invalid user id");
   }
   for (const item of quizIds) {
     if (deletedQuizIdValidator(item) === false) {
@@ -507,19 +520,19 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
     }
   }
   if (!("question" in questionBody && typeof questionBody.question === "string")) {
-    return { error : "a question is required"};
+    return { error: "a question is required" };
   }
   if ((questionBody.question.length < 5 || questionBody.question.length > 50)) {
     return { error: 'Question string is less than 5 characters in length or greater than 50 characters in length' };
   }
   if (!("answers" in questionBody && Array.isArray(questionBody.answers))) {
-    return { error : "answers are required"};
+    return { error: "answers are required" };
   }
   if (questionBody.answers.length < 2 || questionBody.answers.length > 6) {
     return { error: 'The question has more than 6 answers or less than 2 answers' };
   }
   if (!("duration" in questionBody && typeof questionBody.duration === "number")) {
-    return { error : "a duration is required"};
+    return { error: "a duration is required" };
   }
   if (questionBody.duration <= 0) {
     return { error: 'The question duration is not a positive number' };
@@ -528,7 +541,7 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
     return { error: 'If this question were to be updated, the sum of the question durations in the quiz exceeds 3 minutes' };
   }
   if (!("points" in questionBody && typeof questionBody.points === "number")) {
-    return { error : "points is required"};
+    return { error: "points is required" };
   }
   if (questionBody.points < 1 || questionBody.points > 10) {
     return { error: 'The points awarded for the question are less than 1 or greater than 10' };
@@ -566,10 +579,19 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
 }
 
 export function updateQuizThumbnail(userId: number, quizId: number, imgUrl: string) {
-  /*
-    code
-    */
-  return {};
+    if(urlCheck(imgUrl) === false) {
+        throw HTTPError(400, "invalid image url");
+    }
+    if(quizOwnership(userId, quizId) === false) {
+        throw HTTPError(403, "You do not own this quiz");
+    }
+
+    let data = getData();
+    data.quizzes[quizId].imgUrl = imgUrl;
+
+    setData(data);
+
+    return {};
 }
 
 // returns the result of a question
@@ -595,16 +617,27 @@ export function questionResults(playerId: number, questionPosition: number) {
 
   const questions = session.metadata.questions;
   const q = questions[questionPosition - 1];
-  const obj = {
-    questionId: q.questionId,
-    playersCorrectList: [
-      // what is this?
-    ],
-    averageAnswerTime: 45,
-    percentCorrect: 54
-  };
+  let playersCorrect: string[] = [];
+  let Time = 0;
+  let amountPlayers = 0;
+  let correctPlayers = 0;
+  for(const p in q.playerTime) {
+    if(q.playerTime[p].correct) {
+      playersCorrect.push(q.playerTime[p].name);
+      correctPlayers++;
+    }
+    Time += q.playerTime[p].duration;
+    amountPlayers++;
+  }
+  let avgTime = Time/amountPlayers;
+  let percentCorrect = (correctPlayers * 100) / amountPlayers;
 
-  return {};
+  return {
+    questionId: q.questionId,
+    playersCorrectList: playersCorrect,
+    averageAnswerTime: avgTime,
+    percentCorrect: percentCorrect
+  };
 }
 
 // returns the whole chat of the session the player is in
@@ -641,4 +674,115 @@ export function sendChat(playerId: number, body) {
   sesData[curSessionId].messages.push(message);
 
   return {};
+}
+
+
+// Victor's parts
+
+export function statusPlayer(playerId: number) {
+  if (!isPlayerExist(playerId)) {
+    return { error: "playerId does not exist" }
+  }
+  let playerData = getPlayerData();
+  let sessionId = playerData[playerId].sessionId;
+  let session = getSessionData();
+  let newSession = session[sessionId];
+  const data = {
+    "state": newSession.state,
+    "numQuestions": newSession.metadata.numQuizQuestion,
+    "atQuestion": newSession.atQuestion
+  }
+  return data;
+}
+
+export function isQuestionValid(questionPosition: number, questionNumber: number) {
+  if (questionPosition < 1) {
+    return false;
+  }
+  if (questionPosition > questionNumber) {
+    return false;
+  }
+  return true;
+}
+
+export function currentQuestionPosition(playerId: number, questionPosition: number) {
+  if (!isPlayerExist(playerId)) {
+    return { error: "playerId does not exist" }
+  }
+  let playerData = getPlayerData();
+  let sessionId = playerData[playerId].sessionId;
+  let session = getSessionData();
+  let newSession = session[sessionId];
+  if (!isQuestionValid(questionPosition, newSession.metadata.numQuizQuestion)) {
+    return { error: "questionBody is not valid" }
+  }
+  if (newSession.state === QuizSessionState.LOBBY || newSession.state === QuizSessionState.END) {
+    return { error: "QuizSessionState is in LOBBY or END" };
+  }
+  if (newSession.atQuestion !== questionPosition) {
+    return { error: "questionPosition is not the same as atQuestion" }
+  }
+  let data = playerData[playerId].questionAnswered[questionPosition];
+  return data;
+}
+
+export function answerSubmission(playerId: number, questionPosition: number, answerIds: answer[]) {
+  if (!isPlayerExist(playerId)) {
+    return { error: "playerId does not exist" }
+  }
+  let playerData = getPlayerData();
+  let sessionId = playerData[playerId].sessionId;
+  let session = getSessionData();
+  let newSession = session[sessionId];
+  let newPaste = playerData[playerId].questionAnswered[questionPosition];
+  if (!isQuestionValid(questionPosition, newSession.metadata.numQuizQuestion)) {
+    return { error: "questionBody is not valid" }
+  }
+  if (newSession.state !== QuizSessionState.QUESTION_OPEN) {
+    return { error: "Session is not in QUESTION_OPEN state" };
+  }
+  if (newSession.atQuestion !== questionPosition) {
+    return { error: "questionPosition is not the same as atQuestion" }
+  }
+  let check = 0;
+  for (let i = 0; i < newPaste.answers.length; i++) {
+    for (const id of answerIds) {
+      if (newPaste.answers[i] === id) {
+        check = 1;
+      }
+    }
+  }
+  if (check === 1) {
+    return { error: "Answer IDs are not valid for this particular question" }
+  }
+  let newCheck = 0;
+  for (let i = 0; i < answerIds.length; i++) {
+    for (let j = 0; j < answerIds.length; j++) {
+      if (answerIds[j].answerId === answerIds[i].answerId) {
+        newCheck = 1;
+      }
+    }
+  }
+  if (newCheck === 1) {
+    return { error: "There are duplicate answer IDs provided" };
+  }
+  if (answerIds.length < 1) {
+    return { error: "Less than 1 answer ID submitted" };
+  }
+  playerData[playerId].questionAnswered[questionPosition - 1].answers = answerIds;
+  return {};
+}
+
+export function playerResults(playerId: number) {
+  if (!isPlayerExist(playerId)) {
+    return { error: "playerId does not exist" }
+  }
+  let playerData = getPlayerData();
+  let sessionId = playerData[playerId].sessionId;
+  let session = getSessionData();
+  let newSession = session[sessionId];
+  if (newSession.state !== QuizSessionState.END) {
+    return { error: "Session is not in FINAL_RESULTS state" }
+  }
+  return newSession.results
 }

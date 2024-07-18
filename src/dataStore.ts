@@ -25,6 +25,7 @@ function isanswer(answer: object): boolean {
 
 export type playerTimes = {
   [playerId: number] : {
+    name: string,
     correct: boolean, 
     duration: number
   }
@@ -254,6 +255,7 @@ export interface QuizSession {
   metadata: quiz;
   results: QuizSessionResults;
   messages: message[];
+  currentTimerId: number;
 }
 
 export type Sessions = {

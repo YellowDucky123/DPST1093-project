@@ -978,10 +978,10 @@ app.get('/v1/admin/quiz/:quizId/sessions', (req: Request, res: Response) => {
   return res.json(listSessions(UserId, quizId));
 });
 
-app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) => {
+app.post('/v1/admin/quiz/:quizId/session/start', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId);
-  const autoStartNum = parseInt(req.params.autoStartNum);
+  const autoStartNum = parseInt(req.body.autoStartNum);
 
   if (!token) {
     throw HTTPError(401, "A correct token is required");
@@ -998,18 +998,18 @@ app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) 
 app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   if (!findUserIdByToken(token)) {
-    throw HTTPError(401, 'token incorrect or not found');
+    throw HTTPError(401, 'Token incorrect or not found');
   }
 
   const quizId = parseInt(req.params.quizId);
   const sessionId = parseInt(req.params.sessionId);
-  const body = req.body.body;
+  const action = req.body.action;
 
   if (!quizIdValidator(quizId)) {
-    throw HTTPError(403, "quiz does not exist");
+    throw HTTPError(403, "Quiz does not exist");
   }
 
-  return updateSesionState(sessionId, body.action);
+  return res.json(updateSesionState(sessionId, action));
 })
 
 
@@ -1051,21 +1051,6 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
   return sendChat(playerId, messageBody);
 });
 
-app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
-  const token = req.headers.token as string;
-  if (!findUserIdByToken(token)) {
-    throw HTTPError(401, 'token incorrect or not found');
-  }
-
-  const quizId = parseInt(req.params.quizId);
-  const sessionId = parseInt(req.params.sessionId);
-  const body = req.body.body;
-
-  if (!quizIdValidator(quizId)) {
-    throw HTTPError(403, "quiz does not exist");
-  }
-  return updateSesionState(sessionId, body.action);
-})
 
 //Victor's part
 

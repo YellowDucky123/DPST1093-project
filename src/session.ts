@@ -1,6 +1,5 @@
 import { customAlphabet } from "nanoid";
 import { answer, getData,setData, getSessionData, message, Player, playerResults, question, questionResults, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData, QuizSessionAction } from "./dataStore";
-import { setData } from "./dataStore";
 import { createId, quizIdValidator, quizOwnership, countSessionNotEnd} from "./helpers";
 import HTTPError from 'http-errors';
 
@@ -203,7 +202,9 @@ export function startSession(userId: number, quizId: number, autoStartNum: numbe
 
   data.Sessions[data_session.id] = data_session;
 
-  return {};
+  return {
+    sessionId: data_session.id
+  };
 }
 
 export function initiateNextQuizSessionQuestion(quizSessionId: number) {

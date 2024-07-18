@@ -64,7 +64,7 @@ export function testUpdateThumbnail(token: string, quizId: number, imgUrl: strin
     return result;
 }
 
-export function testCreateQuestion(token: string, quizId: number, body: object) {
+export function testCreateQuestion(token: string, quizId: number, questionBody: object) {
     const result = request(
         'POST',
         SERVER_URL + '/v2/admin/quiz/'+quizId+'/question',
@@ -74,7 +74,7 @@ export function testCreateQuestion(token: string, quizId: number, body: object) 
             },
             json: {
                 quizId: quizId,
-                body: body
+                questionBody: questionBody
             }
         }
     );

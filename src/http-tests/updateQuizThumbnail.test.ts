@@ -19,7 +19,7 @@ const token2 = testRegisterUser("test2@email.com", 'newPassword123', 'Kelvin', '
 
 const quizId1 = (JSON.parse(testCreateQuiz(token1, "Test Quiz", "This is test quiz").body as string)).quizId;
 
-describe('Quiz create test: ', () => {
+describe('Update quiz thumbnail test: ', () => {
   test('test succesfull: ', () => {
     const res1 = testUpdateThumbnail(token1, quizId1, "https://www.test.com/a.jpg");
     const result = JSON.parse(res1.body as string);

@@ -1,5 +1,5 @@
-import { answer, getData, getSessionData, message, Player, playerResults, question, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData } from "./dataStore";
-import { createId, quizIdValidator, quizOwnership } from "./helpers";
+import { answer, getData, setData, getSessionData, message, Player, playerResults, question, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData } from "./dataStore";
+import { createId, quizIdValidator, quizOwnership, countSessionNotEnd } from "./helpers";
 import HTTPError from 'http-errors';
 
 export function listSessions(userId: number, quizId: number) {

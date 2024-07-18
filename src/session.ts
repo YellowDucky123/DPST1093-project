@@ -1,4 +1,4 @@
-import { answer, getData, getSessionData, message, Player, playerResults, question, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData } from "./dataStore";
+import { answer, getData, getSessionData, message, Player, playerResults, question, questionResults, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData } from "./dataStore";
 import { createId, quizIdValidator, quizOwnership } from "./helpers";
 import HTTPError from 'http-errors';
 
@@ -94,7 +94,41 @@ function getAnswers(answers : answer[]) {
   }
   return ans;
 }
-
+export function getSessionResult(userId : number, quizId : number, sessionid : number) {
+  let data = getData();
+  // error check
+  if (data.quizzes[quizId] === undefined) throw HTTPError(403, "Invalid quizId");
+  if (quizOwnership(userId, quizId)) throw HTTPError(403, "You do not own this quiz");
+  if (data.Sessions[sessionid] === undefined) throw HTTPError(400, "Invalid sessionid");
+  if (data.Sessions[sessionid].metadata.quizId !== quizId) throw HTTPError(400, "Invalid sessionid");
+  if (data.Sessions[sessionid].state !== QuizSessionState.FINAL_RESULTS) throw HTTPError (400, "Game status error");
+  return {
+    usersRankedByScore : getUsersRankedByScore(data.Sessions[sessionid].results.usersRankedbyScore),
+    questionResults : getQuestionResults(data.Sessions[sessionid].results.questionResults)
+  }
+}
+function getUsersRankedByScore(users : playerResults[]) {
+  let ans = []
+  for (const user of users) {
+    ans.push({
+      name : user.name,
+      score : user.score ? user.score : 0,
+    })
+  }
+  ans.sort((a,b) => b.score - a.score);
+  return ans;
+}
+function getQuestionResults(questionResults : questionResults[]) {
+  let ans = [];
+  for (const questionResult of questionResults) {
+    ans.push({
+      questionId : questionResult.questionId,
+      playersCorrectList : questionResult.playersCorrectList,
+      averageAnswerTime : questionResult.averageAnswerTime,
+      percentCorrect : questionResult.percentCorrect
+    })
+  }
+}
 export function startSession(userId: number, quizId: number, autoStartNum: number) {
   if(autoStartNum > 50) {
     throw HTTPError(400, "autoStartNum is greater than 50");
@@ -173,22 +207,21 @@ export function openQuizSessionQuestion(quizSessionId: number) {
     return {}
   }
   
-  export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
-    /*
-    code Kelvin
-    */
-   let sesData = getSessionData();
-   sesData[quizSessionId].state = QuizSessionState.QUESTION_CLOSE;
-   setSessionData(sesData);
-  
-    return {}
-  }
-  
-  export function generateCurrentQuizSessionQuestionResults(quizSessionId: number) {
-    /*
-    code Yuxuan
-    */
+export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
+  /*
+  code Kelvin
+  */
+ let sesData = getSessionData();
+ sesData[quizSessionId].state = QuizSessionState.QUESTION_CLOSE;
+ setSessionData(sesData);
 
+  return {}
+}
+  
+export function generateCurrentQuizSessionQuestionResults(quizSessionId: number) {
+  /*
+  code Yuxuan
+  */
   return {};
 }
 

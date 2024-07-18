@@ -47,6 +47,7 @@ import {
   sendChat
 } from './quiz';
 import {
+  getSessionResult,
   getSessionStatus,
   listSessions,
   startSession
@@ -393,6 +394,22 @@ app.get('/v1/admin/quiz/:quizid/session/:sessionid', (req : Request, res: Respon
   if (quizId === undefined) throw HTTPError(403, "a quizid is required");
   if (sessionid === undefined) throw HTTPError(400, "a sessionid is required");
   let ans = getSessionStatus(userid, quizId, sessionid);
+  res.status(200).json(ans);
+})
+
+app.get('/v1/admin/quiz/:quizid/session/:sessionid/results', (req : Request, res : Response) => {
+  const token = req.headers.token as string;
+  const quizid = parseInt(req.params.quizid);
+  const sessionid = parseInt(req.params.sessionid);
+
+  if (!token) throw HTTPError(401, "a token is required");
+  const userid = findUserIdByToken(token)
+  if (!userid) throw HTTPError(401, "token invalid");
+
+  if (!quizid) throw HTTPError(403, "a quizid is required");
+  if (!sessionid) throw HTTPError(400, "a sessionid is required");
+
+  const ans = getSessionResult(userid, quizid, sessionid);
   res.status(200).json(ans);
 })
 

@@ -722,6 +722,67 @@ export function currentQuestionPosition(playerId: number, questionPosition: numb
   if (newSession.atQuestion !== questionPosition) {
     return { error: "questionPosition is not the same as atQuestion" }
   }
-  let data = playerData[playerId].questionAnswered;
+  let data = playerData[playerId].questionAnswered[questionPosition];
   return data;
+}
+
+export function answerSubmission(playerId: number, questionPosition: number, answerIds: answer[]) {
+  if (!isPlayerExist(playerId)) {
+    return { error: "playerId does not exist" }
+  }
+  let playerData = getPlayerData();
+  let sessionId = playerData[playerId].sessionId;
+  let session = getSessionData();
+  let newSession = session[sessionId];
+  let newPaste = playerData[playerId].questionAnswered[questionPosition];
+  if (!isQuestionValid(questionPosition, newSession.metadata.numQuizQuestion)) {
+    return { error: "questionBody is not valid" }
+  }
+  if (newSession.state !== QuizSessionState.QUESTION_OPEN) {
+    return { error: "Session is not in QUESTION_OPEN state" };
+  }
+  if (newSession.atQuestion !== questionPosition) {
+    return { error: "questionPosition is not the same as atQuestion" }
+  }
+  let check = 0;
+  for (let i = 0; i < newPaste.answers.length; i++) {
+    for (const id of answerIds) {
+      if (newPaste.answers[i] === id) {
+        check = 1;
+      }
+    }
+  }
+  if (check === 1) {
+    return { error: "Answer IDs are not valid for this particular question" }
+  }
+  let newCheck = 0;
+  for (let i = 0; i < answerIds.length; i++) {
+    for (let j = 0; j < answerIds.length; j++) {
+      if (answerIds[j].answerId === answerIds[i].answerId) {
+        newCheck = 1;
+      }
+    }
+  }
+  if (newCheck === 1) {
+    return { error: "There are duplicate answer IDs provided" };
+  }
+  if (answerIds.length < 1) {
+    return { error: "Less than 1 answer ID submitted" };
+  }
+  playerData[playerId].questionAnswered[questionPosition - 1].answers = answerIds;
+  return {};
+}
+
+export function playerResults(playerId: number) {
+  if (!isPlayerExist(playerId)) {
+    return { error: "playerId does not exist" }
+  }
+  let playerData = getPlayerData();
+  let sessionId = playerData[playerId].sessionId;
+  let session = getSessionData();
+  let newSession = session[sessionId];
+  if (newSession.state !== QuizSessionState.END) {
+    return { error: "Session is not in FINAL_RESULTS state" }
+  }
+  return newSession.results
 }

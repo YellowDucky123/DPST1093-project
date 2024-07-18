@@ -1,5 +1,6 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
+import { allMessagesInSession } from '../quiz';
 
 const port = config.port;
 const url = config.url;
@@ -12,6 +13,8 @@ afterAll(() => {
   );
 });
 
+
+
 describe('error', () => {
   test('player does not exist', () => {
     const res = request(
@@ -21,8 +24,18 @@ describe('error', () => {
         qs: {}
       }
     );
-    const result = JSON.parse(res.body as string);
-    expect(res.statusCode).toBe(400);
-    expect(result).toStrictEqual({});
+    expect(() => allMessagesInSession(playerId)).toThrow(Error);
   });
+  
+  test('correct implementation', () => {
+    const res = request(
+        'GET',
+        SERVER_URL + '/v1/player/:playerId/chat',
+        {
+            qs: {}
+        }
+    );
+    expect(() => allMessagesInSession(playerId)).toEqual({});
+  })
 });
+

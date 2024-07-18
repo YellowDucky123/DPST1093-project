@@ -971,7 +971,7 @@ app.get('/v1/admin/quiz/:quizId/sessions', (req: Request, res: Response) => {
 app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId);
-  const autoStartNum = parseInt(req.params.autoStartNum);
+  const autoStartNum = parseInt(req.body.autoStartNum);
 
   if (!token) {
     throw HTTPError(401, "A correct token is required");
@@ -993,7 +993,7 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
 
   const quizId = parseInt(req.params.quizId);
   const sessionId = parseInt(req.params.sessionId);
-  const body = req.body.body;
+  const body = req.body.action;
 
   if (!quizIdValidator(quizId)) {
     throw HTTPError(403, "quiz does not exist");
@@ -1032,7 +1032,7 @@ app.get('/v1/player/:playerId/chat', (req: Request, res: Response) => {
 app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const playerId = parseInt(req.params.playerId);
-  const messageBody = req.body.body;
+  const messageBody = req.body.message;
 
   if (!findUserIdByToken(token)) {
     throw HTTPError(401, 'token incorrect or not found');
@@ -1049,7 +1049,7 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
 
   const quizId = parseInt(req.params.quizId);
   const sessionId = parseInt(req.params.sessionId);
-  const body = req.body.body;
+  const body = req.body.action;
 
   if (!quizIdValidator(quizId)) {
     throw HTTPError(403, "quiz does not exist");

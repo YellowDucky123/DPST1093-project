@@ -17,6 +17,10 @@ afterAll(() => {
   );
 });
 
+function startSession(quizId: number, autoStartNum: number, token) {
+    return requestHelper('POST', `/v1/admin/quiz/${quizId}/sessions/start`, {autoStartNum}, token);
+}
+
 function sendChat(message: string, playerId: number, token) {
     return requestHelper('POST', `/v1/player/${playerId}/chat`, {message}, token);
 }
@@ -33,17 +37,14 @@ describe('error', () => {
     str = String(str).padStart(110, '*');
     expect(() => sendChat(str, )).toThrow(HTTPError[400]);
   });
-  
+
+  test('message too short', () => {
+    let str: string = '';
+    expect(() => sendChat(str, )).toThrow(HTTPError[400]);
+  });
 });
 
-test('succesfull', () => {
-    const res = request(
-        'GET',
-        SERVER_URL + '/v1/player/:playerId/question/:questionPosition/results',
-        {
-          qs: {}
-        }
-      );
-      const result = JSON.parse(res.body as string);
-  });
+test('succesfull send', () => {
+    expect(() => sendChat(str, )).toEqual({});
+});
 

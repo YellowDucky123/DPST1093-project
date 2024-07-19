@@ -10,6 +10,7 @@ import { customAlphabet } from 'nanoid';
 import { createId } from './helpers';
 import HTTPError from 'http-errors';
 import { countSessionNotEnd } from './helpers';
+import { StartTime } from './session';
 
 /** *******************************************************************************************|
 |            |
@@ -637,12 +638,14 @@ export function questionResults(playerId: number, questionPosition: number) {
   let avgTime = Time/amountPlayers;
   let percentCorrect = (correctPlayers * 100) / amountPlayers;
 
-  return {
+  let obj = {
     questionId: q.questionId,
     playersCorrectList: playersCorrect,
     averageAnswerTime: avgTime,
     percentCorrect: percentCorrect
   };
+  
+  return obj
 }
 
 // returns the whole chat of the session the player is in
@@ -736,6 +739,7 @@ function isDuplicated(elements: number[]) {
   return setElements.size !== elements.length;
 }
 
+
 export function answerSubmission(playerId: number, questionPosition: number, answerIds: number[]) {
   if (!isPlayerExist(playerId)) {
     return { error: "playerId does not exist" }
@@ -755,11 +759,12 @@ export function answerSubmission(playerId: number, questionPosition: number, ans
     return { error: "questionPosition is not the same as atQuestion" }
   }
   let check = 0;
+  let correct = true;
   for (const item of newSession.metadata.questions[questionPosition].answers) {
     for (const id of answerIds) {
       if (item.answerId === id) {
         check = 1;
-      }
+      } 
     }
   }
   if (check === 1) {
@@ -771,7 +776,26 @@ export function answerSubmission(playerId: number, questionPosition: number, ans
   if (answerIds.length < 1) {
     return { error: "Less than 1 answer ID submitted" };
   }
-  playerData[playerId].questionAnswered.push(newSession.metadata.questions[questionPosition]);
+  
+  for (const id of answerIds) {
+    newSession.metadata.questions[questionPosition - 1].playerTime[playerId] = {
+      name: playerData[playerId].name,
+      correct: true,
+      duration: getCurrentTime() - StartTime
+    }
+    for (const item of newSession.metadata.questions[questionPosition].answers) {
+      if (item.answerId === id) {
+        if(item.correct) {
+          newSession.metadata.questions[questionPosition - 1].playerTime[playerId].correct = true;
+        }
+        else {
+          newSession.metadata.questions[questionPosition - 1].playerTime[playerId].correct = false
+        }
+      }
+    } 
+
+  }
+
   return {};
 }
 

@@ -737,7 +737,6 @@ function isDuplicated(elements: number[]) {
 }
 
 export function answerSubmission(playerId: number, questionPosition: number, answerIds: number[]) {
-  console.log("inside function", playerId);
   if (!isPlayerExist(playerId)) {
     return { error: "playerId does not exist" }
   }

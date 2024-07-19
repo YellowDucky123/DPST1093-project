@@ -90,7 +90,6 @@ describe('Update session state test: ', () => {
     console.log((JSON.parse(testSessionInfo(token1, quizId1, sessionId1).body as string)));
     const answerId1 = (JSON.parse(testSessionInfo(token1, quizId1, sessionId1).body as string)).metadata.questions[0].answers.answerId;
     let ary: number[] = [answerId1];
-console.log("inside test",playerId1);
 
     testSubmitAnswer(playerId1, 1, ary);
     const res1 = testSessionState(token1, quizId1, sessionId1, QuizSessionAction.GO_TO_ANSWER);

@@ -658,8 +658,7 @@ export function allMessagesInSession(playerId: number) {
 }
 
 // send a chat message
-export function sendChat(playerId: number, body) {
-  console.log('function' + body);
+export function sendChat(playerId: number, body: string) {
   if (!isPlayerExist(playerId)) {
     throw HTTPError(400, 'player does not exist');
   }
@@ -738,7 +737,6 @@ function isDuplicated(elements: number[]) {
 }
 
 export function answerSubmission(playerId: number, questionPosition: number, answerIds: number[]) {
-  console.log("inside function", playerId);
   if (!isPlayerExist(playerId)) {
     return { error: "playerId does not exist" }
   }

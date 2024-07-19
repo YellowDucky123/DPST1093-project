@@ -199,6 +199,6 @@ export function testSubmitAnswer(playerId: number, questionPosition: number, ans
             }
         }
     );
-console.log("inside helper", playerId);
+    
     return result;
 }

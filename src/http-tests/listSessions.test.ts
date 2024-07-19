@@ -1,6 +1,7 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
-import { testCreateQuiz, testRegisterUser, testCreateQuestion } from './testFunc';
+import { testCreateQuiz, testRegisterUser, testCreateQuestion, testStartSession, testSessionState, testListSessions } from './testFunc';
+import { QuizSessionAction } from '../dataStore';
 
 const OK = 200;
 const port = config.port;
@@ -38,7 +39,27 @@ testCreateQuestion(token1, quizId1,
     }
 );
 
+const sessionId1 = (JSON.parse(testStartSession(token1, quizId1, 30).body as string)).sessionId;
+const sessionId2 = (JSON.parse(testStartSession(token1, quizId1, 30).body as string)).sessionId;
+
+testSessionState(token1, quizId1, sessionId2, QuizSessionAction.END);
+
 describe('List sessions test: ', () => {
   test('test succesfull: ', () => {
+    const result = JSON.parse(testListSessions(token1, quizId1).body as string);
+    expect(result).toStrictEqual({
+        activeSessions: [sessionId1],
+        inactiveSessions: [sessionId2]
+    });
+  });
+
+  test('invalid token: ', () => {
+    const result = testListSessions(token1+1, quizId1);
+    expect(result.statusCode).toBe(401);
+  });
+
+  test('Not owning the quiz: ', () => {
+    const result = testListSessions(token2, quizId1);
+    expect(result.statusCode).toBe(403);
   });
 });

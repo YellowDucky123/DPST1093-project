@@ -72,8 +72,8 @@ function submitAnswer(playerId: number, questionPosition: number, answerIds: num
   return requestHelper('PUT', `/v1/player/${playerId}/question/${questionPosition}/answer`, {answerIds});
 }
 
-function questionResult(playerId: number, questionPosition: number, token) {
-  return requestHelper('GET', `/v1/player/${playerId}/question/${questionPosition}/results`, {}, token);
+function questionResult(playerId: number, questionPosition: number, token: string) {
+  return requestHelper('GET', `/v1/player/${playerId}/question/${questionPosition}/results`, {}, {token});
 }
 
 const authToken = authRegister(
@@ -116,14 +116,16 @@ describe('error', () => {
 test('succesfull', () => {
   changeState(quizId, sessionId, QuizSessionAction.NEXT_QUESTION, userToken);
   changeState(quizId, sessionId, QuizSessionAction.SKIP_COUNTDOWN, userToken);
-  let answerId
-  submitAnswer(playerId, 1, )
+  let d = sessionStatusRoute(quizId, sessionId, userToken);
+  let answerId = d.metadata.questions[0].answers[0].answerId
+  submitAnswer(playerId, 1, answerId);
 
   expect(questionResult(playerId, 1, userToken)).toEqual({
     questionId: questionId.questionId,
-    playersCorrectList: playersCorrect,
-    averageAnswerTime: avgTime,
-    percentCorrect: percentCorrect
+    playersCorrectList: ['player1'],
+    averageAnswerTime: d.metadata.questions[0].playerTime[playerId].duration,
+    percentCorrect: 100
   });
 });
 
+requestHelper('DELETE', '/v2/clear', {});

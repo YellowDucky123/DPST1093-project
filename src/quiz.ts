@@ -732,7 +732,7 @@ export function currentQuestionPosition(playerId: number, questionPosition: numb
   return data;
 }
 
-export function answerSubmission(playerId: number, questionPosition: number, answerIds: answer[]) {
+export function answerSubmission(playerId: number, questionPosition: number, answerIds: number[]) {
   if (!isPlayerExist(playerId)) {
     return { error: "playerId does not exist" }
   }
@@ -753,7 +753,7 @@ export function answerSubmission(playerId: number, questionPosition: number, ans
   let check = 0;
   for (let i = 0; i < newPaste.answers.length; i++) {
     for (const id of answerIds) {
-      if (newPaste.answers[i] === id) {
+      if (newPaste.answers[i].answerId === id) {
         check = 1;
       }
     }
@@ -764,7 +764,7 @@ export function answerSubmission(playerId: number, questionPosition: number, ans
   let newCheck = 0;
   for (let i = 0; i < answerIds.length; i++) {
     for (let j = 0; j < answerIds.length; j++) {
-      if (answerIds[j].answerId === answerIds[i].answerId) {
+      if (answerIds[j] === answerIds[i]) {
         newCheck = 1;
       }
     }
@@ -775,7 +775,7 @@ export function answerSubmission(playerId: number, questionPosition: number, ans
   if (answerIds.length < 1) {
     return { error: "Less than 1 answer ID submitted" };
   }
-  playerData[playerId].questionAnswered[questionPosition - 1].answers = answerIds;
+  playerData[playerId].questionAnswered.push(newSession.metadata.questions[questionPosition]);
   return {};
 }
 

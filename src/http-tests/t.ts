@@ -1,14 +1,9 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
 import { questionResults } from '../quiz';
-import { error } from 'console';
-import { requestHelper} from './requestHelper_fn'
+import { requestHelper } from './requestHelper_fn';
 import HTTPError from 'http-errors';
-import { send } from 'process';
-import { create } from 'ts-node';
-import { before } from 'node:test';
-import { openQuizSessionQuestion } from '../session';
-import { getData, getSessionData } from '../dataStore';
+import { QuizSessionAction } from '../dataStore';
 
 const port = config.port;
 const url = config.url;
@@ -65,8 +60,20 @@ function joinSession(sessionId: number, name: string) {
     return requestHelper('POST', '/v1/player/join', { sessionId, name });
 }
 
-function sendChat(message: string, playerId: number, token:string) {
-    return requestHelper('POST', `/v1/player/${playerId}/chat`, {message:{messageBody: message}}, {token});
+function changeState(quizId: number, sessionId: number, action: QuizSessionAction, token: string) {
+  return requestHelper('PUT', `/v1/admin/quiz/${quizId}/session/${sessionId}`, {action}, {token});
+}
+
+function sessionStatusRoute(quizId: number, sessionId: number, token: string) {
+  return requestHelper('GET', `/v1/admin/quiz/${quizId}/session/${sessionId}`, {}, { token });
+}
+
+function submitAnswer(playerId: number, questionPosition: number, answerIds: number) {
+  return requestHelper('PUT', `/v1/player/${playerId}/question/${questionPosition}/answer`, {answerIds});
+}
+
+function questionResult(playerId: number, questionPosition: number, token: string) {
+  return requestHelper('GET', `/v1/player/${playerId}/question/${questionPosition}/results`, {}, {token});
 }
 
 const authToken = authRegister(
@@ -81,14 +88,12 @@ const userToken = Token.token;
 
 const qzId = createQuiz(userToken, 'question1', 'this is a test q');
 const quizId = qzId.quizId;
-createQuestion(quizId, userToken);
+const questionId = createQuestion(quizId, userToken);
 
 const sessionId = startSession(quizId, 3, userToken);
 const pId = joinSession(sessionId.sessionId, 'player1');
 const playerId = pId.playerId;
 
-sendChat('hello everyone', playerId, userToken);
+console.log(questionResult(playerId, 1, userToken))
 
-// openQuizSessionQuestion(sessionId.sessionId);
-
-// requestHelper('DELETE', '/v2/clear', {});
+requestHelper('DELETE', '/v2/clear', {});

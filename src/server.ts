@@ -51,6 +51,7 @@ import {
   playerResults
 } from './quiz';
 import {
+  getCSVFormatResult,
   getSessionResult,
   getSessionStatus,
   listSessions,
@@ -416,6 +417,29 @@ app.get('/v1/admin/quiz/:quizid/session/:sessionid/results', (req : Request, res
 
   const ans = getSessionResult(userid, quizid, sessionid);
   res.status(200).json(ans);
+})
+
+app.get('/v1/admin/quiz/:quizid/session/:sessionid/results/csv', (req : Request, res : Response) => {
+  const token = req.headers.token as string;
+  const quizid = parseInt(req.params.quizid);
+  const sessionid = parseInt(req.params.sessionid);
+
+  if (!token) throw HTTPError(401, "a token is required");
+  const userid = findUserIdByToken(token)
+  if (!userid) throw HTTPError(401, "token invalid");
+
+  if (!quizid) throw HTTPError(403, "a quizid is required");
+  if (!sessionid) throw HTTPError(400, "a sessionid is required");
+
+  const csvlink = getCSVFormatResult(userid, quizid, sessionid);
+  res.status(200).json(csvlink);
+})
+
+app.get('/v1/download/:filename', (res : Response, req : Request) => {
+  const filename = req.params.filename;
+  res.download(`./result/csv/${filename}`, filename, (err) => {
+    if (err) throw HTTPError(404, "file not found");
+  })
 })
 
 app.post('/v1/player/join', (req : Request, res : Response) => {
@@ -999,7 +1023,7 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
   const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId);
   const sessionId = parseInt(req.params.sessionId);
-  const body = req.body.action;
+  const action = req.body.action;
 
   if (!token) {
     throw HTTPError(401, "A correct token is required");
@@ -1023,10 +1047,13 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
 // return question results
 app.get('/v1/player/:playerId/question/:questionPosition/results', (req: Request, res: Response) => {
   const token = req.headers.token as string;
-
+  console.log(`token is: ${token}`);
+  if (!token) {
+    throw HTTPError(401, "A correct token is required");
+  }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, 'token incorrect or not found');
+    throw HTTPError(401, "Token incorrect or not found");
   }
 
   const { playerId, questionPosition } = req.params;
@@ -1092,14 +1119,11 @@ app.get('/v1/player/:playerId/question:questionposition', (req: Request, res: Re
   return res.status(200).json(result);
 })
 
-app.put('/v1/player/{playerid}/question/{questionposition}/answer', (req: Request, res: Response) => {
+app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerId);
-  const questionPosition = parseInt(req.params.questionposition);
-  const token = req.header('token');
-  const answerIds = req.body
-  if (!findUserIdByToken(token)) {
-    throw HTTPError(401, 'token incorrect or not found');
-  }
+  const questionPosition = parseInt(req.params.questionPosition);
+  const answerIds = (req.body.answerIds as string[]).map(Number);
+  
   const result = answerSubmission(playerId, questionPosition, answerIds);
   if ('error' in result) {
     throw HTTPError(400, result.error);

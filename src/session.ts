@@ -2,7 +2,9 @@ import { customAlphabet } from "nanoid";
 import { answer, getData,setData, getSessionData, message, Player, playerResults, question, questionResults, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData, QuizSessionAction } from "./dataStore";
 import { createId, quizIdValidator, quizOwnership, countSessionNotEnd} from "./helpers";
 import HTTPError from 'http-errors';
-
+import config from "./config.json";
+const path = config.url + ":" + config.port
+import * as fs from 'fs'
 export function listSessions(userId: number, quizId: number) {
   if (quizOwnership(userId, quizId) === false) {
     throw HTTPError(403, "You do not own this quiz");
@@ -71,7 +73,7 @@ function getQuizDuration(questions : question[]) {
   return ans;
 }
 function getMetaQuestions (quizid : number, metadata : question[]) {
-  let ans: question[] = [];
+  let ans = [];
   for (const question of metadata) {
     ans.push({
       questionId : question.questionId,
@@ -143,6 +145,78 @@ export function getSessionResult(userId : number, quizId : number, sessionid : n
     usersRankedByScore : getUsersRankedByScore(data.Sessions[sessionid].results.usersRankedbyScore),
     questionResults : getQuestionResults(data.Sessions[sessionid].results.questionResults)
   }
+}
+export function getCSVFormatResult(userId : number, quizId : number, sessionid : number) {
+  let data = getData();
+  // error check
+  if (data.quizzes[quizId] === undefined) throw HTTPError(403, "Invalid quizId");
+  if (quizOwnership(userId, quizId)) throw HTTPError(403, "You do not own this quiz");
+  if (data.Sessions[sessionid] === undefined) throw HTTPError(400, "Invalid sessionid");
+  if (data.Sessions[sessionid].metadata.quizId !== quizId) throw HTTPError(400, "Invalid sessionid");
+  if (data.Sessions[sessionid].state !== QuizSessionState.FINAL_RESULTS) throw HTTPError (400, "Game status error");
+
+  let CSVString = getCSVResult(data.Sessions[sessionid].players.concat(), data.Sessions[sessionid].results.questionResults);
+  fs.writeFileSync(`./result/csv/${quizId}_${sessionid}.csv`, CSVString);
+  return {url : path + "/v1/download/" + `${quizId}_${sessionid}.csv`};
+}
+function getCSVResult(players : Player[], questionResults : questionResults[]) : string {
+  let ans = '';
+  let header = "player";
+  let count = 1;
+  for (count = 1; count < questionResults.length + 1; count++) {
+    header += `,question${count}score,question${count}rank`;
+  }
+  players = players.sort((a, b) => a.name.localeCompare(b.name));
+  let lines : {
+    [userName : string] : {
+      [question : number] : {
+        rank : number,
+        score : number
+      }
+    }
+  } = {};
+  for (const player of players) {
+    lines[player.name] = {};
+  }
+  for (const questionResult of questionResults) {
+    let questionid = questionResult.questionId;
+    let playerAnsweredList = players.filter((a) => a.questionAnswered[questionid] !== undefined);
+    let playerDurationList = playerAnsweredList
+    .sort((a,b) => a.questionAnswered[questionid].duration - b.questionAnswered[questionid].duration)
+    let sortedPlayersCorrectList = playerDurationList.filter((a) => questionResult.playersCorrectList.find((b) => b === a.name) !== undefined);
+    let score = playerAnsweredList[0].questionAnswered[questionResult.questionId].points
+    for (const player of sortedPlayersCorrectList) {
+      lines[player.name][questionResults.indexOf(questionResult)] = {
+        rank : sortedPlayersCorrectList.indexOf(player) + 1,
+        score : Math.round(score/(sortedPlayersCorrectList.indexOf(player) + 1) * 10) / 10
+      }
+    }
+    for (const player in lines) { 
+      if (lines[player][questionResults.indexOf(questionResult)] === undefined) {
+        if (playerAnsweredList.find((a) => a.name === player) !== undefined) {
+          lines[player][questionResults.indexOf(questionResult)] = {
+            rank : sortedPlayersCorrectList.length + 1,
+            score : 0
+          }
+        } else {
+          lines[player][questionResults.indexOf(questionResult)] = {
+            rank : 0,
+            score : 0
+          }
+        }
+      }
+    }
+  }
+  let linesToStrings = []
+  for (const player in lines) {
+    let newString = `${player}`
+    for (const data in lines[player]) {
+      newString += `,${lines[player][data].score},${lines[player][data].rank}`
+    }
+    linesToStrings.push(newString);
+  }
+  ans = header + '\n' + linesToStrings.join('\n') + '\n'+ 'X,Y,Z,...\nX,Y,Z,...\nX,Y,Z,...\n'
+  return ans
 }
 function getUsersRankedByScore(users : playerResults[]) {
   let ans: playerResults[] = []
@@ -326,7 +400,9 @@ export function gotoQuizSessionQuestionAnswer(quizSessionId: number) {
   /*
     code Yuxuan
     */
-
+  let session = getSessionData();
+  session[quizSessionId].state = QuizSessionState.ANSWER_SHOW;
+  setSessionData(session);
   return {};
 }
 

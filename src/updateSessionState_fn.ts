@@ -1,5 +1,5 @@
 import HTTPError from 'http-errors';
-import { QuizSessionAction, QuizSessionState, getState } from './dataStore';
+import { QuizSessionAction, QuizSessionState, getData, getState } from './dataStore';
 import {
   initiateNextQuizSessionQuestion, generateCurrentQuizSessionFinalResults, endQuizSession, openQuizSessionQuestion, closeCurrentQuizSessionQuestion
   , generateCurrentQuizSessionQuestionResults, gotoQuizSessionQuestionAnswer, gotoQuizSessionFinalResults

@@ -1,5 +1,6 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
+import { QuizSessionAction } from '../dataStore';
 
 const port = config.port;
 const url = config.url;
@@ -100,7 +101,7 @@ export function testStartSession(token: string, quizId: number, autoStartNum: nu
     return result;
 }
 
-export function testSessionState(token: string, quizId: number, sessionId: number, action: string) {
+export function testSessionState(token: string, quizId: number, sessionId: number, action: QuizSessionAction) {
     const result = request(
         'PUT',
         SERVER_URL + '/v1/admin/quiz/'+quizId+'/session/'+sessionId,
@@ -112,6 +113,73 @@ export function testSessionState(token: string, quizId: number, sessionId: numbe
                 quizId: quizId,
                 sessionId: sessionId,
                 action: action
+            }
+        }
+    );
+
+    return result;
+}
+
+export function testQuizInfo(token: string, quizId: number) {
+    const result = request(
+        'GET',
+        SERVER_URL + '/v2/admin/quiz/'+quizId,
+        {
+            headers: {
+                token: token
+            },
+            json: {
+                quizId: quizId
+            }
+        }
+    );
+
+    return result;
+}
+
+export function testSessionInfo(token: string, quizId: number, sessionId: number) {
+    const result = request(
+        'GET',
+        SERVER_URL + '/v1/admin/quiz/'+quizId+'/session/'+sessionId,
+        {
+            headers: {
+                token: token
+            },
+            json: {
+                quizId: quizId,
+                sessionId: sessionId
+            }
+        }
+    );
+
+    return result;
+}
+
+export function testListSessions(token: string, quizId: number) {
+    const result = request(
+        'GET',
+        SERVER_URL + '/v1/admin/quiz/'+quizId+'/sessions',
+        {
+            headers: {
+                token: token
+            },
+            json: {
+                quizId: quizId
+            }
+        }
+    );
+
+    return result;
+}
+
+export function testJoinSession(sessionId: number, name: string) {
+    const result = request(
+        'POST',
+        SERVER_URL + '/v1/player/join',
+        {
+            json: {
+                sessionId: sessionId,
+                name: name
             }
         }
     );

@@ -1120,10 +1120,10 @@ app.get('/v1/player/:playerId/question:questionposition', (req: Request, res: Re
 })
 
 app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request, res: Response) => {
-  const playerId = parseInt(req.params.playerId);
-  const questionPosition = parseInt(req.params.questionPosition);
-  const answerIds = (req.body.answerIds as string[]).map(Number);
-  
+  const playerId = parseInt(req.params.playerid);
+  const questionPosition = parseInt(req.params.questionposition);
+  const answerIds = (req.body.answerids as string[]).map(Number);
+  console.log("inside route",playerId);
   const result = answerSubmission(playerId, questionPosition, answerIds);
   if ('error' in result) {
     throw HTTPError(400, result.error);

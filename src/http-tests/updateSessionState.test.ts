@@ -66,7 +66,6 @@ const questionId2 = JSON.parse(resCQQ2.body as string).questionId;
 const sessionId1 = (JSON.parse(testStartSession(token1, quizId1, 30).body as string)).sessionId;
 
 const playerId1 = JSON.parse(testJoinSession(sessionId1, "Kei").body as string).playerId;
-console.log(playerId1);
 
 describe('Update session state test: ', () => {
   test('[SUCCESS] LOBBY => (NEXT_QUESTION) => QUESTION_COUNTDOWN: ', () => {
@@ -90,7 +89,9 @@ describe('Update session state test: ', () => {
   test('[SUCCESS] QUESTION_OPEN => (GO_TO_ANSWER) => ANSWER_SHOW: ', () => {
     console.log((JSON.parse(testSessionInfo(token1, quizId1, sessionId1).body as string)));
     const answerId1 = (JSON.parse(testSessionInfo(token1, quizId1, sessionId1).body as string)).metadata.questions[0].answers.answerId;
-    let ary = [answerId1];
+    let ary: number[] = [answerId1];
+console.log("inside test",playerId1);
+
     testSubmitAnswer(playerId1, 1, ary);
     const res1 = testSessionState(token1, quizId1, sessionId1, QuizSessionAction.GO_TO_ANSWER);
 

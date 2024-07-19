@@ -1047,10 +1047,13 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
 // return question results
 app.get('/v1/player/:playerId/question/:questionPosition/results', (req: Request, res: Response) => {
   const token = req.headers.token as string;
-
+  console.log(`token is: ${token}`);
+  if (!token) {
+    throw HTTPError(401, "A correct token is required");
+  }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, 'token incorrect or not found');
+    throw HTTPError(401, "Token incorrect or not found");
   }
 
   const { playerId, questionPosition } = req.params;
@@ -1074,7 +1077,7 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const playerId = parseInt(req.params.playerId);
   const messageBody = req.body.message;
-  console.log(messageBody);
+  console.log('server' + messageBody);
   if (!token) {
     throw HTTPError(401, "A correct token is required");
   }
@@ -1083,7 +1086,7 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
     throw HTTPError(401, "Token incorrect or not found");
   }
 
-  return sendChat(playerId, messageBody.message);
+  return sendChat(playerId, messageBody.messageBody);
 });
 
 //Victor's part

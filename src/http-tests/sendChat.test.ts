@@ -91,7 +91,7 @@ describe('error', () => {
     });
 
   test('player does not exist', () => {
-    expect(() => sendChat('Hello Everyone', playerId, userToken)).toThrow(HTTPError[400]);
+    expect(() => sendChat('Hello Everyone', playerId + 1, userToken)).toThrow(HTTPError[400]);
   });
 
   test('message too Long', () => {

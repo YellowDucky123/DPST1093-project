@@ -1,59 +1,59 @@
-import request from 'sync-request-curl';
-import config from '../config.json';
-import { testCreateQuestion, testCreateQuiz, testJoinSession, testQuizInfo, testRegisterUser, testSessionInfo, testSessionState, testStartSession, testSubmitAnswer, testUpdateThumbnail } from './testFunc';
-import { getSessionStatus } from '../session';
-import { quizIdValidator } from '../helpers';
-import { QuizSessionAction, QuizSessionState, getData } from '../dataStore';
+    import request from 'sync-request-curl';
+    import config from '../config.json';
+    import { testCreateQuestion, testCreateQuiz, testJoinSession, testQuizInfo, testRegisterUser, testSessionInfo, testSessionState, testStartSession, testSubmitAnswer, testUpdateThumbnail } from './testFunc';
+    import { getSessionStatus } from '../session';
+    import { quizIdValidator } from '../helpers';
+    import { QuizSessionAction, QuizSessionState, getData } from '../dataStore';
 
-const OK = 200;
-const port = config.port;
-const url = config.url;
+    const OK = 200;
+    const port = config.port;
+    const url = config.url;
 
-const SERVER_URL = `${url}:${port}`;
+    const SERVER_URL = `${url}:${port}`;
 
-afterAll(() => {
-  request('DELETE', SERVER_URL + '/v1/clear');
-});
+    afterAll(() => {
+    request('DELETE', SERVER_URL + '/v1/clear');
+    });
 
-request('DELETE', `${url}:${port}/v1/clear`);
+    request('DELETE', `${url}:${port}/v1/clear`);
 
-const token1 = testRegisterUser("test@email.com", 'newPassword123', 'Kei', 'Ikushima');
-const token2 = testRegisterUser("test2@email.com", 'newPassword123', 'Kelvin', 'Yoga');
+    const token1 = testRegisterUser("test@email.com", 'newPassword123', 'Kei', 'Ikushima');
+    const token2 = testRegisterUser("test2@email.com", 'newPassword123', 'Kelvin', 'Yoga');
 
-const quizId1 = (JSON.parse(testCreateQuiz(token1, "Test Quiz", "This is test quiz").body as string)).quizId;
-const quizId2 = (JSON.parse(testCreateQuiz(token1, "Test Quiz 2", "This is test quiz").body as string)).quizId;
+    const quizId1 = (JSON.parse(testCreateQuiz(token1, "Test Quiz", "This is test quiz").body as string)).quizId;
+    const quizId2 = (JSON.parse(testCreateQuiz(token1, "Test Quiz 2", "This is test quiz").body as string)).quizId;
 
-const resCQQ1 = testCreateQuestion(token1, quizId1, 
-    {
-        question: "Who is the Monarch of England?",
-        duration: 10,
-        points: 5,
-        answers: [
-            {
-                answer: "Prince Charles",
-                correct: true
-            },
-            {
-                answer: "Example",
-                correct: false
-            }
-        ],
-        "thumbnailUrl": "http://google.com/some/image/path.jpg"
-    }
-);
-const questionId1 = JSON.parse(resCQQ1.body as string).questionId;
+    const resCQQ1 = testCreateQuestion(token1, quizId1, 
+        {
+            question: "Who is the Monarch of England?",
+            duration: 10,
+            points: 5,
+            answers: [
+                {
+                    answer: "Prince Charles",
+                    correct: true
+                },
+                {
+                    answer: "Example",
+                    correct: false
+                }
+            ],
+            "thumbnailUrl": "http://google.com/some/image/path.jpg"
+        }
+    );
+    const questionId1 = JSON.parse(resCQQ1.body as string).questionId;
 
-const resCQQ2 = testCreateQuestion(token1, quizId1, 
-    {
-        question: "Second Question!",
-        duration: 10,
-        points: 5,
-        answers: [
-            {
-                answer: "Answer A",
-                correct: true
-            },
-            {
+    const resCQQ2 = testCreateQuestion(token1, quizId1, 
+        {
+            question: "Second Question!",
+            duration: 10,
+            points: 5,
+            answers: [
+                {
+                    answer: "Answer A",
+                    correct: true
+                },
+                {
                 answer: "Answer B",
                 correct: false
             }

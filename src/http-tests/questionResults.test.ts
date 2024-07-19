@@ -97,11 +97,11 @@ const playerId = pId.playerId;
 
 describe('error', () => {
   test('player does not exist', () => {
-    expect(questionResult(playerId + 1, 1, userToken)).toThrow(HTTPError[400]);
+    expect(() => questionResult(playerId + 1, 1, userToken)).toThrow(HTTPError[400]);
   });
 
   test('question position invalid', () => {
-    expect(questionResult(playerId, 0, userToken)).toThrow(HTTPError[400]);
+    expect(() => questionResult(playerId, 0, userToken)).toThrow(HTTPError[400]);
   });
 
   // test('quiz session state wrong', () => {
@@ -109,14 +109,14 @@ describe('error', () => {
   // });
 
   test('question position more than what exists', () => {
-    expect(questionResult(playerId , 2, userToken)).toThrow(HTTPError[400]);
+    expect(() => questionResult(playerId , 2, userToken)).toThrow(HTTPError[400]);
   });
 });
 
 test('succesfull', () => {
-  changeState(quizId, sessionId, QuizSessionAction.NEXT_QUESTION, userToken);
-  changeState(quizId, sessionId, QuizSessionAction.SKIP_COUNTDOWN, userToken);
-  let d = sessionStatusRoute(quizId, sessionId, userToken);
+  changeState(quizId, sessionId.sessionId, QuizSessionAction.NEXT_QUESTION, userToken);
+  changeState(quizId, sessionId.sessionId, QuizSessionAction.SKIP_COUNTDOWN, userToken);
+  let d = sessionStatusRoute(quizId, sessionId.sessionId, userToken);
   let answerId = d.metadata.questions[0].answers[0].answerId
   submitAnswer(playerId, 1, answerId);
 
@@ -128,4 +128,4 @@ test('succesfull', () => {
   });
 });
 
-requestHelper('DELETE', '/v2/clear', {});
+// requestHelper('DELETE', '/v2/clear', {});

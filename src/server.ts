@@ -1050,12 +1050,16 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const playerId = parseInt(req.params.playerId);
   const messageBody = req.body.message;
-
-  if (!findUserIdByToken(token)) {
-    throw HTTPError(401, 'token incorrect or not found');
+  console.log(messageBody);
+  if (!token) {
+    throw HTTPError(401, "A correct token is required");
+  }
+  const UserId = findUserIdByToken(token);
+  if (!UserId) {
+    throw HTTPError(401, "Token incorrect or not found");
   }
 
-  return sendChat(playerId, messageBody);
+  return sendChat(playerId, messageBody.message);
 });
 
 //Victor's part

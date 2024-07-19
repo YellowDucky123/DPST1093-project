@@ -1120,7 +1120,7 @@ app.put('/v1/player/{playerid}/question/{questionposition}/answer', (req: Reques
   const playerId = parseInt(req.params.playerId);
   const questionPosition = parseInt(req.params.questionposition);
   const token = req.header('token');
-  const answerIds = req.body
+  const answerIds = (req.body.answerIds as string[]).map(Number);
   if (!findUserIdByToken(token)) {
     throw HTTPError(401, 'token incorrect or not found');
   }

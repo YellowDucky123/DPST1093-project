@@ -329,7 +329,7 @@ export function openQuizSessionQuestion(quizSessionId: number) {
     let sesData = getSessionData();
     clearTimeout(sesData[quizSessionId].currentTimerId);
     sesData[quizSessionId].state = QuizSessionState.QUESTION_OPEN;
-    sesData[quizSessionId].currentTimerId = setTimeout(() => closeCurrentQuizSessionQuestion(quizSessionId), sesData[quizSessionId].metadata.questions[sesData[quizSessionId].atQuestion - 1].duration * 1000)[Symbol.toPrimitive]()
+    sesData[quizSessionId].currentTimerId = setTimeout(() => closeCurrentQuizSessionQuestion(quizSessionId), sesData[quizSessionId].metadata.questions[sesData[quizSessionId].atQuestion - 1].duration * 1000)[Symbol.toPrimitive]();
     setSessionData(sesData);
   
     return {}
@@ -338,7 +338,7 @@ export function openQuizSessionQuestion(quizSessionId: number) {
 export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
     /*
     code Kelvin
-    */
+    */  
    let sesData = getSessionData();
    clearTimeout(sesData[quizSessionId].currentTimerId);
    sesData[quizSessionId].state = QuizSessionState.QUESTION_CLOSE;

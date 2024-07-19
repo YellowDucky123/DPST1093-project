@@ -662,13 +662,13 @@ export function sendChat(playerId: number, body) {
   if (!isPlayerExist(playerId)) {
     throw HTTPError(400, 'player does not exist');
   }
-  if (body.message.messageBody.length === 0 || body.message.messageBody.length > 100) {
+  if (body.length === 0 || body.length > 100) {
     throw HTTPError(400, 'message length invalid');
   }
 
   const players = getPlayerData();
   const message: message = {
-    messageBody: body.message.messageBody,
+    messageBody: body,
     playerId: playerId,
     playerName: players[playerId].name,
     timeSent: Date.now()

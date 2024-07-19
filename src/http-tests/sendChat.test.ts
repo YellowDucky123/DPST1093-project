@@ -13,13 +13,13 @@ const url = config.url;
 
 const SERVER_URL = `${url}:${port}`;
 
-afterAll(() => {
-    requestHelper('DELETE', '/v2/clear', {});
-});
+// afterAll(() => {
+//     requestHelper('DELETE', '/v2/clear', {});
+// });
 
-beforeAll(() => {
-    requestHelper('DELETE', '/v2/clear', {});
-});
+// beforeAll(() => {
+//     requestHelper('DELETE', '/v2/clear', {});
+// });
 
 requestHelper('DELETE', '/v2/clear', {});
 
@@ -64,7 +64,7 @@ function joinSession(sessionId: number, name: string) {
 }
 
 function sendChat(message: string, playerId: number, token:string) {
-    return requestHelper('POST', `/v1/player/${playerId}/chat`, {message}, {token});
+    return requestHelper('POST', `/v1/player/${playerId}/chat`, {message:{messageBody: message}}, {token});
 }
 
 const authToken = authRegister(
@@ -82,9 +82,14 @@ const quizId = qzId.quizId;
 createQuestion(quizId, userToken);
 
 const sessionId = startSession(quizId, 3, userToken);
-const playerId = joinSession(sessionId.sessionId, 'player1');
+const pId = joinSession(sessionId.sessionId, 'player1');
+const playerId = pId.playerId;
 
 describe('error', () => {
+    test('token does not exist or wrong', () => {
+        expect(() => sendChat('Hello Everyone', playerId, userToken + 1)).toThrow(HTTPError[401]);
+    });
+
   test('player does not exist', () => {
     expect(() => sendChat('Hello Everyone', playerId, userToken)).toThrow(HTTPError[400]);
   });
@@ -104,4 +109,6 @@ describe('error', () => {
 test('succesfull send', () => {
     expect(() => sendChat('Greeting Earthlings!', playerId, userToken)).toEqual({});
 });
+
+// requestHelper('DELETE', '/v2/clear', {});
 

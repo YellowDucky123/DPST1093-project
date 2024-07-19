@@ -1029,6 +1029,9 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
     throw HTTPError(401, "A correct token is required");
   }
   const userId = findUserIdByToken(token);
+  if (!userId) {
+    throw HTTPError(401, "Token incorrect or not found");
+  }
 
   if (quizIdValidator(quizId) === false) {
     throw HTTPError(403, "Quiz does not exist");

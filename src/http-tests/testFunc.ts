@@ -21,8 +21,8 @@ export function testRegisterUser(email: string, password: string, nameFirst: str
         }
     );
     const token = JSON.parse(res.body as string).token;
-  
-    if('error' in res) {
+
+    if ('error' in res) {
         return res;
     } else {
         return token;
@@ -34,13 +34,45 @@ export function testCreateQuiz(token: string, name: string, description: string)
         'POST',
         SERVER_URL + '/v2/admin/quiz',
         {
-          headers: {
-            token: token
-          },
-          json: {
-            name: name,
-            description: description
-          }
+            headers: {
+                token: token
+            },
+            json: {
+                name: name,
+                description: description
+            }
+        }
+    );
+
+    return result;
+}
+
+export function testAdminLogout(token: string) {
+    const result = request(
+        'POST',
+        SERVER_URL + '/v2/admin/auth/logout',
+        {
+            headers: {
+                token: token
+            }
+        }
+    );
+
+    return result;
+}
+
+export function testAdminUserPassword(token: string, oldPassword: string, newPassword: string) {
+    const result = request(
+        'PUT',
+        SERVER_URL + '/v2/admin/user/password',
+        {
+            headers: {
+                token: token
+            },
+            json: {
+                oldPassword: oldPassword,
+                newPassword: newPassword
+            }
         }
     );
 
@@ -50,7 +82,7 @@ export function testCreateQuiz(token: string, name: string, description: string)
 export function testUpdateThumbnail(token: string, quizId: number, imgUrl: string) {
     const result = request(
         'PUT',
-        SERVER_URL + '/v1/admin/quiz/'+quizId+'/thumbnail',
+        SERVER_URL + '/v1/admin/quiz/' + quizId + '/thumbnail',
         {
             headers: {
                 token: token
@@ -68,7 +100,7 @@ export function testUpdateThumbnail(token: string, quizId: number, imgUrl: strin
 export function testCreateQuestion(token: string, quizId: number, questionBody: object) {
     const result = request(
         'POST',
-        SERVER_URL + '/v2/admin/quiz/'+quizId+'/question',
+        SERVER_URL + '/v2/admin/quiz/' + quizId + '/question',
         {
             headers: {
                 token: token
@@ -86,7 +118,7 @@ export function testCreateQuestion(token: string, quizId: number, questionBody: 
 export function testStartSession(token: string, quizId: number, autoStartNum: number) {
     const result = request(
         'POST',
-        SERVER_URL + '/v1/admin/quiz/'+quizId+'/session/start',
+        SERVER_URL + '/v1/admin/quiz/' + quizId + '/session/start',
         {
             headers: {
                 token: token
@@ -104,7 +136,7 @@ export function testStartSession(token: string, quizId: number, autoStartNum: nu
 export function testSessionState(token: string, quizId: number, sessionId: number, action: QuizSessionAction) {
     const result = request(
         'PUT',
-        SERVER_URL + '/v1/admin/quiz/'+quizId+'/session/'+sessionId,
+        SERVER_URL + '/v1/admin/quiz/' + quizId + '/session/' + sessionId,
         {
             headers: {
                 token: token
@@ -123,7 +155,7 @@ export function testSessionState(token: string, quizId: number, sessionId: numbe
 export function testQuizInfo(token: string, quizId: number) {
     const result = request(
         'GET',
-        SERVER_URL + '/v2/admin/quiz/'+quizId,
+        SERVER_URL + '/v2/admin/quiz/' + quizId,
         {
             headers: {
                 token: token
@@ -140,7 +172,7 @@ export function testQuizInfo(token: string, quizId: number) {
 export function testSessionInfo(token: string, quizId: number, sessionId: number) {
     const result = request(
         'GET',
-        SERVER_URL + '/v1/admin/quiz/'+quizId+'/session/'+sessionId,
+        SERVER_URL + '/v1/admin/quiz/' + quizId + '/session/' + sessionId,
         {
             headers: {
                 token: token
@@ -158,7 +190,7 @@ export function testSessionInfo(token: string, quizId: number, sessionId: number
 export function testListSessions(token: string, quizId: number) {
     const result = request(
         'GET',
-        SERVER_URL + '/v1/admin/quiz/'+quizId+'/sessions',
+        SERVER_URL + '/v1/admin/quiz/' + quizId + '/sessions',
         {
             headers: {
                 token: token
@@ -190,7 +222,23 @@ export function testJoinSession(sessionId: number, name: string) {
 export function testSubmitAnswer(playerId: number, questionPosition: number, answerIds: number[]) {
     const result = request(
         'PUT',
-        SERVER_URL + '/v1/player/'+playerId+'/question/'+questionPosition+'/answer',
+        SERVER_URL + '/v1/player/' + playerId + '/question/' + questionPosition + '/answer',
+        {
+            json: {
+                playerId: playerId,
+                questionPosition: questionPosition,
+                answerIds: answerIds
+            }
+        }
+    );
+
+    return result;
+}
+
+export function playerStatus(playerId: number, questionPosition: number, answerIds: number[]) {
+    const result = request(
+        'PUT',
+        SERVER_URL + '/v1/player/' + playerId + '/question/' + questionPosition + '/answer',
         {
             json: {
                 playerId: playerId,

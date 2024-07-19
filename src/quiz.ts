@@ -19,7 +19,7 @@ import { countSessionNotEnd } from './helpers';
 
 export function adminQuizCreate(authUserId: number, name: string, description: string) {
   if (userIdValidator(authUserId) === false) {
-    throw HTTPError(401, "Invalid user id");
+    throw HTTPError(401, 'Invalid user id');
   }
   if (nameLen(name) === false) {
     throw HTTPError(400, 'Invalid name length');
@@ -58,16 +58,16 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
 
 export function adminQuizRemove(authUserId: number, quizId: number) {
   if (userIdValidator(authUserId) === false) {
-    throw HTTPError(401, "Invalid user id");
+    throw HTTPError(401, 'Invalid user id');
   }
   if (quizIdValidator(quizId) === false) {
-    throw HTTPError(403, "Invalid quiz id");
+    throw HTTPError(403, 'Invalid quiz id');
   }
   if (quizOwnership(authUserId, quizId) === false) {
     throw HTTPError(403, 'You do not own this quiz');
   }
   if (countSessionNotEnd(quizId) != 0) {
-    throw HTTPError(400, "All sessions for this quiz must be in END state");
+    throw HTTPError(400, 'All sessions for this quiz must be in END state');
   }
 
   const data = getData();
@@ -85,10 +85,10 @@ export function adminQuizRemove(authUserId: number, quizId: number) {
 
 export function adminQuizInfo(authUserId: number, quizId: number) {
   if (userIdValidator(authUserId) === false) {
-    throw HTTPError(401, "Invalid user id");
+    throw HTTPError(401, 'Invalid user id');
   }
   if (quizIdValidator(quizId) === false) {
-    throw HTTPError(403, "Invalid quiz id");
+    throw HTTPError(403, 'Invalid quiz id');
   }
   if (quizOwnership(authUserId, quizId) === false) {
     throw HTTPError(403, 'You do not own this quiz');
@@ -139,7 +139,7 @@ function getanswers(question: question) {
     ans.push({
       answerId: answer.answerId ? answer.answerId : question.answers.indexOf(answer),
       answer: answer.answer,
-      colour: answer.colour ? answer.colour : "black",
+      colour: answer.colour ? answer.colour : 'black',
       correct: answer.correct
     });
   }
@@ -252,7 +252,7 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
     points: question.points,
     answers: getanswers(question),
     playerTime: [],
-    thumbnailUrl:question.thumbnailUrl
+    thumbnailUrl: question.thumbnailUrl
   };
   data.quizzes[quizId].questions.push(ans);
   data.quizzes[quizId].numQuizQuestion++;
@@ -426,7 +426,7 @@ export function moveQuestion(authUserId: number, quizId: number, questionId: num
 
 export function adminViewDeletedQuizzes(authUserId: number) {
   if (!userIdValidator(authUserId)) {
-    throw HTTPError(401, "Invalid user id");
+    throw HTTPError(401, 'Invalid user id');
   }
 
   const data = getData();
@@ -450,10 +450,10 @@ export function adminViewDeletedQuizzes(authUserId: number) {
 
 export function adminRestoreQuiz(authUserId: number, quizId: number) {
   if (userIdValidator(authUserId) === false) {
-    throw HTTPError(401, "Invalid user id");
+    throw HTTPError(401, 'Invalid user id');
   }
   if (deletedQuizIdValidator(quizId) === false) {
-    throw HTTPError(400, "Invalid quiz id");
+    throw HTTPError(400, 'Invalid quiz id');
   }
   if (deletedQuizOwnership(authUserId, quizId) === false) {
     throw HTTPError(403, 'You do not own this quiz');
@@ -480,7 +480,7 @@ export function adminRestoreQuiz(authUserId: number, quizId: number) {
 
 export function adminQuizPermDelete(authUserId: number, quizIds: number[]) {
   if (userIdValidator(authUserId) === false) {
-    throw HTTPError(401, "Invalid user id");
+    throw HTTPError(401, 'Invalid user id');
   }
   for (const item of quizIds) {
     if (deletedQuizIdValidator(item) === false) {
@@ -521,20 +521,20 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
       break;
     }
   }
-  if (!("question" in questionBody && typeof questionBody.question === "string")) {
-    return { error: "a question is required" };
+  if (!('question' in questionBody && typeof questionBody.question === 'string')) {
+    return { error: 'a question is required' };
   }
   if ((questionBody.question.length < 5 || questionBody.question.length > 50)) {
     return { error: 'Question string is less than 5 characters in length or greater than 50 characters in length' };
   }
-  if (!("answers" in questionBody && Array.isArray(questionBody.answers))) {
-    return { error: "answers are required" };
+  if (!('answers' in questionBody && Array.isArray(questionBody.answers))) {
+    return { error: 'answers are required' };
   }
   if (questionBody.answers.length < 2 || questionBody.answers.length > 6) {
     return { error: 'The question has more than 6 answers or less than 2 answers' };
   }
-  if (!("duration" in questionBody && typeof questionBody.duration === "number")) {
-    return { error: "a duration is required" };
+  if (!('duration' in questionBody && typeof questionBody.duration === 'number')) {
+    return { error: 'a duration is required' };
   }
   if (questionBody.duration <= 0) {
     return { error: 'The question duration is not a positive number' };
@@ -542,8 +542,8 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
   if (questionBody.duration > 180) {
     return { error: 'If this question were to be updated, the sum of the question durations in the quiz exceeds 3 minutes' };
   }
-  if (!("points" in questionBody && typeof questionBody.points === "number")) {
-    return { error: "points is required" };
+  if (!('points' in questionBody && typeof questionBody.points === 'number')) {
+    return { error: 'points is required' };
   }
   if (questionBody.points < 1 || questionBody.points > 10) {
     return { error: 'The points awarded for the question are less than 1 or greater than 10' };
@@ -581,19 +581,19 @@ export function adminQuizQuestionUpdate(userId: number, quizId: number, question
 }
 
 export function updateQuizThumbnail(userId: number, quizId: number, imgUrl: string) {
-    if(urlCheck(imgUrl) === false) {
-        throw HTTPError(400, "invalid image url");
-    }
-    if(quizOwnership(userId, quizId) === false) {
-        throw HTTPError(403, "You do not own this quiz");
-    }
+  if (urlCheck(imgUrl) === false) {
+    throw HTTPError(400, 'invalid image url');
+  }
+  if (quizOwnership(userId, quizId) === false) {
+    throw HTTPError(403, 'You do not own this quiz');
+  }
 
-    let data = getData();
-    data.quizzes[quizId].imgUrl = imgUrl;
+  const data = getData();
+  data.quizzes[quizId].imgUrl = imgUrl;
 
-    setData(data);
+  setData(data);
 
-    return {};
+  return {};
 }
 
 // returns the result of a question
@@ -610,7 +610,7 @@ export function questionResults(playerId: number, questionPosition: number) {
   if (questionPosition > session.atQuestion) {
     throw HTTPError(400, 'have not reached there yet');
   }
-  if(questionPosition < 1) {
+  if (questionPosition < 1) {
     throw HTTPError(400, 'question invalid');
   }
   if (session.metadata.questions.length + 1 < questionPosition) {
@@ -622,20 +622,20 @@ export function questionResults(playerId: number, questionPosition: number) {
 
   const questions = session.metadata.questions;
   const q = questions[questionPosition - 1];
-  let playersCorrect: string[] = [];
+  const playersCorrect: string[] = [];
   let Time = 0;
   let amountPlayers = 0;
   let correctPlayers = 0;
-  for(const p in q.playerTime) {
-    if(q.playerTime[p].correct) {
+  for (const p in q.playerTime) {
+    if (q.playerTime[p].correct) {
       playersCorrect.push(q.playerTime[p].name);
       correctPlayers++;
     }
     Time += q.playerTime[p].duration;
     amountPlayers++;
   }
-  let avgTime = Time/amountPlayers;
-  let percentCorrect = (correctPlayers * 100) / amountPlayers;
+  const avgTime = Time / amountPlayers;
+  const percentCorrect = (correctPlayers * 100) / amountPlayers;
 
   return {
     questionId: q.questionId,
@@ -681,22 +681,21 @@ export function sendChat(playerId: number, body : string) {
   return {};
 }
 
-
 // Victor's parts
 
 export function statusPlayer(playerId: number) {
   if (!isPlayerExist(playerId)) {
-    return { error: "playerId does not exist" }
+    return { error: 'playerId does not exist' };
   }
-  let playerData = getPlayerData();
-  let sessionId = playerData[playerId].sessionId;
-  let session = getSessionData();
-  let newSession = session[sessionId];
+  const playerData = getPlayerData();
+  const sessionId = playerData[playerId].sessionId;
+  const session = getSessionData();
+  const newSession = session[sessionId];
   const data = {
-    "state": newSession.state,
-    "numQuestions": newSession.metadata.numQuizQuestion,
-    "atQuestion": newSession.atQuestion
-  }
+    state: newSession.state,
+    numQuestions: newSession.metadata.numQuizQuestion,
+    atQuestion: newSession.atQuestion
+  };
   return data;
 }
 
@@ -712,42 +711,42 @@ export function isQuestionValid(questionPosition: number, questionNumber: number
 
 export function currentQuestionPosition(playerId: number, questionPosition: number) {
   if (!isPlayerExist(playerId)) {
-    return { error: "playerId does not exist" }
+    return { error: 'playerId does not exist' };
   }
-  let playerData = getPlayerData();
-  let sessionId = playerData[playerId].sessionId;
-  let session = getSessionData();
-  let newSession = session[sessionId];
+  const playerData = getPlayerData();
+  const sessionId = playerData[playerId].sessionId;
+  const session = getSessionData();
+  const newSession = session[sessionId];
   if (!isQuestionValid(questionPosition, newSession.metadata.numQuizQuestion)) {
-    return { error: "questionBody is not valid" }
+    return { error: 'questionBody is not valid' };
   }
   if (newSession.state === QuizSessionState.LOBBY || newSession.state === QuizSessionState.END) {
-    return { error: "QuizSessionState is in LOBBY or END" };
+    return { error: 'QuizSessionState is in LOBBY or END' };
   }
   if (newSession.atQuestion !== questionPosition) {
-    return { error: "questionPosition is not the same as atQuestion" }
+    return { error: 'questionPosition is not the same as atQuestion' };
   }
-  let data = playerData[playerId].questionAnswered[questionPosition];
+  const data = playerData[playerId].questionAnswered[questionPosition];
   return data;
 }
 
 export function answerSubmission(playerId: number, questionPosition: number, answerIds: number[]) {
   if (!isPlayerExist(playerId)) {
-    return { error: "playerId does not exist" }
+    return { error: 'playerId does not exist' };
   }
-  let playerData = getPlayerData();
-  let sessionId = playerData[playerId].sessionId;
-  let session = getSessionData();
-  let newSession = session[sessionId];
-  let newPaste = playerData[playerId].questionAnswered[questionPosition];
+  const playerData = getPlayerData();
+  const sessionId = playerData[playerId].sessionId;
+  const session = getSessionData();
+  const newSession = session[sessionId];
+  const newPaste = playerData[playerId].questionAnswered[questionPosition];
   if (!isQuestionValid(questionPosition, newSession.metadata.numQuizQuestion)) {
-    return { error: "questionBody is not valid" }
+    return { error: 'questionBody is not valid' };
   }
   if (newSession.state !== QuizSessionState.QUESTION_OPEN) {
-    return { error: "Session is not in QUESTION_OPEN state" };
+    return { error: 'Session is not in QUESTION_OPEN state' };
   }
   if (newSession.atQuestion !== questionPosition) {
-    return { error: "questionPosition is not the same as atQuestion" }
+    return { error: 'questionPosition is not the same as atQuestion' };
   }
   let check = 0;
   for (let i = 0; i < newPaste.answers.length; i++) {
@@ -758,7 +757,7 @@ export function answerSubmission(playerId: number, questionPosition: number, ans
     }
   }
   if (check === 1) {
-    return { error: "Answer IDs are not valid for this particular question" }
+    return { error: 'Answer IDs are not valid for this particular question' };
   }
   let newCheck = 0;
   for (let i = 0; i < answerIds.length; i++) {
@@ -769,10 +768,10 @@ export function answerSubmission(playerId: number, questionPosition: number, ans
     }
   }
   if (newCheck === 1) {
-    return { error: "There are duplicate answer IDs provided" };
+    return { error: 'There are duplicate answer IDs provided' };
   }
   if (answerIds.length < 1) {
-    return { error: "Less than 1 answer ID submitted" };
+    return { error: 'Less than 1 answer ID submitted' };
   }
   playerData[playerId].questionAnswered.push(newSession.metadata.questions[questionPosition]);
   return {};
@@ -780,14 +779,14 @@ export function answerSubmission(playerId: number, questionPosition: number, ans
 
 export function playerResults(playerId: number) {
   if (!isPlayerExist(playerId)) {
-    return { error: "playerId does not exist" }
+    return { error: 'playerId does not exist' };
   }
-  let playerData = getPlayerData();
-  let sessionId = playerData[playerId].sessionId;
-  let session = getSessionData();
-  let newSession = session[sessionId];
+  const playerData = getPlayerData();
+  const sessionId = playerData[playerId].sessionId;
+  const session = getSessionData();
+  const newSession = session[sessionId];
   if (newSession.state !== QuizSessionState.END) {
-    return { error: "Session is not in FINAL_RESULTS state" }
+    return { error: 'Session is not in FINAL_RESULTS state' };
   }
-  return newSession.results
+  return newSession.results;
 }

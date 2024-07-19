@@ -15,29 +15,29 @@ afterAll(() => {
 
 request('DELETE', `${url}:${port}/v1/clear`);
 
-const token1 = testRegisterUser("test@email.com", 'newPassword123', 'Kei', 'Ikushima');
-const token2 = testRegisterUser("test2@email.com", 'newPassword123', 'Kelvin', 'Yoga');
+const token1 = testRegisterUser('test@email.com', 'newPassword123', 'Kei', 'Ikushima');
+const token2 = testRegisterUser('test2@email.com', 'newPassword123', 'Kelvin', 'Yoga');
 
-const quizId1 = (JSON.parse(testCreateQuiz(token1, "Test Quiz", "This is test quiz").body as string)).quizId;
-const quizId2 = (JSON.parse(testCreateQuiz(token1, "Test Quiz 2", "This is test quiz").body as string)).quizId;
+const quizId1 = (JSON.parse(testCreateQuiz(token1, 'Test Quiz', 'This is test quiz').body as string)).quizId;
+const quizId2 = (JSON.parse(testCreateQuiz(token1, 'Test Quiz 2', 'This is test quiz').body as string)).quizId;
 
-testCreateQuestion(token1, quizId1, 
-    {
-        question: "Who is the Monarch of England?",
-        duration: 4,
-        points: 5,
-        answers: [
-            {
-                answer: "Prince Charles",
-                correct: true
-            },
-            {
-                answer: "Example",
-                correct: false
-            }
-        ],
-        "thumbnailUrl": "http://google.com/some/image/path.jpg"
-    }
+testCreateQuestion(token1, quizId1,
+  {
+    question: 'Who is the Monarch of England?',
+    duration: 4,
+    points: 5,
+    answers: [
+      {
+        answer: 'Prince Charles',
+        correct: true
+      },
+      {
+        answer: 'Example',
+        correct: false
+      }
+    ],
+    thumbnailUrl: 'http://google.com/some/image/path.jpg'
+  }
 );
 
 describe('Start session test: ', () => {
@@ -46,10 +46,10 @@ describe('Start session test: ', () => {
     const result = JSON.parse(res1.body as string);
     expect(res1.statusCode).toBe(OK);
     expect(result).toStrictEqual({
-        sessionId: result.sessionId
+      sessionId: result.sessionId
     });
   });
-  
+
   test('Invalid autoStartNum: ', () => {
     const res1 = testStartSession(token1, quizId1, 100);
     expect(res1.statusCode).toBe(400);
@@ -61,7 +61,7 @@ describe('Start session test: ', () => {
   });
 
   test('Invalid token: ', () => {
-    const res1 = testStartSession(token1+1, quizId1, 30);
+    const res1 = testStartSession(token1 + 1, quizId1, 30);
     expect(res1.statusCode).toBe(401);
   });
 
@@ -71,8 +71,8 @@ describe('Start session test: ', () => {
   });
 
   test('Over maximum of 10 session: ', () => {
-    for(let i = 0; i < 9; ++i) {
-        testStartSession(token1, quizId1, 30);
+    for (let i = 0; i < 9; ++i) {
+      testStartSession(token1, quizId1, 30);
     }
     const res1 = testStartSession(token1, quizId1, 30);
     expect(res1.statusCode).toBe(400);

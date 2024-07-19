@@ -26,7 +26,7 @@ function isanswer(answer: object): boolean {
 export type playerTimes = {
   [playerId: number] : {
     name: string,
-    correct: boolean, 
+    correct: boolean,
     duration: number
   }
 }

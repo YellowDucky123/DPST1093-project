@@ -57,7 +57,7 @@ import {
   listSessions,
   newPlayerJoinSession,
   startSession
-} from "./session"
+} from './session';
 
 import { updateSesionState } from './updateSessionState_fn';
 // set up data
@@ -177,7 +177,7 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
 app.get('/v2/admin/user/details', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   if (!token) {
-    throw HTTPError(401, "A token is required")
+    throw HTTPError(401, 'A token is required');
   }
   let UserId;
   if (!(UserId = findUserIdByToken(token))) {
@@ -218,7 +218,7 @@ app.get('/v2/admin/quiz/list', (req: Request, res: Response) => {
   }
   let UserId;
   if (!(UserId = findUserIdByToken(token))) {
-    throw HTTPError(401, 'token incorrect or not found' );
+    throw HTTPError(401, 'token incorrect or not found');
   } else {
     const ans = adminQuizList(UserId);
     if ('error' in ans) {
@@ -268,7 +268,7 @@ app.put('/v2/admin/user/details', (req: Request, res: Response) => {
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, 'token incorrect or not found' );
+    throw HTTPError(401, 'token incorrect or not found');
   }
   const ans = adminUserDetailsUpdate(UserId, email, nameFirst, nameLast);
   if ('error' in ans) {
@@ -325,15 +325,15 @@ app.post('/v2/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
     throw HTTPError(403, 'You must provide a quizId');
   }
   if (!userEmail) {
-    throw HTTPError(400, 'You must provide a valid email' );
+    throw HTTPError(400, 'You must provide a valid email');
   }
   const ans = adminQuizTransfer(quizId, UserId, userEmail);
 
   if ('error' in ans) {
     if (ans.error === 'You do not own this quiz') {
-      throw HTTPError(403, ans.error)
+      throw HTTPError(403, ans.error);
     } else {
-      throw HTTPError(400, ans.error)
+      throw HTTPError(400, ans.error);
     }
   }
   res.status(200).json(ans);
@@ -382,74 +382,74 @@ app.post('/v2/admin/quiz/:quizId/question', (req: Request, res: Response) => {
   const ans = adminQuestionCreate(UserId, quizId, questionBody);
   if ('error' in ans) {
     if (ans.error === 'This user does not own this quiz') {
-      throw HTTPError(403, ans.error)
+      throw HTTPError(403, ans.error);
     } else {
-      throw HTTPError(400, ans.error)
+      throw HTTPError(400, ans.error);
     }
   }
   res.status(200).json(ans);
 });
 
 app.get('/v1/admin/quiz/:quizid/session/:sessionid', (req : Request, res: Response) => {
-  let token = req.headers.token as string;
-  let quizId = parseInt(req.params.quizid)
-  let sessionid = parseInt(req.params.sessionid)
-  if (!token) throw HTTPError(401, "a token is required");
-  let userid = findUserIdByToken(token);
-  if (!userid) throw HTTPError(401, "token not correct");
-  if (quizId === undefined) throw HTTPError(403, "a quizid is required");
-  if (sessionid === undefined) throw HTTPError(400, "a sessionid is required");
-  let ans = getSessionStatus(userid, quizId, sessionid);
+  const token = req.headers.token as string;
+  const quizId = parseInt(req.params.quizid);
+  const sessionid = parseInt(req.params.sessionid);
+  if (!token) throw HTTPError(401, 'a token is required');
+  const userid = findUserIdByToken(token);
+  if (!userid) throw HTTPError(401, 'token not correct');
+  if (quizId === undefined) throw HTTPError(403, 'a quizid is required');
+  if (sessionid === undefined) throw HTTPError(400, 'a sessionid is required');
+  const ans = getSessionStatus(userid, quizId, sessionid);
   res.status(200).json(ans);
-})
+});
 
 app.get('/v1/admin/quiz/:quizid/session/:sessionid/results', (req : Request, res : Response) => {
   const token = req.headers.token as string;
   const quizid = parseInt(req.params.quizid);
   const sessionid = parseInt(req.params.sessionid);
 
-  if (!token) throw HTTPError(401, "a token is required");
-  const userid = findUserIdByToken(token)
-  if (!userid) throw HTTPError(401, "token invalid");
+  if (!token) throw HTTPError(401, 'a token is required');
+  const userid = findUserIdByToken(token);
+  if (!userid) throw HTTPError(401, 'token invalid');
 
-  if (!quizid) throw HTTPError(403, "a quizid is required");
-  if (!sessionid) throw HTTPError(400, "a sessionid is required");
+  if (!quizid) throw HTTPError(403, 'a quizid is required');
+  if (!sessionid) throw HTTPError(400, 'a sessionid is required');
 
   const ans = getSessionResult(userid, quizid, sessionid);
   res.status(200).json(ans);
-})
+});
 
 app.get('/v1/admin/quiz/:quizid/session/:sessionid/results/csv', (req : Request, res : Response) => {
   const token = req.headers.token as string;
   const quizid = parseInt(req.params.quizid);
   const sessionid = parseInt(req.params.sessionid);
 
-  if (!token) throw HTTPError(401, "a token is required");
-  const userid = findUserIdByToken(token)
-  if (!userid) throw HTTPError(401, "token invalid");
+  if (!token) throw HTTPError(401, 'a token is required');
+  const userid = findUserIdByToken(token);
+  if (!userid) throw HTTPError(401, 'token invalid');
 
-  if (!quizid) throw HTTPError(403, "a quizid is required");
-  if (!sessionid) throw HTTPError(400, "a sessionid is required");
+  if (!quizid) throw HTTPError(403, 'a quizid is required');
+  if (!sessionid) throw HTTPError(400, 'a sessionid is required');
 
   const csvlink = getCSVFormatResult(userid, quizid, sessionid);
   res.status(200).json(csvlink);
-})
+});
 
 app.get('/v1/download/:filename', (res : Response, req : Request) => {
   const filename = req.params.filename;
   res.download(`./result/csv/${filename}`, filename, (err) => {
-    if (err) throw HTTPError(404, "file not found");
-  })
-})
+    if (err) throw HTTPError(404, 'file not found');
+  });
+});
 
 app.post('/v1/player/join', (req : Request, res : Response) => {
-  let sessionid = parseInt(req.body.sessionId);
-  let userName = req.body.name as string;
-  if (sessionid === undefined) throw HTTPError(400, "a sessionid is required");
-  if (userName === undefined) throw HTTPError(400, "a username is required");
+  const sessionid = parseInt(req.body.sessionId);
+  const userName = req.body.name as string;
+  if (sessionid === undefined) throw HTTPError(400, 'a sessionid is required');
+  if (userName === undefined) throw HTTPError(400, 'a username is required');
   return res.json(newPlayerJoinSession(sessionid, userName));
   // res.status(200).json(ans)
-})
+});
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   const token = req.body.token as string;
@@ -478,13 +478,13 @@ app.post('/v2/admin/quiz', (req: Request, res: Response) => {
   const name = req.body.name as string;
   const description = req.body.description as string;
   if (!token) {
-    throw HTTPError(401, "A correct token is required");
+    throw HTTPError(401, 'A correct token is required');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, "Token incorrect or not found");
+    throw HTTPError(401, 'Token incorrect or not found');
   }
-  
+
   return res.json(adminQuizCreate(UserId, name, description));
 });
 
@@ -512,11 +512,11 @@ app.delete('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const quizId = parseInt(req.query.quizId as string);
   if (!token) {
-    throw HTTPError(401, "A correct token is required");
+    throw HTTPError(401, 'A correct token is required');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, "Token incorrect or not found");
+    throw HTTPError(401, 'Token incorrect or not found');
   }
 
   return res.json(adminQuizRemove(UserId, quizId));
@@ -544,11 +544,11 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
 app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   if (!token) {
-    throw HTTPError(401, "A correct token is required");
+    throw HTTPError(401, 'A correct token is required');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, "Token incorrect or not found");
+    throw HTTPError(401, 'Token incorrect or not found');
   }
 
   return res.json(adminViewDeletedQuizzes(UserId));
@@ -583,11 +583,11 @@ app.get('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId as string);
   if (!token) {
-    throw HTTPError(401, "A correct token is required");
+    throw HTTPError(401, 'A correct token is required');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, "Token incorrect or not found");
+    throw HTTPError(401, 'Token incorrect or not found');
   }
 
   return res.json(adminQuizInfo(UserId, quizId));
@@ -621,11 +621,11 @@ app.post('/v2/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId as string);
   if (!token) {
-    throw HTTPError(401, "A correct token is required");
+    throw HTTPError(401, 'A correct token is required');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, "Token incorrect or not found");
+    throw HTTPError(401, 'Token incorrect or not found');
   }
 
   return res.json(adminRestoreQuiz(UserId, quizId));
@@ -659,11 +659,11 @@ app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const quizIds = (req.query.quizIds as string[]).map(Number);
   if (!token) {
-    throw HTTPError(401, "A correct token is required");
+    throw HTTPError(401, 'A correct token is required');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, "Token incorrect or not found");
+    throw HTTPError(401, 'Token incorrect or not found');
   }
 
   return res.json(adminQuizPermDelete(UserId, quizIds));
@@ -977,11 +977,11 @@ app.put('/v1/admin/quiz/:quizId/thumbnail', (req: Request, res: Response) => {
   const imgUrl = req.body.imgUrl as string;
 
   if (!token) {
-    throw HTTPError(401, "A correct token is required");
+    throw HTTPError(401, 'A correct token is required');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, "Token incorrect or not found");
+    throw HTTPError(401, 'Token incorrect or not found');
   }
 
   return res.json(updateQuizThumbnail(UserId, quizId, imgUrl));
@@ -992,11 +992,11 @@ app.get('/v1/admin/quiz/:quizId/sessions', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
 
   if (!token) {
-    throw HTTPError(401, "A correct token is required");
+    throw HTTPError(401, 'A correct token is required');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, "Token incorrect or not found");
+    throw HTTPError(401, 'Token incorrect or not found');
   }
 
   return res.json(listSessions(UserId, quizId));
@@ -1008,11 +1008,11 @@ app.post('/v1/admin/quiz/:quizId/session/start', (req: Request, res: Response) =
   const autoStartNum = parseInt(req.body.autoStartNum);
 
   if (!token) {
-    throw HTTPError(401, "A correct token is required");
+    throw HTTPError(401, 'A correct token is required');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, "Token incorrect or not found");
+    throw HTTPError(401, 'Token incorrect or not found');
   }
 
   return res.json(startSession(UserId, quizId, autoStartNum));
@@ -1026,23 +1026,22 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
   const action = req.body.action;
 
   if (!token) {
-    throw HTTPError(401, "A correct token is required");
+    throw HTTPError(401, 'A correct token is required');
   }
   const userId = findUserIdByToken(token);
 
   if (quizIdValidator(quizId) === false) {
-    throw HTTPError(403, "Quiz does not exist");
+    throw HTTPError(403, 'Quiz does not exist');
   }
-  if(quizOwnership(userId, quizId) === false) {
-    throw HTTPError(403, "You do not own this quiz");
+  if (quizOwnership(userId, quizId) === false) {
+    throw HTTPError(403, 'You do not own this quiz');
   }
   if (sessionIdValidator(sessionId) === false) {
-    throw HTTPError(400, "Invalid sessionid");
+    throw HTTPError(400, 'Invalid sessionid');
   }
 
   return res.json(updateSesionState(sessionId, action));
-})
-
+});
 
 // return question results
 app.get('/v1/player/:playerId/question/:questionPosition/results', (req: Request, res: Response) => {
@@ -1076,17 +1075,17 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
   const messageBody = req.body.message;
   console.log(messageBody);
   if (!token) {
-    throw HTTPError(401, "A correct token is required");
+    throw HTTPError(401, 'A correct token is required');
   }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, "Token incorrect or not found");
+    throw HTTPError(401, 'Token incorrect or not found');
   }
 
   return sendChat(playerId, messageBody.message);
 });
 
-//Victor's part
+// Victor's part
 
 // Status of guest player in session
 app.get('/v1/player/:playerId', (req: Request, res: Response) => {
@@ -1100,7 +1099,7 @@ app.get('/v1/player/:playerId', (req: Request, res: Response) => {
     throw HTTPError(400, result.error);
   }
   return res.status(200).json(result);
-})
+});
 
 app.get('/v1/player/:playerId/question:questionposition', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerId);
@@ -1114,19 +1113,19 @@ app.get('/v1/player/:playerId/question:questionposition', (req: Request, res: Re
     throw HTTPError(400, result.error);
   }
   return res.status(200).json(result);
-})
+});
 
 app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerId);
   const questionPosition = parseInt(req.params.questionPosition);
   const answerIds = (req.body.answerIds as string[]).map(Number);
-  
+
   const result = answerSubmission(playerId, questionPosition, answerIds);
   if ('error' in result) {
     throw HTTPError(400, result.error);
   }
   return res.status(200).json(result);
-})
+});
 
 app.get('/v1/player/:playerId/results', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerId);
@@ -1134,10 +1133,9 @@ app.get('/v1/player/:playerId/results', (req: Request, res: Response) => {
   if (!findUserIdByToken(token)) {
     throw HTTPError(401, 'token incorrect or not found');
   }
-  let result = playerResults(playerId);
-
-})
-//--------------------------------------------------------------------------
+  const result = playerResults(playerId);
+});
+// --------------------------------------------------------------------------
 // rids the server of everything
 app.delete('/v2/clear', (req: Request, res: Response) => {
   return res.json(clear());

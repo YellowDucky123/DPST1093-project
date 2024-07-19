@@ -16,11 +16,11 @@ afterAll(() => {
 });
 
 function startSession(quizId: number, autoStartNum: number, token) {
-    return requestHelper('POST', `/v1/admin/quiz/${quizId}/sessions/start`, {autoStartNum}, token);
+  return requestHelper('POST', `/v1/admin/quiz/${quizId}/sessions/start`, { autoStartNum }, token);
 }
 
 function questionResult(playerId: number, questionPosition: number, token) {
-    return requestHelper('GET', `/v1/player/${playerId}/question/${questionPosition}/results`, {}, token);
+  return requestHelper('GET', `/v1/player/${playerId}/question/${questionPosition}/results`, {}, token);
 }
 
 describe('error', () => {
@@ -42,8 +42,7 @@ describe('error', () => {
 });
 
 test('succesfull', () => {
-    expect(questionResult()).toEqual({
+  expect(questionResult()).toEqual({
 
-    });
+  });
 });
-

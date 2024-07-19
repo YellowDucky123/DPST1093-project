@@ -16,22 +16,21 @@ afterAll(() => {
 });
 
 function startSession(quizId: number, autoStartNum: number, token) {
-    return requestHelper('POST', `/v1/admin/quiz/${quizId}/sessions/start`, {autoStartNum}, token);
+  return requestHelper('POST', `/v1/admin/quiz/${quizId}/sessions/start`, { autoStartNum }, token);
 }
 
 function allChat(playerId: number, token) {
-    return requestHelper('GET', `/v1/player/${playerId}/chat`, {}, token);
+  return requestHelper('GET', `/v1/player/${playerId}/chat`, {}, token);
 }
 
 describe('error', () => {
   test('player does not exist', () => {
     expect(() => allChat(playerId, token)).toThrow(HTTPError[400]);
   });
-  
+
   test('correct implementation', () => {
     expect(() => allChat(playerId, token)).toEqual({
-        
-    });
-  })
-});
 
+    });
+  });
+});

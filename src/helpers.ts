@@ -345,38 +345,38 @@ export function hash(string: string) {
   return createHash('sha256').update(string).digest('hex');
 }
 
-//check file extension, and begin with "http"
+// check file extension, and begin with "http"
 export function urlCheck(url: string) {
-    const allowExtensions = /.(jpeg|jpg|png)$/i;
-    if(allowExtensions.test(url)) {
-        const allowStart = /^(http:\/\/|https:\/\/)/;
-        if(allowStart.test(url)) {
-            return true;
-        } else {
-            return false;
-        }
+  const allowExtensions = /.(jpeg|jpg|png)$/i;
+  if (allowExtensions.test(url)) {
+    const allowStart = /^(http:\/\/|https:\/\/)/;
+    if (allowStart.test(url)) {
+      return true;
     } else {
-        return false;
+      return false;
     }
+  } else {
+    return false;
+  }
 }
 
 export function countSessionNotEnd(quizId: number) {
-    let cnt: number = 0;
-    const data = getData();
-    for(const item in data.Sessions) {
-        if(data.Sessions[item].metadata.quizId === quizId) {
-            if(data.Sessions[item].state != QuizSessionState.END) {
-                cnt++;
-            }
-        }
+  let cnt = 0;
+  const data = getData();
+  for (const item in data.Sessions) {
+    if (data.Sessions[item].metadata.quizId === quizId) {
+      if (data.Sessions[item].state != QuizSessionState.END) {
+        cnt++;
+      }
     }
+  }
 
-    return cnt;
+  return cnt;
 }
 
 export function sessionIdValidator(sessionId: number) {
   const data = getData();
-  if(data.Sessions[sessionId] === undefined) {
+  if (data.Sessions[sessionId] === undefined) {
     return false;
   } else {
     return true;

@@ -186,3 +186,19 @@ export function testJoinSession(sessionId: number, name: string) {
 
     return result;
 }
+
+export function testSubmitAnswer(playerId: number, questionPosition: number, answerIds: number[]) {
+    const result = request(
+        'PUT',
+        SERVER_URL + '/v1/player/'+playerId+'/question/'+questionPosition+'/answer',
+        {
+            json: {
+                playerId: playerId,
+                questionPosition: questionPosition,
+                answerIds: answerIds
+            }
+        }
+    );
+
+    return result;
+}

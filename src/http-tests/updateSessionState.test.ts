@@ -1,6 +1,6 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
-import { testCreateQuestion, testCreateQuiz, testJoinSession, testQuizInfo, testRegisterUser, testSessionInfo, testSessionState, testStartSession, testUpdateThumbnail } from './testFunc';
+import { testCreateQuestion, testCreateQuiz, testJoinSession, testQuizInfo, testRegisterUser, testSessionInfo, testSessionState, testStartSession, testSubmitAnswer, testUpdateThumbnail } from './testFunc';
 import { getSessionStatus } from '../session';
 import { quizIdValidator } from '../helpers';
 import { QuizSessionAction, QuizSessionState, getData } from '../dataStore';
@@ -11,9 +11,9 @@ const url = config.url;
 
 const SERVER_URL = `${url}:${port}`;
 
-afterAll(() => {
-  request('DELETE', SERVER_URL + '/v1/clear');
-});
+// afterAll(() => {
+//   request('DELETE', SERVER_URL + '/v1/clear');
+// });
 
 request('DELETE', `${url}:${port}/v1/clear`);
 
@@ -23,10 +23,10 @@ const token2 = testRegisterUser("test2@email.com", 'newPassword123', 'Kelvin', '
 const quizId1 = (JSON.parse(testCreateQuiz(token1, "Test Quiz", "This is test quiz").body as string)).quizId;
 const quizId2 = (JSON.parse(testCreateQuiz(token1, "Test Quiz 2", "This is test quiz").body as string)).quizId;
 
-testCreateQuestion(token1, quizId1, 
+const resCQQ1 = testCreateQuestion(token1, quizId1, 
     {
         question: "Who is the Monarch of England?",
-        duration: 30,
+        duration: 10,
         points: 5,
         answers: [
             {
@@ -41,11 +41,12 @@ testCreateQuestion(token1, quizId1,
         "thumbnailUrl": "http://google.com/some/image/path.jpg"
     }
 );
+const questionId1 = JSON.parse(resCQQ1.body as string).questionId;
 
-testCreateQuestion(token1, quizId1, 
+const resCQQ2 = testCreateQuestion(token1, quizId1, 
     {
         question: "Second Question!",
-        duration: 30,
+        duration: 10,
         points: 5,
         answers: [
             {
@@ -60,10 +61,11 @@ testCreateQuestion(token1, quizId1,
         "thumbnailUrl": "http://google.com/some/image/path.jpg"
     }
 );
+const questionId2 = JSON.parse(resCQQ2.body as string).questionId;
 
 const sessionId1 = (JSON.parse(testStartSession(token1, quizId1, 30).body as string)).sessionId;
 
-const playerId1 = testJoinSession(sessionId1, "Kei");
+const playerId1 = JSON.parse(testJoinSession(sessionId1, "Kei").body as string).playerId;
 console.log(playerId1);
 
 describe('Update session state test: ', () => {
@@ -86,6 +88,10 @@ describe('Update session state test: ', () => {
   });
 
   test('[SUCCESS] QUESTION_OPEN => (GO_TO_ANSWER) => ANSWER_SHOW: ', () => {
+    console.log((JSON.parse(testSessionInfo(token1, quizId1, sessionId1).body as string)));
+    const answerId1 = (JSON.parse(testSessionInfo(token1, quizId1, sessionId1).body as string)).metadata.questions[0].answers.answerId;
+    let ary = [answerId1];
+    testSubmitAnswer(playerId1, 1, ary);
     const res1 = testSessionState(token1, quizId1, sessionId1, QuizSessionAction.GO_TO_ANSWER);
 
     expect(res1.statusCode).toBe(OK);

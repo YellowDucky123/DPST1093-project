@@ -193,12 +193,12 @@ export function testSubmitAnswer(playerId: number, questionPosition: number, ans
         SERVER_URL + '/v1/player/'+playerId+'/question/'+questionPosition+'/answer',
         {
             json: {
-                playerId: playerId,
-                questionPosition: questionPosition,
-                answerIds: answerIds
+                playerid: playerId,
+                questionposition: questionPosition,
+                answerids: answerIds
             }
         }
     );
-
+console.log("inside helper", playerId);
     return result;
 }

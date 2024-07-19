@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 import { answer, getData,setData, getSessionData, message, Player, playerResults, question, questionResults, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData, QuizSessionAction } from "./dataStore";
-import { createId, quizIdValidator, quizOwnership, countSessionNotEnd} from "./helpers";
+import { createId, quizIdValidator, quizOwnership, countSessionNotEnd, getCurrentTime} from "./helpers";
 import HTTPError from 'http-errors';
 import config from "./config.json";
 const path = config.url + ":" + config.port
@@ -322,10 +322,13 @@ export function endQuizSession(quizSessionId: number) {
   return {};
 }
 
+export let StartTime: number;
+
 export function openQuizSessionQuestion(quizSessionId: number) {
   /*
     code Kelvin
     */
+    StartTime = getCurrentTime();
     let sesData = getSessionData();
     clearTimeout(sesData[quizSessionId].currentTimerId);
     sesData[quizSessionId].state = QuizSessionState.QUESTION_OPEN;

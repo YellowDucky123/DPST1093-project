@@ -332,12 +332,18 @@ export function getCurrentTime() {
 }
 
 export function isPlayerExist(playerId: number) {
-  const P = getPlayerData();
+  // const P = getPlayerData();
 
-  for (const k in P) {
-    if (parseInt(k) === playerId) return true;
+  // for (const k in P) {
+  //   if (parseInt(k) === playerId) return true;
+  // }
+  // return false;
+  const data = getData();
+  if(data.playerData[playerId] === undefined) {
+    return false;
+  } else {
+    return true;
   }
-  return false;
 }
 
 // SHA-256 hash

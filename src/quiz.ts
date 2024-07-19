@@ -731,7 +731,13 @@ export function currentQuestionPosition(playerId: number, questionPosition: numb
   return data;
 }
 
+function isDuplicated(elements: number[]) {
+  const setElements = new Set(elements);
+  return setElements.size !== elements.length;
+}
+
 export function answerSubmission(playerId: number, questionPosition: number, answerIds: number[]) {
+  console.log("inside function", playerId);
   if (!isPlayerExist(playerId)) {
     return { error: "playerId does not exist" }
   }
@@ -750,9 +756,9 @@ export function answerSubmission(playerId: number, questionPosition: number, ans
     return { error: "questionPosition is not the same as atQuestion" }
   }
   let check = 0;
-  for (let i = 0; i < newPaste.answers.length; i++) {
+  for (const item of newSession.metadata.questions[questionPosition].answers) {
     for (const id of answerIds) {
-      if (newPaste.answers[i].answerId === id) {
+      if (item.answerId === id) {
         check = 1;
       }
     }
@@ -760,15 +766,7 @@ export function answerSubmission(playerId: number, questionPosition: number, ans
   if (check === 1) {
     return { error: "Answer IDs are not valid for this particular question" }
   }
-  let newCheck = 0;
-  for (let i = 0; i < answerIds.length; i++) {
-    for (let j = 0; j < answerIds.length; j++) {
-      if (answerIds[j] === answerIds[i]) {
-        newCheck = 1;
-      }
-    }
-  }
-  if (newCheck === 1) {
+  if (isDuplicated(answerIds) === true) {
     return { error: "There are duplicate answer IDs provided" };
   }
   if (answerIds.length < 1) {

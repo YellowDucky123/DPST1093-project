@@ -51,6 +51,7 @@ import {
   playerResults
 } from './quiz';
 import {
+  getCSVFormatResult,
   getSessionResult,
   getSessionStatus,
   listSessions,
@@ -418,6 +419,28 @@ app.get('/v1/admin/quiz/:quizid/session/:sessionid/results', (req : Request, res
   res.status(200).json(ans);
 })
 
+app.get('/v1/admin/quiz/:quizid/session/:sessionid/results/csv', (req : Request, res : Response) => {
+  const token = req.headers.token as string;
+  const quizid = parseInt(req.params.quizid);
+  const sessionid = parseInt(req.params.sessionid);
+
+  if (!token) throw HTTPError(401, "a token is required");
+  const userid = findUserIdByToken(token)
+  if (!userid) throw HTTPError(401, "token invalid");
+
+  if (!quizid) throw HTTPError(403, "a quizid is required");
+  if (!sessionid) throw HTTPError(400, "a sessionid is required");
+
+  const csvlink = getCSVFormatResult(userid, quizid, sessionid);
+  res.status(200).json(csvlink);
+})
+
+app.get('/v1/download/:filename', (res : Response, req : Request) => {
+  const filename = req.params.filename;
+  res.download(`./result/csv/${filename}`, filename, (err) => {
+    if (err) throw HTTPError(404, "file not found");
+  })
+})
 app.post('/v1/player/join', (res : Response, req : Request) => {
   let sessionid = parseInt(req.body.sessionid);
   let userName = req.body.name as string;

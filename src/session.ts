@@ -1,6 +1,5 @@
 import { customAlphabet } from "nanoid";
 import { answer, getData,setData, getSessionData, message, Player, playerResults, question, questionResults, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData, QuizSessionAction } from "./dataStore";
-import { setData } from "./dataStore";
 import { createId, quizIdValidator, quizOwnership, countSessionNotEnd} from "./helpers";
 import HTTPError from 'http-errors';
 
@@ -39,7 +38,7 @@ function checkQuizQuestionEmpty(quizId: number) {
 export function getSessionStatus(userId : number, quizId : number, sessionid : number) {
   let data = getData();
   // error check
-  if (data.quizzes[quizId] === undefined) throw HTTPError(403, "Invalid quizId");
+  if (!quizIdValidator(quizId)) throw HTTPError(403, "Invalid quizId");
   if (!quizOwnership(userId, quizId)) throw HTTPError(403, "You do not own this quiz");
   if (data.Sessions[sessionid] === undefined) throw HTTPError(400, "Invalid sessionid");
   if (data.Sessions[sessionid].metadata.quizId !== quizId) throw HTTPError(400, "Invalid sessionid");
@@ -80,7 +79,8 @@ function getMetaQuestions (quizid : number, metadata : question[]) {
       duration : question.duration, 
       thumbnailUrl : getData().quizzes[quizid].imgUrl,
       points : question.points,
-      answers : getAnswers(question.answers)
+      answers : getAnswers(question.answers),
+      playerTime: question.playerTime
     })
   }
   return ans;
@@ -203,7 +203,9 @@ export function startSession(userId: number, quizId: number, autoStartNum: numbe
 
   data.Sessions[data_session.id] = data_session;
 
-  return {};
+  return {
+    sessionId: data_session.id
+  };
 }
 
 export function initiateNextQuizSessionQuestion(quizSessionId: number) {

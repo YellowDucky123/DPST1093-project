@@ -37,7 +37,8 @@ export type question = {
   duration: number,
   points: number,
   answers: answer[],
-  playerTime: playerTimes 
+  playerTime: playerTimes,
+  thumbnailUrl: string
 }
 function isAnswers(answers: object): boolean {
   if (Array.isArray(answers) && answers.every(isanswer) &&

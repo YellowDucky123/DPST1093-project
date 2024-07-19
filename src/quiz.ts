@@ -658,7 +658,7 @@ export function allMessagesInSession(playerId: number) {
 }
 
 // send a chat message
-export function sendChat(playerId: number, body) {
+export function sendChat(playerId: number, body : string) {
   if (!isPlayerExist(playerId)) {
     throw HTTPError(400, 'player does not exist');
   }

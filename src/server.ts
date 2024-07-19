@@ -66,7 +66,7 @@ setDataStorebyJSON();
 
 import { clear } from './other';
 import HTTPError from 'http-errors';
-import { quizIdValidator } from './helpers';
+import { quizIdValidator, quizOwnership, sessionIdValidator } from './helpers';
 
 // Set up web app
 const app = express();
@@ -441,13 +441,14 @@ app.get('/v1/download/:filename', (res : Response, req : Request) => {
     if (err) throw HTTPError(404, "file not found");
   })
 })
-app.post('/v1/player/join', (res : Response, req : Request) => {
-  let sessionid = parseInt(req.body.sessionid);
+
+app.post('/v1/player/join', (req : Request, res : Response) => {
+  let sessionid = parseInt(req.body.sessionId);
   let userName = req.body.name as string;
   if (sessionid === undefined) throw HTTPError(400, "a sessionid is required");
   if (userName === undefined) throw HTTPError(400, "a username is required");
-  let ans = newPlayerJoinSession(sessionid, userName);
-  res.status(200).json(ans)
+  return res.json(newPlayerJoinSession(sessionid, userName));
+  // res.status(200).json(ans)
 })
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
@@ -1001,10 +1002,10 @@ app.get('/v1/admin/quiz/:quizId/sessions', (req: Request, res: Response) => {
   return res.json(listSessions(UserId, quizId));
 });
 
-app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) => {
+app.post('/v1/admin/quiz/:quizId/session/start', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId);
-  const autoStartNum = parseInt(req.params.autoStartNum);
+  const autoStartNum = parseInt(req.body.autoStartNum);
 
   if (!token) {
     throw HTTPError(401, "A correct token is required");
@@ -1020,19 +1021,26 @@ app.post('/v1/admin/quiz/:quizId/sessions/start', (req: Request, res: Response) 
 // update the session's state
 app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
   const token = req.headers.token as string;
-  if (!findUserIdByToken(token)) {
-    throw HTTPError(401, 'token incorrect or not found');
-  }
-
   const quizId = parseInt(req.params.quizId);
   const sessionId = parseInt(req.params.sessionId);
-  const body = req.body.body;
+  const action = req.body.action;
 
-  if (!quizIdValidator(quizId)) {
-    throw HTTPError(403, "quiz does not exist");
+  if (!token) {
+    throw HTTPError(401, "A correct token is required");
+  }
+  const userId = findUserIdByToken(token);
+
+  if (quizIdValidator(quizId) === false) {
+    throw HTTPError(403, "Quiz does not exist");
+  }
+  if(quizOwnership(userId, quizId) === false) {
+    throw HTTPError(403, "You do not own this quiz");
+  }
+  if (sessionIdValidator(sessionId) === false) {
+    throw HTTPError(400, "Invalid sessionid");
   }
 
-  return updateSesionState(sessionId, body.action);
+  return res.json(updateSesionState(sessionId, action));
 })
 
 
@@ -1065,7 +1073,7 @@ app.get('/v1/player/:playerId/chat', (req: Request, res: Response) => {
 app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const playerId = parseInt(req.params.playerId);
-  const messageBody = req.body.body;
+  const messageBody = req.body.message;
 
   if (!findUserIdByToken(token)) {
     throw HTTPError(401, 'token incorrect or not found');
@@ -1073,22 +1081,6 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
 
   return sendChat(playerId, messageBody);
 });
-
-app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
-  const token = req.headers.token as string;
-  if (!findUserIdByToken(token)) {
-    throw HTTPError(401, 'token incorrect or not found');
-  }
-
-  const quizId = parseInt(req.params.quizId);
-  const sessionId = parseInt(req.params.sessionId);
-  const body = req.body.body;
-
-  if (!quizIdValidator(quizId)) {
-    throw HTTPError(403, "quiz does not exist");
-  }
-  return updateSesionState(sessionId, body.action);
-})
 
 //Victor's part
 

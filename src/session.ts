@@ -400,7 +400,9 @@ export function gotoQuizSessionQuestionAnswer(quizSessionId: number) {
   /*
     code Yuxuan
     */
-
+  let session = getSessionData();
+  session[quizSessionId].state = QuizSessionState.ANSWER_SHOW;
+  setSessionData(session);
   return {};
 }
 

@@ -73,7 +73,7 @@ function getQuizDuration(questions : question[]) {
   return ans;
 }
 function getMetaQuestions (quizid : number, metadata : question[]) {
-  let ans = [];
+  let ans: question[] = [];
   for (const question of metadata) {
     ans.push({
       questionId : question.questionId,

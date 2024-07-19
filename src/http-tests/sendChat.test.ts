@@ -107,7 +107,7 @@ describe('error', () => {
 });
 
 test('succesfull send', () => {
-    expect(() => sendChat('Greeting Earthlings!', playerId, userToken)).toEqual({});
+    expect(sendChat('Greeting Earthlings!', playerId, userToken)).toEqual({});
 });
 
 // requestHelper('DELETE', '/v2/clear', {});

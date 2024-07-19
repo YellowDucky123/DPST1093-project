@@ -637,12 +637,14 @@ export function questionResults(playerId: number, questionPosition: number) {
   let avgTime = Time/amountPlayers;
   let percentCorrect = (correctPlayers * 100) / amountPlayers;
 
-  return {
+  let obj = {
     questionId: q.questionId,
     playersCorrectList: playersCorrect,
     averageAnswerTime: avgTime,
     percentCorrect: percentCorrect
   };
+  
+  return obj
 }
 
 // returns the whole chat of the session the player is in
@@ -658,7 +660,7 @@ export function allMessagesInSession(playerId: number) {
 }
 
 // send a chat message
-export function sendChat(playerId: number, body) {
+export function sendChat(playerId: number, body: string) {
   console.log('function' + body);
   if (!isPlayerExist(playerId)) {
     throw HTTPError(400, 'player does not exist');

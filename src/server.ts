@@ -1055,9 +1055,9 @@ app.get('/v1/player/:playerId/question/:questionPosition/results', (req: Request
   if (!UserId) {
     throw HTTPError(401, "Token incorrect or not found");
   }
-
-  const { playerId, questionPosition } = req.params;
-  return questionResults(parseInt(playerId), parseInt(questionPosition));
+  const playerId = parseInt(req.params.playerId);
+  const questionPosition = parseInt(req.params.questionPosition);
+  return res.json(questionResults(playerId, questionPosition));
 });
 
 // views all messages in the session
@@ -1069,7 +1069,7 @@ app.get('/v1/player/:playerId/chat', (req: Request, res: Response) => {
     throw HTTPError(401, 'token incorrect or not found');
   }
 
-  return allMessagesInSession(playerId);
+  return res.json(allMessagesInSession(playerId));
 });
 
 // player sends a chat message
@@ -1086,7 +1086,7 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
     throw HTTPError(401, "Token incorrect or not found");
   }
 
-  return sendChat(playerId, messageBody.messageBody);
+  return res.json(sendChat(playerId, messageBody.messageBody));
 });
 
 //Victor's part

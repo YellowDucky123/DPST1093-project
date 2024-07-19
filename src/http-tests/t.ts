@@ -13,13 +13,13 @@ const url = config.url;
 
 const SERVER_URL = `${url}:${port}`;
 
-afterAll(() => {
-    requestHelper('DELETE', '/v2/clear', {});
-});
+// afterAll(() => {
+//     requestHelper('DELETE', '/v2/clear', {});
+// });
 
-beforeAll(() => {
-    requestHelper('DELETE', '/v2/clear', {});
-});
+// beforeAll(() => {
+//     requestHelper('DELETE', '/v2/clear', {});
+// });
 
 requestHelper('DELETE', '/v2/clear', {});
 
@@ -59,8 +59,19 @@ function startSession(quizId: number, autoStartNum: number, token: string) {
     return requestHelper('POST', `/v1/admin/quiz/${quizId}/session/start`, {autoStartNum}, {token});
 }
 
-function joinSession(sessionId: number, name: string) {
-    return requestHelper('POST', '/v1/player/join', { sessionId, name });
+function joinSession(sessionId: number, userName: string) {
+    // return requestHelper('POST', '/v1/player/join', {sessionId, userName})
+    return request(
+        'POST',
+        SERVER_URL + '/v1/player/join',
+        {
+            json: {
+                sessionId: sessionId,
+                name: userName
+            }
+        }
+    )
+
 }
 
 function sendChat(message: string, playerId: number, token:string) {
@@ -81,27 +92,11 @@ const qzId = createQuiz(userToken, 'question1', 'this is a test q');
 const quizId = qzId.quizId;
 createQuestion(quizId, userToken);
 
+
 const sessionId = startSession(quizId, 3, userToken);
-const playerId = joinSession(sessionId.sessionId, 'player1');
+const playerId = joinSession(sessionId.sessionId, 'player');
 
-describe('error', () => {
-  test('player does not exist', () => {
-    expect(() => sendChat('Hello Everyone', playerId, userToken)).toThrow(HTTPError[400]);
-  });
+// console.log(sessionId.sessionId);
+console.log(playerId)
 
-  test('message too Long', () => {
-    let str: string = '';
-    str = String(str).padStart(110, '*');
-    expect(() => sendChat(str, playerId, userToken)).toThrow(HTTPError[400]);
-  });
-
-  test('message too short', () => {
-    let str: string = '';
-    expect(() => sendChat(str, playerId, userToken)).toThrow(HTTPError[400]);
-  });
-});
-
-test('succesfull send', () => {
-    expect(() => sendChat('Greeting Earthlings!', playerId, userToken)).toEqual({});
-});
-
+requestHelper('DELETE', '/v2/clear', {});

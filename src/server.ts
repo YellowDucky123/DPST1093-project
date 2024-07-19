@@ -418,13 +418,13 @@ app.get('/v1/admin/quiz/:quizid/session/:sessionid/results', (req : Request, res
   res.status(200).json(ans);
 })
 
-app.post('/v1/player/join', (res : Response, req : Request) => {
-  let sessionid = parseInt(req.body.sessionid);
+app.post('/v1/player/join', (req : Request, res : Response) => {
+  let sessionid = parseInt(req.body.sessionId);
   let userName = req.body.name as string;
   if (sessionid === undefined) throw HTTPError(400, "a sessionid is required");
   if (userName === undefined) throw HTTPError(400, "a username is required");
-  let ans = newPlayerJoinSession(sessionid, userName);
-  res.status(200).json(ans)
+  return res.json(newPlayerJoinSession(sessionid, userName));
+  // res.status(200).json(ans)
 })
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
@@ -1057,7 +1057,6 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
 
   return sendChat(playerId, messageBody);
 });
-
 
 //Victor's part
 

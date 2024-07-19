@@ -203,9 +203,7 @@ export function startSession(userId: number, quizId: number, autoStartNum: numbe
 
   data.Sessions[data_session.id] = data_session;
 
-  return {
-    sessionId: data_session.id
-  };
+  return {sessionId: data_session.id};
 }
 
 export function initiateNextQuizSessionQuestion(quizSessionId: number) {

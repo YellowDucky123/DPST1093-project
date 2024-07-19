@@ -1116,14 +1116,11 @@ app.get('/v1/player/:playerId/question:questionposition', (req: Request, res: Re
   return res.status(200).json(result);
 })
 
-app.put('/v1/player/{playerid}/question/{questionposition}/answer', (req: Request, res: Response) => {
+app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerId);
-  const questionPosition = parseInt(req.params.questionposition);
-  const token = req.header('token');
+  const questionPosition = parseInt(req.params.questionPosition);
   const answerIds = (req.body.answerIds as string[]).map(Number);
-  if (!findUserIdByToken(token)) {
-    throw HTTPError(401, 'token incorrect or not found');
-  }
+  
   const result = answerSubmission(playerId, questionPosition, answerIds);
   if ('error' in result) {
     throw HTTPError(400, result.error);

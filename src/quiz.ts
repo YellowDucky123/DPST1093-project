@@ -128,6 +128,7 @@ function getQuestionsInfo(quizId: number) {
       points: question.points,
       answers: getanswers(question),
       playerTime: question.playerTime,
+      thumbnailUrl: question.thumbnailUrl
     });
   }
   return ans;
@@ -250,7 +251,8 @@ export function adminQuestionCreate(authUserId: number, quizId: number, question
     duration: question.duration,
     points: question.points,
     answers: getanswers(question),
-    playerTime: []
+    playerTime: [],
+    thumbnailUrl:question.thumbnailUrl
   };
   data.quizzes[quizId].questions.push(ans);
   data.quizzes[quizId].numQuizQuestion++;

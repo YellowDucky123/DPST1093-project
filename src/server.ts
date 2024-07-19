@@ -999,7 +999,7 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
   const token = req.headers.token as string;
   const quizId = parseInt(req.params.quizId);
   const sessionId = parseInt(req.params.sessionId);
-  const body = req.body.action;
+  const action = req.body.action;
 
   if (!token) {
     throw HTTPError(401, "A correct token is required");

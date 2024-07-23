@@ -91,7 +91,7 @@ describe('error', () => {
   });
 
   test('player does not exist', () => {
-    expect(() => sendChat('Hello Everyone', playerId, userToken)).toThrow(HTTPError[400]);
+    expect(() => sendChat('Hello Everyone', playerId + 1, userToken)).toThrow(HTTPError[400]);
   });
 
   test('message too Long', () => {
@@ -107,7 +107,7 @@ describe('error', () => {
 });
 
 test('succesfull send', () => {
-  expect(() => sendChat('Greeting Earthlings!', playerId, userToken)).toEqual({});
+    expect(sendChat('Greeting Earthlings!', playerId, userToken)).toEqual({});
 });
 
 // requestHelper('DELETE', '/v2/clear', {});

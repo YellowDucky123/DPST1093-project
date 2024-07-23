@@ -1029,6 +1029,9 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
     throw HTTPError(401, 'A correct token is required');
   }
   const userId = findUserIdByToken(token);
+  if (!userId) {
+    throw HTTPError(401, "Token incorrect or not found");
+  }
 
   if (quizIdValidator(quizId) === false) {
     throw HTTPError(403, 'Quiz does not exist');
@@ -1046,14 +1049,17 @@ app.put('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
 // return question results
 app.get('/v1/player/:playerId/question/:questionPosition/results', (req: Request, res: Response) => {
   const token = req.headers.token as string;
-
+  console.log(`token is: ${token}`);
+  if (!token) {
+    throw HTTPError(401, "A correct token is required");
+  }
   const UserId = findUserIdByToken(token);
   if (!UserId) {
-    throw HTTPError(401, 'token incorrect or not found');
+    throw HTTPError(401, "Token incorrect or not found");
   }
-
-  const { playerId, questionPosition } = req.params;
-  return questionResults(parseInt(playerId), parseInt(questionPosition));
+  const playerId = parseInt(req.params.playerId);
+  const questionPosition = parseInt(req.params.questionPosition);
+  return res.json(questionResults(playerId, questionPosition));
 });
 
 // views all messages in the session
@@ -1065,7 +1071,7 @@ app.get('/v1/player/:playerId/chat', (req: Request, res: Response) => {
     throw HTTPError(401, 'token incorrect or not found');
   }
 
-  return allMessagesInSession(playerId);
+  return res.json(allMessagesInSession(playerId));
 });
 
 // player sends a chat message
@@ -1073,7 +1079,7 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
   const token = req.headers.token as string;
   const playerId = parseInt(req.params.playerId);
   const messageBody = req.body.message;
-  console.log(messageBody);
+  console.log('server' + messageBody);
   if (!token) {
     throw HTTPError(401, 'A correct token is required');
   }
@@ -1082,7 +1088,7 @@ app.post('/v1/player/:playerId/chat', (req: Request, res: Response) => {
     throw HTTPError(401, 'Token incorrect or not found');
   }
 
-  return sendChat(playerId, messageBody.message);
+  return res.json(sendChat(playerId, messageBody.messageBody));
 });
 
 // Victor's part
@@ -1116,10 +1122,9 @@ app.get('/v1/player/:playerId/question:questionposition', (req: Request, res: Re
 });
 
 app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request, res: Response) => {
-  const playerId = parseInt(req.params.playerId);
-  const questionPosition = parseInt(req.params.questionPosition);
-  const answerIds = (req.body.answerIds as string[]).map(Number);
-
+  const playerId = parseInt(req.params.playerid);
+  const questionPosition = parseInt(req.params.questionposition);
+  const answerIds = (req.body.answerids as string[]).map(Number);
   const result = answerSubmission(playerId, questionPosition, answerIds);
   if ('error' in result) {
     throw HTTPError(400, result.error);

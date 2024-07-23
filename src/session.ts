@@ -1,6 +1,6 @@
-import { customAlphabet } from 'nanoid';
-import { answer, getData, setData, getSessionData, message, Player, playerResults, question, questionResults, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData, QuizSessionAction } from './dataStore';
-import { createId, quizIdValidator, quizOwnership, countSessionNotEnd } from './helpers';
+import { customAlphabet } from "nanoid";
+import { answer, getData,setData, getSessionData, message, Player, playerResults, question, questionResults, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData, QuizSessionAction } from "./dataStore";
+import { createId, quizIdValidator, quizOwnership, countSessionNotEnd, getCurrentTime} from "./helpers";
 import HTTPError from 'http-errors';
 import config from './config.json';
 const path = config.url + ':' + config.port;
@@ -73,7 +73,7 @@ function getQuizDuration(questions : question[]) {
   return ans;
 }
 function getMetaQuestions (quizid : number, metadata : question[]) {
-  const ans = [];
+  let ans: question[] = [];
   for (const question of metadata) {
     ans.push({
       questionId: question.questionId,
@@ -322,17 +322,20 @@ export function endQuizSession(quizSessionId: number) {
   return {};
 }
 
+export let StartTime: number;
+
 export function openQuizSessionQuestion(quizSessionId: number) {
   /*
     code Kelvin
     */
-  const sesData = getSessionData();
-  clearTimeout(sesData[quizSessionId].currentTimerId);
-  sesData[quizSessionId].state = QuizSessionState.QUESTION_OPEN;
-  sesData[quizSessionId].currentTimerId = setTimeout(() => closeCurrentQuizSessionQuestion(quizSessionId), sesData[quizSessionId].metadata.questions[sesData[quizSessionId].atQuestion - 1].duration * 1000)[Symbol.toPrimitive]();
-  setSessionData(sesData);
-
-  return {};
+    StartTime = getCurrentTime();
+    let sesData = getSessionData();
+    clearTimeout(sesData[quizSessionId].currentTimerId);
+    sesData[quizSessionId].state = QuizSessionState.QUESTION_OPEN;
+    sesData[quizSessionId].currentTimerId = setTimeout(() => closeCurrentQuizSessionQuestion(quizSessionId), sesData[quizSessionId].metadata.questions[sesData[quizSessionId].atQuestion - 1].duration * 1000)[Symbol.toPrimitive]();
+    setSessionData(sesData);
+  
+    return {}
 }
 
 export function closeCurrentQuizSessionQuestion(quizSessionId: number) {

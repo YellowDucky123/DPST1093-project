@@ -2,17 +2,17 @@ import { customAlphabet } from "nanoid";
 import { answer, getData,setData, getSessionData, message, Player, playerResults, question, questionResults, quiz, QuizSession, QuizSessionResults, QuizSessionState, Sessions, setSessionData, QuizSessionAction } from "./dataStore";
 import { createId, quizIdValidator, quizOwnership, countSessionNotEnd, getCurrentTime} from "./helpers";
 import HTTPError from 'http-errors';
-import config from "./config.json";
-const path = config.url + ":" + config.port
-import * as fs from 'fs'
+import config from './config.json';
+const path = config.url + ':' + config.port;
+import * as fs from 'fs';
 export function listSessions(userId: number, quizId: number) {
   if (quizOwnership(userId, quizId) === false) {
-    throw HTTPError(403, "You do not own this quiz");
+    throw HTTPError(403, 'You do not own this quiz');
   }
 
   const data = getData();
-  let active: number[] = [];
-  let inactive: number[] = [];
+  const active: number[] = [];
+  const inactive: number[] = [];
 
   for (const item in data.Sessions) {
     if (data.Sessions[item].metadata.quizId === quizId) {
@@ -24,8 +24,8 @@ export function listSessions(userId: number, quizId: number) {
     }
   }
   return {
-    "activeSessions": active,
-    "inactiveSessions": inactive
+    activeSessions: active,
+    inactiveSessions: inactive
   };
 }
 
@@ -38,34 +38,34 @@ function checkQuizQuestionEmpty(quizId: number) {
   }
 }
 export function getSessionStatus(userId : number, quizId : number, sessionid : number) {
-  let data = getData();
+  const data = getData();
   // error check
-  if (!quizIdValidator(quizId)) throw HTTPError(403, "Invalid quizId");
-  if (!quizOwnership(userId, quizId)) throw HTTPError(403, "You do not own this quiz");
-  if (data.Sessions[sessionid] === undefined) throw HTTPError(400, "Invalid sessionid");
-  if (data.Sessions[sessionid].metadata.quizId !== quizId) throw HTTPError(400, "Invalid sessionid");
-  let Sessiondata = data.Sessions[sessionid];
+  if (!quizIdValidator(quizId)) throw HTTPError(403, 'Invalid quizId');
+  if (!quizOwnership(userId, quizId)) throw HTTPError(403, 'You do not own this quiz');
+  if (data.Sessions[sessionid] === undefined) throw HTTPError(400, 'Invalid sessionid');
+  if (data.Sessions[sessionid].metadata.quizId !== quizId) throw HTTPError(400, 'Invalid sessionid');
+  const Sessiondata = data.Sessions[sessionid];
   return {
-    state : Sessiondata.state,
-    atQuestion : Sessiondata.atQuestion,
-    players : Sessiondata.players,
-    metadata : getMetadata(quizId, Sessiondata.metadata)
-  }
+    state: Sessiondata.state,
+    atQuestion: Sessiondata.atQuestion,
+    players: Sessiondata.players,
+    metadata: getMetadata(quizId, Sessiondata.metadata)
+  };
 }
 function getMetadata(quizid : number, metadata : quiz) {
   return {
-    quizId : metadata.quizId,
-    name : metadata.name,
-    timeCreated : metadata.timeCreated,
-    timeLastEdited : metadata.timeLastEdited,
-    description : metadata.description? metadata.description : undefined,
-    numQuestions : metadata.questions.length,
-    questions : getMetaQuestions(quizid, metadata.questions),
-    thumbnailUrl : metadata.imgUrl,
-    duration : getQuizDuration(metadata.questions)
-  }
+    quizId: metadata.quizId,
+    name: metadata.name,
+    timeCreated: metadata.timeCreated,
+    timeLastEdited: metadata.timeLastEdited,
+    description: metadata.description ? metadata.description : undefined,
+    numQuestions: metadata.questions.length,
+    questions: getMetaQuestions(quizid, metadata.questions),
+    thumbnailUrl: metadata.imgUrl,
+    duration: getQuizDuration(metadata.questions)
+  };
 }
-function getQuizDuration(questions : question[]) { 
+function getQuizDuration(questions : question[]) {
   let ans = 0;
   for (const question of questions) {
     ans += question.duration;
@@ -76,54 +76,54 @@ function getMetaQuestions (quizid : number, metadata : question[]) {
   let ans: question[] = [];
   for (const question of metadata) {
     ans.push({
-      questionId : question.questionId,
-      question : question.question,
-      duration : question.duration, 
-      thumbnailUrl : getData().quizzes[quizid].imgUrl,
-      points : question.points,
-      answers : getAnswers(question.answers),
+      questionId: question.questionId,
+      question: question.question,
+      duration: question.duration,
+      thumbnailUrl: getData().quizzes[quizid].imgUrl,
+      points: question.points,
+      answers: getAnswers(question.answers),
       playerTime: question.playerTime
-    })
+    });
   }
   return ans;
 }
 function getAnswers(answers : answer[]) {
-  let ans: answer[] = [];
+  const ans: answer[] = [];
   for (const answer of answers) {
     ans.push({
-      answerId : answer.answerId ? answer.answerId : answers.indexOf(answer),
-      answer : answer.answer,
-      colour : answer.colour ? answer.colour : "black",
-      correct : answer.correct
+      answerId: answer.answerId ? answer.answerId : answers.indexOf(answer),
+      answer: answer.answer,
+      colour: answer.colour ? answer.colour : 'black',
+      correct: answer.correct
     });
   }
   return ans;
 }
 
 export function newPlayerJoinSession(sessionid : number, userName : string) {
-  let data = getData();
+  const data = getData();
   if (data.Sessions[sessionid] === undefined || data.Sessions[sessionid].state !== QuizSessionState.LOBBY) {
-    throw HTTPError(400, "Session does not exist or is not in lobby");
+    throw HTTPError(400, 'Session does not exist or is not in lobby');
   }
-  if (data.Sessions[sessionid].players.filter((player) => {player.name === userName}).length !== 0) {
-    throw HTTPError(400, 'userName has used')
+  if (data.Sessions[sessionid].players.filter((player) => { player.name === userName; }).length !== 0) {
+    throw HTTPError(400, 'userName has used');
   }
-  let player : Player = {
+  const player : Player = {
     id: getNewPlayerId(),
     name: userName,
     sessionId: sessionid,
     questionAnswered: [],
     score: 0,
-  }
+  };
   data.Sessions[sessionid].players.push(player);
   data.playerData[player.id] = player;
   setData(data);
-  return {playerId : player.id};
+  return { playerId: player.id };
 }
 
 function getNewPlayerId() {
-  let data = getData();
-  const nanoid = customAlphabet("0123456789", 5);
+  const data = getData();
+  const nanoid = customAlphabet('0123456789', 5);
   let id = parseInt(nanoid());
   while (1) {
     if (data.playerData[id] === undefined) {
@@ -134,40 +134,40 @@ function getNewPlayerId() {
 }
 
 export function getSessionResult(userId : number, quizId : number, sessionid : number) {
-  let data = getData();
+  const data = getData();
   // error check
-  if (data.quizzes[quizId] === undefined) throw HTTPError(403, "Invalid quizId");
-  if (quizOwnership(userId, quizId)) throw HTTPError(403, "You do not own this quiz");
-  if (data.Sessions[sessionid] === undefined) throw HTTPError(400, "Invalid sessionid");
-  if (data.Sessions[sessionid].metadata.quizId !== quizId) throw HTTPError(400, "Invalid sessionid");
-  if (data.Sessions[sessionid].state !== QuizSessionState.FINAL_RESULTS) throw HTTPError (400, "Game status error");
+  if (data.quizzes[quizId] === undefined) throw HTTPError(403, 'Invalid quizId');
+  if (quizOwnership(userId, quizId)) throw HTTPError(403, 'You do not own this quiz');
+  if (data.Sessions[sessionid] === undefined) throw HTTPError(400, 'Invalid sessionid');
+  if (data.Sessions[sessionid].metadata.quizId !== quizId) throw HTTPError(400, 'Invalid sessionid');
+  if (data.Sessions[sessionid].state !== QuizSessionState.FINAL_RESULTS) throw HTTPError(400, 'Game status error');
   return {
-    usersRankedByScore : getUsersRankedByScore(data.Sessions[sessionid].results.usersRankedbyScore),
-    questionResults : getQuestionResults(data.Sessions[sessionid].results.questionResults)
-  }
+    usersRankedByScore: getUsersRankedByScore(data.Sessions[sessionid].results.usersRankedbyScore),
+    questionResults: getQuestionResults(data.Sessions[sessionid].results.questionResults)
+  };
 }
 export function getCSVFormatResult(userId : number, quizId : number, sessionid : number) {
-  let data = getData();
+  const data = getData();
   // error check
-  if (data.quizzes[quizId] === undefined) throw HTTPError(403, "Invalid quizId");
-  if (quizOwnership(userId, quizId)) throw HTTPError(403, "You do not own this quiz");
-  if (data.Sessions[sessionid] === undefined) throw HTTPError(400, "Invalid sessionid");
-  if (data.Sessions[sessionid].metadata.quizId !== quizId) throw HTTPError(400, "Invalid sessionid");
-  if (data.Sessions[sessionid].state !== QuizSessionState.FINAL_RESULTS) throw HTTPError (400, "Game status error");
+  if (data.quizzes[quizId] === undefined) throw HTTPError(403, 'Invalid quizId');
+  if (quizOwnership(userId, quizId)) throw HTTPError(403, 'You do not own this quiz');
+  if (data.Sessions[sessionid] === undefined) throw HTTPError(400, 'Invalid sessionid');
+  if (data.Sessions[sessionid].metadata.quizId !== quizId) throw HTTPError(400, 'Invalid sessionid');
+  if (data.Sessions[sessionid].state !== QuizSessionState.FINAL_RESULTS) throw HTTPError(400, 'Game status error');
 
-  let CSVString = getCSVResult(data.Sessions[sessionid].players.concat(), data.Sessions[sessionid].results.questionResults);
+  const CSVString = getCSVResult(data.Sessions[sessionid].players.concat(), data.Sessions[sessionid].results.questionResults);
   fs.writeFileSync(`./result/csv/${quizId}_${sessionid}.csv`, CSVString);
-  return {url : path + "/v1/download/" + `${quizId}_${sessionid}.csv`};
+  return { url: path + '/v1/download/' + `${quizId}_${sessionid}.csv` };
 }
 function getCSVResult(players : Player[], questionResults : questionResults[]) : string {
   let ans = '';
-  let header = "player";
+  let header = 'player';
   let count = 1;
   for (count = 1; count < questionResults.length + 1; count++) {
     header += `,question${count}score,question${count}rank`;
   }
   players = players.sort((a, b) => a.name.localeCompare(b.name));
-  let lines : {
+  const lines : {
     [userName : string] : {
       [question : number] : {
         rank : number,
@@ -179,82 +179,82 @@ function getCSVResult(players : Player[], questionResults : questionResults[]) :
     lines[player.name] = {};
   }
   for (const questionResult of questionResults) {
-    let questionid = questionResult.questionId;
-    let playerAnsweredList = players.filter((a) => a.questionAnswered[questionid] !== undefined);
-    let playerDurationList = playerAnsweredList
-    .sort((a,b) => a.questionAnswered[questionid].duration - b.questionAnswered[questionid].duration)
-    let sortedPlayersCorrectList = playerDurationList.filter((a) => questionResult.playersCorrectList.find((b) => b === a.name) !== undefined);
-    let score = playerAnsweredList[0].questionAnswered[questionResult.questionId].points
+    const questionid = questionResult.questionId;
+    const playerAnsweredList = players.filter((a) => a.questionAnswered[questionid] !== undefined);
+    const playerDurationList = playerAnsweredList
+      .sort((a, b) => a.questionAnswered[questionid].duration - b.questionAnswered[questionid].duration);
+    const sortedPlayersCorrectList = playerDurationList.filter((a) => questionResult.playersCorrectList.find((b) => b === a.name) !== undefined);
+    const score = playerAnsweredList[0].questionAnswered[questionResult.questionId].points;
     for (const player of sortedPlayersCorrectList) {
       lines[player.name][questionResults.indexOf(questionResult)] = {
-        rank : sortedPlayersCorrectList.indexOf(player) + 1,
-        score : Math.round(score/(sortedPlayersCorrectList.indexOf(player) + 1) * 10) / 10
-      }
+        rank: sortedPlayersCorrectList.indexOf(player) + 1,
+        score: Math.round(score / (sortedPlayersCorrectList.indexOf(player) + 1) * 10) / 10
+      };
     }
-    for (const player in lines) { 
+    for (const player in lines) {
       if (lines[player][questionResults.indexOf(questionResult)] === undefined) {
         if (playerAnsweredList.find((a) => a.name === player) !== undefined) {
           lines[player][questionResults.indexOf(questionResult)] = {
-            rank : sortedPlayersCorrectList.length + 1,
-            score : 0
-          }
+            rank: sortedPlayersCorrectList.length + 1,
+            score: 0
+          };
         } else {
           lines[player][questionResults.indexOf(questionResult)] = {
-            rank : 0,
-            score : 0
-          }
+            rank: 0,
+            score: 0
+          };
         }
       }
     }
   }
-  let linesToStrings = []
+  const linesToStrings = [];
   for (const player in lines) {
-    let newString = `${player}`
+    let newString = `${player}`;
     for (const data in lines[player]) {
-      newString += `,${lines[player][data].score},${lines[player][data].rank}`
+      newString += `,${lines[player][data].score},${lines[player][data].rank}`;
     }
     linesToStrings.push(newString);
   }
-  ans = header + '\n' + linesToStrings.join('\n') + '\n'+ 'X,Y,Z,...\nX,Y,Z,...\nX,Y,Z,...\n'
-  return ans
+  ans = header + '\n' + linesToStrings.join('\n') + '\n' + 'X,Y,Z,...\nX,Y,Z,...\nX,Y,Z,...\n';
+  return ans;
 }
 function getUsersRankedByScore(users : playerResults[]) {
-  let ans: playerResults[] = []
+  const ans: playerResults[] = [];
   for (const user of users) {
     ans.push({
-      name : user.name,
-      score : user.score ? user.score : 0,
-    })
+      name: user.name,
+      score: user.score ? user.score : 0,
+    });
   }
-  ans.sort((a,b) => b.score - a.score);
+  ans.sort((a, b) => b.score - a.score);
   return ans;
 }
 function getQuestionResults(questionResults : questionResults[]) {
-  let ans: questionResults[] = [];
+  const ans: questionResults[] = [];
   for (const questionResult of questionResults) {
     ans.push({
-      questionId : questionResult.questionId,
-      playersCorrectList : questionResult.playersCorrectList,
-      averageAnswerTime : questionResult.averageAnswerTime,
-      percentCorrect : questionResult.percentCorrect
-    })
+      questionId: questionResult.questionId,
+      playersCorrectList: questionResult.playersCorrectList,
+      averageAnswerTime: questionResult.averageAnswerTime,
+      percentCorrect: questionResult.percentCorrect
+    });
   }
 }
 export function startSession(userId: number, quizId: number, autoStartNum: number) {
   if (autoStartNum > 50) {
-    throw HTTPError(400, "autoStartNum is greater than 50");
+    throw HTTPError(400, 'autoStartNum is greater than 50');
   }
   if (countSessionNotEnd(quizId) >= 10) {
-    throw HTTPError(400, "A maximum of 10 session can be exist");
+    throw HTTPError(400, 'A maximum of 10 session can be exist');
   }
   if (checkQuizQuestionEmpty(quizId) === false) {
-    throw HTTPError(400, "The quiz does not have any questions");
+    throw HTTPError(400, 'The quiz does not have any questions');
   }
   if (quizIdValidator(quizId) === false) {
-    throw HTTPError(403, "Invalid quizId");
+    throw HTTPError(403, 'Invalid quizId');
   }
   if (quizOwnership(userId, quizId) === false) {
-    throw HTTPError(403, "You do not own this quiz");
+    throw HTTPError(403, 'You do not own this quiz');
   }
   const data = getData();
 
@@ -277,19 +277,19 @@ export function startSession(userId: number, quizId: number, autoStartNum: numbe
 
   data.Sessions[data_session.id] = data_session;
 
-  return {sessionId: data_session.id};
+  return { sessionId: data_session.id };
 }
 
 export function initiateNextQuizSessionQuestion(quizSessionId: number) {
   /*
     code Kei
     */
-    let data = getData();
-    data.Sessions[quizSessionId].atQuestion++;
-    data.Sessions[quizSessionId].state = QuizSessionState.QUESTION_COUNTDOWN;
-    const timerId = setTimeout(() => {openQuizSessionQuestion(quizSessionId)}, 3 * 1000);
-    data.Sessions[quizSessionId].currentTimerId = timerId[Symbol.toPrimitive]();
-    setData(data);
+  const data = getData();
+  data.Sessions[quizSessionId].atQuestion++;
+  data.Sessions[quizSessionId].state = QuizSessionState.QUESTION_COUNTDOWN;
+  const timerId = setTimeout(() => { openQuizSessionQuestion(quizSessionId); }, 3 * 1000);
+  data.Sessions[quizSessionId].currentTimerId = timerId[Symbol.toPrimitive]();
+  setData(data);
 
   return {};
 }
@@ -301,9 +301,9 @@ export function generateCurrentQuizSessionFinalResults(quizSessionId: number) {
   /*
     code Victor
     */
-  let data = getData();
-  const results = data.Sessions[quizSessionId].results
-  results.usersRankedbyScore = calculateRank(results.questionResults)
+  const data = getData();
+  const results = data.Sessions[quizSessionId].results;
+  results.usersRankedbyScore = calculateRank(results.questionResults);
   setData(data);
 
   return results;
@@ -313,9 +313,9 @@ export function endQuizSession(quizSessionId: number) {
   /*
     code Kei
     */
-   let data = getData();
-   clearTimeout(data.Sessions[quizSessionId].currentTimerId);
-   data.Sessions[quizSessionId].state = QuizSessionState.END;
+  const data = getData();
+  clearTimeout(data.Sessions[quizSessionId].currentTimerId);
+  data.Sessions[quizSessionId].state = QuizSessionState.END;
 
   setData(data);
 
@@ -339,28 +339,28 @@ export function openQuizSessionQuestion(quizSessionId: number) {
 }
 
 export function closeCurrentQuizSessionQuestion(quizSessionId: number) {
-    /*
+  /*
     code Kelvin
-    */  
-   let sesData = getSessionData();
-   clearTimeout(sesData[quizSessionId].currentTimerId);
-   sesData[quizSessionId].state = QuizSessionState.QUESTION_CLOSE;
-   setSessionData(sesData);
-  
-    return {}
+    */
+  const sesData = getSessionData();
+  clearTimeout(sesData[quizSessionId].currentTimerId);
+  sesData[quizSessionId].state = QuizSessionState.QUESTION_CLOSE;
+  setSessionData(sesData);
+
+  return {};
 }
 
 export function generateCurrentQuizSessionQuestionResults(quizSessionId: number) {
   /*
   code Yuxuan
   */
-  let data = getData();
-  let session = data.Sessions[quizSessionId]
-  let correctAnswer = session.metadata.questions[session.atQuestion - 1].answers.filter((answer) => (answer.correct === true));
-  let questionid = session.metadata.questions[session.atQuestion - 1].questionId
-  let players = session.players;
+  const data = getData();
+  const session = data.Sessions[quizSessionId];
+  const correctAnswer = session.metadata.questions[session.atQuestion - 1].answers.filter((answer) => (answer.correct === true));
+  const questionid = session.metadata.questions[session.atQuestion - 1].questionId;
+  const players = session.players;
 
-  let playersCorrectList = []
+  const playersCorrectList = [];
   for (const player of players) {
     let answersid;
     for (const question of player.questionAnswered) {
@@ -371,29 +371,29 @@ export function generateCurrentQuizSessionQuestionResults(quizSessionId: number)
     let check = true;
     if (answersid === undefined) {
       check = false;
-    }
-    else if (answersid.length !== correctAnswer.length) {
+    } else if (answersid.length !== correctAnswer.length) {
       check = false;
-    }
-    else for (const answer of correctAnswer) {
-      if (answersid.filter((ans) => (ans !== answer.answerId)).length === 0) {
-        check = false;
+    } else {
+      for (const answer of correctAnswer) {
+        if (answersid.filter((ans) => (ans !== answer.answerId)).length === 0) {
+          check = false;
+        }
       }
     }
     if (check) {
       playersCorrectList.push(player.name);
-    } 
+    }
   }
   let totaltime : number;
-  Object.values(session.metadata.questions[questionid].playerTime).every((function (time) {totaltime+=time.duration}))
-  let averageAnswerTime = totaltime / Object.values(session.metadata.questions[questionid].playerTime).length
-  let percentCorrect = Math.round(playersCorrectList.length / players.length * 1000) / 10
-  session.results.questionResults.push ({
+  Object.values(session.metadata.questions[questionid].playerTime).every(function (time) { totaltime += time.duration; });
+  const averageAnswerTime = totaltime / Object.values(session.metadata.questions[questionid].playerTime).length;
+  const percentCorrect = Math.round(playersCorrectList.length / players.length * 1000) / 10;
+  session.results.questionResults.push({
     questionId: questionid,
     playersCorrectList: playersCorrectList,
-    averageAnswerTime : averageAnswerTime,
-    percentCorrect : percentCorrect
-  })
+    averageAnswerTime: averageAnswerTime,
+    percentCorrect: percentCorrect
+  });
   data.Sessions[questionid] = session;
   setData(data);
   return {};
@@ -403,7 +403,7 @@ export function gotoQuizSessionQuestionAnswer(quizSessionId: number) {
   /*
     code Yuxuan
     */
-  let session = getSessionData();
+  const session = getSessionData();
   session[quizSessionId].state = QuizSessionState.ANSWER_SHOW;
   setSessionData(session);
   return {};
@@ -413,7 +413,7 @@ export function gotoQuizSessionFinalResults(quizSessionId: number) {
   /*
     code Victor
     */
-  let data = getData();
+  const data = getData();
   const quizSession = data.Sessions[quizSessionId];
   const finalResults = generateCurrentQuizSessionFinalResults(quizSessionId);
   quizSession.state = QuizSessionState.FINAL_RESULTS;

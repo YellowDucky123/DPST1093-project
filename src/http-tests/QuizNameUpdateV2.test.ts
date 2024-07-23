@@ -1,6 +1,6 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
-import { requestHelper} from './requestHelper_fn'
+import { requestHelper } from './requestHelper_fn';
 import HTTPError from 'http-errors';
 
 const OK = 200;
@@ -12,16 +12,16 @@ const url = config.url;
 const SERVER_URL = `${url}:${port}`;
 
 afterAll(() => {
-    requestHelper('DELETE', '/v2/clear', {});
+  requestHelper('DELETE', '/v2/clear', {});
 });
 
 requestHelper('DELETE', '/v2/clear', {});
 
 function authRegister(email: string, password: string, nameFirst: string, nameLast: string) {
-    return requestHelper('POST', '/v1/admin/auth/register', {email, password, nameFirst, nameLast});
+  return requestHelper('POST', '/v1/admin/auth/register', { email, password, nameFirst, nameLast });
 }
 function createQuiz(token: number, name: string, description: string) {
-    return requestHelper('POST', '/v1/admin/quiz', {token, name, description});
+  return requestHelper('POST', '/v1/admin/quiz', { token, name, description });
 }
 
 request(
@@ -58,7 +58,6 @@ const u2 = request(
 );
 const t2Id = authRegister('testh@email.com', 'newPassword123', 'Kelvin', 'Yoga');
 
-
 // create quiz1
 const q1 = request(
   'POST',
@@ -71,7 +70,7 @@ const q1 = request(
     }
   }
 );
-const qId = create
+const qId = create;
 
 // create quiz2
 const q2 = request(

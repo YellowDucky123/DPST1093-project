@@ -15,28 +15,28 @@ afterAll(() => {
 
 request('DELETE', `${url}:${port}/v1/clear`);
 
-const token1 = testRegisterUser("test@email.com", 'newPassword123', 'Kei', 'Ikushima');
-const token2 = testRegisterUser("test2@email.com", 'newPassword123', 'Kelvin', 'Yoga');
+const token1 = testRegisterUser('test@email.com', 'newPassword123', 'Kei', 'Ikushima');
+const token2 = testRegisterUser('test2@email.com', 'newPassword123', 'Kelvin', 'Yoga');
 
-const quizId1 = (JSON.parse(testCreateQuiz(token1, "Test Quiz", "This is test quiz").body as string)).quizId;
+const quizId1 = (JSON.parse(testCreateQuiz(token1, 'Test Quiz', 'This is test quiz').body as string)).quizId;
 
-testCreateQuestion(token1, quizId1, 
-    {
-        question: "Who is the Monarch of England?",
-        duration: 4,
-        points: 5,
-        answers: [
-            {
-                answer: "Prince Charles",
-                correct: true
-            },
-            {
-                answer: "Example",
-                correct: false
-            }
-        ],
-        "thumbnailUrl": "http://google.com/some/image/path.jpg"
-    }
+testCreateQuestion(token1, quizId1,
+  {
+    question: 'Who is the Monarch of England?',
+    duration: 4,
+    points: 5,
+    answers: [
+      {
+        answer: 'Prince Charles',
+        correct: true
+      },
+      {
+        answer: 'Example',
+        correct: false
+      }
+    ],
+    thumbnailUrl: 'http://google.com/some/image/path.jpg'
+  }
 );
 
 const sessionId1 = (JSON.parse(testStartSession(token1, quizId1, 30).body as string)).sessionId;
@@ -48,13 +48,13 @@ describe('List sessions test: ', () => {
   test('test succesfull: ', () => {
     const result = JSON.parse(testListSessions(token1, quizId1).body as string);
     expect(result).toStrictEqual({
-        activeSessions: [sessionId1],
-        inactiveSessions: [sessionId2]
+      activeSessions: [sessionId1],
+      inactiveSessions: [sessionId2]
     });
   });
 
   test('invalid token: ', () => {
-    const result = testListSessions(token1+1, quizId1);
+    const result = testListSessions(token1 + 1, quizId1);
     expect(result.statusCode).toBe(401);
   });
 

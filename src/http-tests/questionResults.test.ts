@@ -54,6 +54,8 @@ function createQuestion(quizId: number, token: string) {
 
 function startSession(quizId: number, autoStartNum: number, token: string) {
     return requestHelper('POST', `/v1/admin/quiz/${quizId}/session/start`, {autoStartNum}, {token});
+function startSession(quizId: number, autoStartNum: number, token) {
+  return requestHelper('POST', `/v1/admin/quiz/${quizId}/sessions/start`, { autoStartNum }, token);
 }
 
 function joinSession(sessionId: number, name: string) {
@@ -74,6 +76,8 @@ function submitAnswer(playerId: number, questionPosition: number, answerIds: num
 
 function questionResult(playerId: number, questionPosition: number, token: string) {
   return requestHelper('GET', `/v1/player/${playerId}/question/${questionPosition}/results`, {}, {token});
+function questionResult(playerId: number, questionPosition: number, token) {
+  return requestHelper('GET', `/v1/player/${playerId}/question/${questionPosition}/results`, {}, token);
 }
 
 const authToken = authRegister(
@@ -125,6 +129,9 @@ test('succesfull', () => {
     playersCorrectList: ['player1'],
     averageAnswerTime: d.metadata.questions[0].playerTime[playerId].duration,
     percentCorrect: 100
+  });
+  expect(questionResult()).toEqual({
+
   });
 });
 

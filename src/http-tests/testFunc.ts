@@ -44,7 +44,7 @@ export function testCreateQuiz(token: string, name: string, description: string)
         }
     );
 
-    return result;
+  return result;
 }
 
 export function testAdminLogout(token: string) {
@@ -94,7 +94,7 @@ export function testUpdateThumbnail(token: string, quizId: number, imgUrl: strin
         }
     );
 
-    return result;
+  return result;
 }
 
 export function testCreateQuestion(token: string, quizId: number, questionBody: object) {
@@ -112,7 +112,7 @@ export function testCreateQuestion(token: string, quizId: number, questionBody: 
         }
     );
 
-    return result;
+  return result;
 }
 
 export function testStartSession(token: string, quizId: number, autoStartNum: number) {
@@ -130,7 +130,7 @@ export function testStartSession(token: string, quizId: number, autoStartNum: nu
         }
     );
 
-    return result;
+  return result;
 }
 
 export function testSessionState(token: string, quizId: number, sessionId: number, action: QuizSessionAction) {
@@ -149,7 +149,7 @@ export function testSessionState(token: string, quizId: number, sessionId: numbe
         }
     );
 
-    return result;
+  return result;
 }
 
 export function testQuizInfo(token: string, quizId: number) {
@@ -166,7 +166,7 @@ export function testQuizInfo(token: string, quizId: number) {
         }
     );
 
-    return result;
+  return result;
 }
 
 export function testSessionInfo(token: string, quizId: number, sessionId: number) {
@@ -184,7 +184,7 @@ export function testSessionInfo(token: string, quizId: number, sessionId: number
         }
     );
 
-    return result;
+  return result;
 }
 
 export function testListSessions(token: string, quizId: number) {
@@ -201,22 +201,22 @@ export function testListSessions(token: string, quizId: number) {
         }
     );
 
-    return result;
+  return result;
 }
 
 export function testJoinSession(sessionId: number, name: string) {
-    const result = request(
-        'POST',
-        SERVER_URL + '/v1/player/join',
-        {
-            json: {
-                sessionId: sessionId,
-                name: name
-            }
-        }
-    );
+  const result = request(
+    'POST',
+    SERVER_URL + '/v1/player/join',
+    {
+      json: {
+        sessionId: sessionId,
+        name: name
+      }
+    }
+  );
 
-    return result;
+  return result;
 }
 
 export function testSubmitAnswer(playerId: number, questionPosition: number, answerIds: number[]) {

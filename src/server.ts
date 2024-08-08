@@ -84,6 +84,11 @@ app.use('/docs', sui.serve, sui.setup(YAML.parse(file), { swaggerOptions: { docE
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
 
+app.get('/', (req: Request, res: Response) => {
+  console.log('Print to terminal: someone accessed our root url!');
+  res.json({ message: "Welcome to Project backend Server's root URL!" });
+});
+
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   const token = req.body.token as string;
   if (!token) {
